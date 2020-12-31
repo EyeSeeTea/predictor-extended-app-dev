@@ -1,20 +1,12 @@
 import React from "react";
 import { HashRouter, Route, Switch } from "react-router-dom";
-import Example from "../example/Example";
-import LandingPage from "../landing/LandingPage";
+import { PredictorList } from "../predictor-list/PredictorList";
 
 const Root = () => {
     return (
         <HashRouter>
             <Switch>
-                <Route
-                    path="/for/:name"
-                    render={({ match }) => <Example name={match.params.name} />}
-                />
-                <Route path="/for" render={() => <Example name="Stranger" />} />
-
-                {/* Default route */}
-                <Route render={() => <LandingPage />} />
+                <Route render={() => <PredictorList />} />
             </Switch>
         </HashRouter>
     );

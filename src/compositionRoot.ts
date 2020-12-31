@@ -1,13 +1,12 @@
-import { D2Api } from "./types/d2-api";
-import { Dhis2DataValueRepository } from "./data/Dhis2DataValueRepository";
-import { GetDataValuesUseCase } from "./domain/usecases/GetDataValuesUseCase";
+import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
+import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
 
-export function getCompositionRoot(api: D2Api) {
-    const dataValueRepository = new Dhis2DataValueRepository(api);
+export function getCompositionRoot() {
+    const dataValueRepository = new PredictorD2ApiRepository();
 
     return {
-        dataValues: {
-            get: new GetDataValuesUseCase(dataValueRepository),
+        predictors: {
+            get: new GetPredictorsUseCase(dataValueRepository),
         },
     };
 }
