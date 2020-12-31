@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-12-31T10:43:30.700Z\n"
-"PO-Revision-Date: 2020-12-31T10:43:30.700Z\n"
+"POT-Creation-Date: 2020-12-31T15:49:59.527Z\n"
+"PO-Revision-Date: 2020-12-31T15:49:59.527Z\n"
 
 msgid "Search by name"
 msgstr ""
@@ -23,10 +23,31 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
+msgid "Output data element"
+msgstr ""
+
+msgid "Output category option"
+msgstr ""
+
+msgid "Period type"
+msgstr ""
+
 msgid "Last Updated"
 msgstr ""
 
+msgid "Description"
+msgstr ""
+
+msgid "Last updated"
+msgstr ""
+
+msgid "Last updated by"
+msgstr ""
+
 msgid "Created"
+msgstr ""
+
+msgid "Created by"
 msgstr ""
 
 msgid "Details"

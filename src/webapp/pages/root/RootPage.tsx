@@ -1,12 +1,12 @@
 import React from "react";
 import { HashRouter, Route, Switch } from "react-router-dom";
-import { PredictorList } from "../predictor-list/PredictorList";
+import { PredictorListPage } from "../predictor-list/PredictorListPage";
 
 const Root = () => {
     return (
         <HashRouter>
             <Switch>
-                <Route render={() => <PredictorList />} />
+                <Route render={() => <PredictorListPage />} />
             </Switch>
         </HashRouter>
     );
