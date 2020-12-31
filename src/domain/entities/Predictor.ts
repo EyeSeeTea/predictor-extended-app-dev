@@ -1,57 +1,25 @@
-import { AttributeValue, Ref, SharingSetting } from "./DHIS2";
+import { NamedRef, Ref, SharingSetting } from "./DHIS2";
 
 export interface Predictor {
-    annualSampleCount: number;
-    attributeValues: AttributeValue[];
-    code: string;
-    created: string;
-    description: string;
-    displayDescription: string;
-    displayFormName: string;
-    displayName: string;
-    displayShortName: string;
-    externalAccess: boolean;
-    favorite: boolean;
-    favorites: string[];
-    formName: string;
-    generator: Expression;
-    href: string;
     id: string;
-    lastUpdated: string;
-    lastUpdatedBy: Ref;
+    code: string;
     name: string;
-    organisationUnitLevels: Ref[];
-    output: Ref;
-    outputCombo: Ref;
+    description: string;
+    output: NamedRef;
+    outputCombo: NamedRef;
     periodType: string;
-    predictorGroups: PredictorGroup[];
-    publicAccess: string;
+    annualSampleCount: number;
+    generator: Expression;
+    organisationUnitLevels: Ref[];
+    predictorGroups: NamedRef[];
     sampleSkipTest: Expression;
     sequentialSampleCount: number;
     sequentialSkipCount: number;
-    shortName: string;
-    user: Ref;
-    userAccesses: SharingSetting[];
-    userGroupAccesses: SharingSetting[];
-}
-
-export interface PredictorGroup {
-    attributeValues: AttributeValue[];
-    code: string;
-    created: string;
-    description: string;
-    displayName: string;
-    externalAccess: boolean;
-    favorite: boolean;
-    favorites: string[];
-    href: string;
-    id: string;
     lastUpdated: string;
-    lastUpdatedBy: Ref;
-    name: string;
-    predictors: Predictor[];
+    lastUpdatedBy: NamedRef;
+    created: string;
+    user: NamedRef;
     publicAccess: string;
-    user: Ref;
     userAccesses: SharingSetting[];
     userGroupAccesses: SharingSetting[];
 }

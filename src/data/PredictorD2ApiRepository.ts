@@ -14,8 +14,40 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     async get(): Promise<{ pager: Pager; objects: Predictor[] }> {
         return this.api.models.predictors
             .get({
-                fields: { $owner: true },
+                fields: {
+                    id: true,
+                    code: true,
+                    name: true,
+                    description: true,
+                    output: { id: true, name: true },
+                    outputCombo: { id: true, name: true },
+                    periodType: true,
+                    annualSampleCount: true,
+                    generator: {
+                        expression: true,
+                        description: true,
+                        missingValueStrategy: true,
+                        slidingWindow: true,
+                    },
+                    organisationUnitLevels: true,
+                    predictorGroups: { id: true, name: true },
+                    sampleSkipTest: {
+                        expression: true,
+                        description: true,
+                        missingValueStrategy: true,
+                        slidingWindow: true,
+                    },
+                    sequentialSampleCount: true,
+                    sequentialSkipCount: true,
+                    lastUpdated: true,
+                    lastUpdatedBy: { id: true, name: true },
+                    created: true,
+                    user: { id: true, name: true },
+                    publicAccess: true,
+                    userAccesses: { id: true, access: true, displayName: true },
+                    userGroupAccesses: { id: true, access: true, displayName: true },
+                },
             })
-            .getData() as any;
+            .getData();
     }
 }
