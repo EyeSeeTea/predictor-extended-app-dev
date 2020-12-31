@@ -1,5 +1,3 @@
-import { makeStyles } from "@material-ui/core";
-import classnames from "classnames";
 import {
     MouseActionsMapping,
     ObjectsTable,
@@ -49,10 +47,8 @@ export function ObjectsList<T extends ReferenceObject>(
         ...tableProps
     } = props;
 
-    const classes = useStyles();
-
     return (
-        <div className={classnames(classes.wrapper, className)}>
+        <div className={className}>
             {isLoading ? <span data-test-loading /> : <span data-test-loaded />}
             {
                 <ObjectsTable<T>
@@ -76,7 +72,3 @@ const defaultMouseActionsMapping: MouseActionsMapping = {
     left: { type: "contextual" },
     right: { type: "contextual" },
 };
-
-const useStyles = makeStyles({
-    wrapper: { marginTop: 25 },
-});

@@ -10,7 +10,7 @@ import {
 } from "d2-ui-components";
 import _ from "lodash";
 import { parse } from "querystring";
-import React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import i18n from "../../../locales";
 import { ObjectsListProps } from "./ObjectsList";
@@ -51,7 +51,7 @@ export function useObjectsTable<Obj extends ReferenceObject>(
     config: TableConfig<Obj>,
     getRows: GetRows<Obj>
 ): ObjectsListProps<Obj> {
-    const [state, setState] = React.useState<State<Obj>>(() => ({
+    const [state, setState] = useState<State<Obj>>(() => ({
         rows: undefined,
         pagination: initialPagination,
         sorting: config.initialSorting,
@@ -61,9 +61,9 @@ export function useObjectsTable<Obj extends ReferenceObject>(
     const match = useLocation();
     const queryParams = parse(match.search.slice(1));
     const initialSearch = _.castArray(queryParams.search)[0] || "";
-    const [search, setSearch] = React.useState(initialSearch);
+    const [search, setSearch] = useState(initialSearch);
 
-    const loadRows = React.useCallback(
+    const loadRows = useCallback(
         async (sorting: TableSorting<Obj>, pagination: Partial<TablePagination>) => {
             setState(state => ({ ...state, isLoading: true }));
             const paging = { ...initialPagination, ...pagination };
@@ -78,15 +78,15 @@ export function useObjectsTable<Obj extends ReferenceObject>(
         [getRows, search]
     );
 
-    const reload = React.useCallback(async () => {
+    const reload = useCallback(async () => {
         loadRows(state.sorting, state.pagination);
     }, [loadRows, state.sorting, state.pagination]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         loadRows(config.initialSorting, initialPagination);
     }, [config.initialSorting, loadRows]);
 
-    const onChange = React.useCallback(
+    const onChange = useCallback(
         (newState: TableState<Obj>) => {
             loadRows(newState.sorting, newState.pagination);
         },
