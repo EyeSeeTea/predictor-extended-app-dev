@@ -10,7 +10,7 @@ import {
 } from "d2-ui-components";
 import _ from "lodash";
 import { parse } from "querystring";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import i18n from "../../../locales";
 import { ObjectsListProps } from "./ObjectsList";
@@ -37,8 +37,6 @@ type GetRows<Obj extends ReferenceObject> = (
     sorting: TableSorting<Obj>
 ) => Promise<{ objects: Obj[]; pager: Pager }>;
 
-const initialPagination: TablePagination = { page: 1, pageSize: 20, total: 0 };
-
 // Group state to avoid multiple re-renders on individual setState dispatchers
 interface State<Obj extends ReferenceObject> {
     rows: Obj[] | undefined;
@@ -51,6 +49,15 @@ export function useObjectsTable<Obj extends ReferenceObject>(
     config: TableConfig<Obj>,
     getRows: GetRows<Obj>
 ): ObjectsListProps<Obj> {
+    const initialPagination: TablePagination = useMemo(
+        () => ({
+            page: 1,
+            pageSize: config.paginationOptions.pageSizeInitialValue ?? 20,
+            total: 0,
+        }),
+        [config.paginationOptions.pageSizeInitialValue]
+    );
+
     const [state, setState] = useState<State<Obj>>(() => ({
         rows: undefined,
         pagination: initialPagination,
@@ -75,7 +82,7 @@ export function useObjectsTable<Obj extends ReferenceObject>(
                 isLoading: false,
             });
         },
-        [getRows, search]
+        [getRows, search, initialPagination]
     );
 
     const reload = useCallback(async () => {
@@ -84,7 +91,7 @@ export function useObjectsTable<Obj extends ReferenceObject>(
 
     useEffect(() => {
         loadRows(config.initialSorting, initialPagination);
-    }, [config.initialSorting, loadRows]);
+    }, [config.initialSorting, loadRows, initialPagination]);
 
     const onChange = useCallback(
         (newState: TableState<Obj>) => {

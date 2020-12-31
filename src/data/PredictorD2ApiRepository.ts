@@ -1,3 +1,4 @@
+import { TableSorting } from "d2-ui-components";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
 import { D2Api } from "../types/d2-api";
@@ -11,9 +12,17 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         this.api = getD2APiFromInstance(baseUrl);
     }
 
-    async get(): Promise<{ pager: Pager; objects: Predictor[] }> {
+    async get(
+        search?: string,
+        paging?: { page: number, pageSize: number },
+        sorting?: TableSorting<Predictor>
+    ): Promise<{ pager: Pager; objects: Predictor[] }> {
         return this.api.models.predictors
             .get({
+                filter: { identifiable: { token: search } },
+                page: paging?.page,
+                pageSize: paging?.pageSize,
+                order: sorting ? `${sorting.field}:${sorting.order}` : undefined,
                 fields: {
                     id: true,
                     code: true,

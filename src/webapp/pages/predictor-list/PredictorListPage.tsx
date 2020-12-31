@@ -13,14 +13,7 @@ export const PredictorListPage: React.FC = () => {
         return buildTableConfig();
     }, []);
 
-    const rows = React.useMemo(
-        () => async () => {
-            return compositionRoot.predictors.get();
-        },
-        [compositionRoot]
-    );
-
-    const tableProps = useObjectsTable(baseConfig, rows);
+    const tableProps = useObjectsTable(baseConfig, compositionRoot.predictors.get);
 
     return (
         <Wrapper>
