@@ -48,7 +48,7 @@ const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
 
     useEffect(() => {
         async function setup() {
-            const compositionRoot = getCompositionRoot();
+            const compositionRoot = getCompositionRoot(baseUrl);
             const appContext: AppContextState = { config: {}, compositionRoot };
 
             setAppContext(appContext);
@@ -57,7 +57,7 @@ const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
             setLoading(false);
         }
         setup();
-    }, [d2]);
+    }, [d2, baseUrl]);
 
     if (loading) {
         return (

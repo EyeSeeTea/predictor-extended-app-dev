@@ -1,58 +1,81 @@
-import React from "react";
+import { makeStyles } from "@material-ui/core";
+import classnames from "classnames";
 import {
+    MouseActionsMapping,
     ObjectsTable,
-    TableColumn,
-    TableSorting,
-    ReferenceObject,
+    ObjectsTableProps,
     PaginationOptions,
+    ReferenceObject,
+    TableColumn,
+    TableGlobalAction,
     TablePagination,
+    TableSorting,
     TableState,
 } from "d2-ui-components";
-import { LinearProgress } from "material-ui";
-import { Spinner } from "./Spinner";
-import { makeStyles } from "@material-ui/core";
+import React, { PropsWithChildren } from "react";
+import { Spinner } from "../objects-list/Spinner";
 
-export interface ObjectsListProps<Row extends ReferenceObject> {
+export interface ObjectsListProps<Obj extends ReferenceObject> {
+    className?: string;
+    columns: TableColumn<Obj>[];
+    rows: Obj[] | undefined;
+    onChange(newState: TableState<Obj>): void;
+
     isLoading: boolean;
-    rows: Row[] | undefined;
-    columns: TableColumn<Row>[];
+
     pagination: Partial<TablePagination>;
     paginationOptions: Partial<PaginationOptions>;
-    initialPagination: Partial<TablePagination>;
-    initialSorting: TableSorting<Row>;
-    onStateChange(newState: TableState<Row>): void;
+    initialSorting: TableSorting<Obj>;
+
+    sideComponents?: ObjectsTableProps<Obj>["sideComponents"];
+    globalActions?: TableGlobalAction[];
+    mouseActionsMapping?: MouseActionsMapping;
+
+    searchBoxLabel: string;
+    onChangeSearch?(value: string): void;
+
+    reload(): void;
 }
 
 export function ObjectsList<T extends ReferenceObject>(
-    props: ObjectsListProps<T>
+    props: PropsWithChildren<ObjectsListProps<T>>
 ): React.ReactElement<ObjectsListProps<T>> {
-    const { isLoading, rows, ...tableProps } = props;
+    const {
+        className,
+        children,
+        isLoading,
+        rows,
+        mouseActionsMapping = defaultMouseActionsMapping,
+        ...tableProps
+    } = props;
+
     const classes = useStyles();
 
     return (
-        <div className={classes.wrapper}>
+        <div className={classnames(classes.wrapper, className)}>
             {isLoading ? <span data-test-loading /> : <span data-test-loaded />}
-            {!rows && <LinearProgress />}
-            {rows && (
+            {
                 <ObjectsTable<T>
-                    rows={rows}
+                    rows={rows || []}
+                    mouseActionsMapping={mouseActionsMapping}
                     {...tableProps}
                     filterComponents={
                         <React.Fragment key="filters">
-                            {/*<ProjectsListFilters
-                                filter={filter}
-                                filterOptions={filterOptions}
-                                onChange={setFilter}
-                            />*/}
+                            {children}
 
                             <Spinner isVisible={isLoading} />
                         </React.Fragment>
                     }
                 />
-            )}
+            }
         </div>
     );
 }
+
+const defaultMouseActionsMapping: MouseActionsMapping = {
+    left: { type: "contextual" },
+    right: { type: "contextual" },
+};
 
 const useStyles = makeStyles({
     wrapper: { marginTop: 25 },

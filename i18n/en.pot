@@ -5,11 +5,32 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-12-31T10:16:54.120Z\n"
-"PO-Revision-Date: 2020-12-31T10:16:54.120Z\n"
+"POT-Creation-Date: 2020-12-31T10:43:30.700Z\n"
+"PO-Revision-Date: 2020-12-31T10:43:30.700Z\n"
+
+msgid "Search by name"
+msgstr ""
 
 msgid "Back"
 msgstr ""
 
 msgid "Help"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Last Updated"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Search by name or code"
 msgstr ""
