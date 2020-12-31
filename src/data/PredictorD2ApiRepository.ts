@@ -19,7 +19,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
         return this.api.models.predictors
             .get({
-                filter: { identifiable: { token: search } },
+                filter: { name: { token: search } },
                 page: paging?.page,
                 pageSize: paging?.pageSize,
                 order: sorting ? `${sorting.field}:${sorting.order}` : undefined,

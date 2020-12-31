@@ -63,6 +63,6 @@ function buildTableConfig(): TableConfig<Predictor> {
             pageSizeOptions: [10, 25, 50, 100],
             pageSizeInitialValue: 25,
         },
-        searchBoxLabel: i18n.t("Search by name or code"),
+        searchBoxLabel: i18n.t("Search by name"),
     };
 }
