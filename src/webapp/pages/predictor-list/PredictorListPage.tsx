@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
-import { useCallback } from "react";
+import { Icon } from "@material-ui/core";
+import { useLoading } from "d2-ui-components";
+import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
@@ -10,11 +11,66 @@ import { useQueryState } from "../../hooks/useQueryState";
 
 export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
+    const loading = useLoading();
+
     const [state, setState] = useQueryState<{ search: string }>({ search: "" });
 
-    const baseConfig = useMemo(() => {
-        return buildTableConfig();
-    }, []);
+    const runPredictors = useCallback(
+        async (predictors: string[]) => {
+            loading.show(true, i18n.t("Running predictors"));
+            await compositionRoot.predictors.run(predictors);
+            loading.reset();
+        },
+        [compositionRoot, loading]
+    );
+
+    const baseConfig: TableConfig<Predictor> = useMemo(() => {
+        return {
+            columns: [
+                { name: "name", text: i18n.t("Name"), sortable: true },
+                { name: "code", text: i18n.t("Code"), sortable: true, hidden: true },
+                { name: "output", text: i18n.t("Output data element"), sortable: true },
+                { name: "outputCombo", text: i18n.t("Output category option"), sortable: true },
+                { name: "periodType", text: i18n.t("Period type"), sortable: true },
+                { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
+            ],
+            details: [
+                { name: "code", text: i18n.t("Code") },
+                { name: "name", text: i18n.t("Name") },
+                { name: "description", text: i18n.t("Description") },
+                { name: "output", text: i18n.t("Output data element") },
+                { name: "outputCombo", text: i18n.t("Output data element") },
+                { name: "lastUpdated", text: i18n.t("Last updated") },
+                { name: "lastUpdatedBy", text: i18n.t("Last updated by") },
+                { name: "created", text: i18n.t("Created") },
+                { name: "user", text: i18n.t("Created by") },
+            ],
+            actions: [
+                {
+                    name: "details",
+                    text: i18n.t("Details"),
+                    multiple: false,
+                    primary: true,
+                },
+                {
+                    name: "execute",
+                    text: i18n.t("Run"),
+                    multiple: true,
+                    onClick: runPredictors,
+                    icon: <Icon>queue_play_next</Icon>,
+                },
+            ],
+            initialSorting: {
+                field: "name",
+                order: "asc",
+            },
+            paginationOptions: {
+                pageSizeOptions: [10, 25, 50, 100],
+                pageSizeInitialValue: 25,
+            },
+            searchBoxLabel: i18n.t("Search by name"),
+        };
+    }, [runPredictors]);
 
     const tableProps = useObjectsTable(baseConfig, compositionRoot.predictors.get);
 
@@ -40,44 +96,3 @@ export const PredictorListPage: React.FC = () => {
 const Wrapper = styled.div`
     margin: 20px;
 `;
-
-function buildTableConfig(): TableConfig<Predictor> {
-    return {
-        columns: [
-            { name: "name", text: i18n.t("Name"), sortable: true },
-            { name: "code", text: i18n.t("Code"), sortable: true, hidden: true },
-            { name: "output", text: i18n.t("Output data element"), sortable: true },
-            { name: "outputCombo", text: i18n.t("Output category option"), sortable: true },
-            { name: "periodType", text: i18n.t("Period type"), sortable: true },
-            { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
-        ],
-        details: [
-            { name: "code", text: i18n.t("Code") },
-            { name: "name", text: i18n.t("Name") },
-            { name: "description", text: i18n.t("Description") },
-            { name: "output", text: i18n.t("Output data element") },
-            { name: "outputCombo", text: i18n.t("Output data element") },
-            { name: "lastUpdated", text: i18n.t("Last updated") },
-            { name: "lastUpdatedBy", text: i18n.t("Last updated by") },
-            { name: "created", text: i18n.t("Created") },
-            { name: "user", text: i18n.t("Created by") },
-        ],
-        actions: [
-            {
-                name: "details",
-                text: i18n.t("Details"),
-                multiple: false,
-                primary: true,
-            },
-        ],
-        initialSorting: {
-            field: "name",
-            order: "asc",
-        },
-        paginationOptions: {
-            pageSizeOptions: [10, 25, 50, 100],
-            pageSizeInitialValue: 25,
-        },
-        searchBoxLabel: i18n.t("Search by name"),
-    };
-}

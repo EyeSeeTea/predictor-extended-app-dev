@@ -1,12 +1,16 @@
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
 import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
+import { RunAllPredictorsUseCase } from "./domain/usecases/RunAllPredictorsUseCase";
+import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
-    const dataValueRepository = new PredictorD2ApiRepository(baseUrl);
+    const predictorRepository = new PredictorD2ApiRepository(baseUrl);
 
     return {
         predictors: getExecute({
-            get: new GetPredictorsUseCase(dataValueRepository),
+            get: new GetPredictorsUseCase(predictorRepository),
+            run: new RunPredictorsUseCase(predictorRepository),
+            runAll: new RunAllPredictorsUseCase(predictorRepository),
         }),
     };
 }

@@ -1,8 +1,10 @@
 import { TableSorting } from "d2-ui-components";
+import { format } from "date-fns";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
 import { D2Api } from "../types/d2-api";
 import { getD2APiFromInstance } from "../utils/d2-api";
+import { promiseMap } from "../utils/promises";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
 
 export class PredictorD2ApiRepository implements PredictorRepository {
@@ -12,7 +14,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         this.api = getD2APiFromInstance(baseUrl);
     }
 
-    async get(
+    public async get(
         search?: string,
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
@@ -59,4 +61,25 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             })
             .getData();
     }
+
+    // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}
+    public async run(ids: string[], startDate: Date, endDate: Date): Promise<void> {
+        await promiseMap(ids, id =>
+            this.api
+                .post(`/predictors/${id}/run`, {
+                    startDate: formatDate(startDate),
+                    endDate: formatDate(endDate),
+                })
+                .getData()
+        );
+    }
+
+    // TODO: Not tested, will likely require startDate and endDate
+    public async runAll(): Promise<void> {
+        await this.api.post(`/predictors/run`).getData();
+    }
+}
+
+function formatDate(date: Date): string {
+    return format(date, "yyyy-MM-dd");
 }

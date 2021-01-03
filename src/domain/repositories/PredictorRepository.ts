@@ -8,4 +8,7 @@ export interface PredictorRepository {
         paging: { page: number; pageSize: number },
         sorting: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }>;
+
+    run(ids: string[], startDate: Date, endDate: Date): Promise<void>
+    runAll(): Promise<void>
 }
