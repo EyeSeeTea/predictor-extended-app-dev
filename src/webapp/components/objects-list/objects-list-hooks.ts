@@ -103,7 +103,7 @@ export function useObjectsTable<Obj extends ReferenceObject>(
     return {
         ...config,
         isLoading: state.isLoading,
-        rows: state.rows,
+        rows: state.rows ?? [],
         onChange,
         pagination: state.pagination,
         searchBoxLabel: config.searchBoxLabel || i18n.t("Search by name"),

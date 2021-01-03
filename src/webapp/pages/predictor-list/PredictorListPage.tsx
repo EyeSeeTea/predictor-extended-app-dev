@@ -1,13 +1,16 @@
 import React, { useMemo } from "react";
+import { useCallback } from "react";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
 import { TableConfig, useObjectsTable } from "../../components/objects-list/objects-list-hooks";
 import { ObjectsList } from "../../components/objects-list/ObjectsList";
 import { useAppContext } from "../../contexts/app-context";
+import { useQueryState } from "../../hooks/useQueryState";
 
 export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
+    const [state, setState] = useQueryState<{ search: string }>({ search: "" });
 
     const baseConfig = useMemo(() => {
         return buildTableConfig();
@@ -15,9 +18,21 @@ export const PredictorListPage: React.FC = () => {
 
     const tableProps = useObjectsTable(baseConfig, compositionRoot.predictors.get);
 
+    const onChangeSearch = useCallback(
+        (search: string) => {
+            if (tableProps.onChangeSearch) tableProps.onChangeSearch(search);
+            setState({ search });
+        },
+        [setState, tableProps]
+    );
+
     return (
         <Wrapper>
-            <ObjectsList<Predictor> {...tableProps} />
+            <ObjectsList<Predictor>
+                {...tableProps}
+                onChangeSearch={onChangeSearch}
+                initialSearch={state.search}
+            />
         </Wrapper>
     );
 };

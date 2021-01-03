@@ -13,10 +13,10 @@ import {
 import React, { PropsWithChildren } from "react";
 import { Spinner } from "../objects-list/Spinner";
 
-export interface ObjectsListProps<Obj extends ReferenceObject> {
+export interface ObjectsListProps<Obj extends ReferenceObject> extends ObjectsTableProps<Obj> {
     className?: string;
     columns: TableColumn<Obj>[];
-    rows: Obj[] | undefined;
+    rows: Obj[];
     onChange(newState: TableState<Obj>): void;
 
     isLoading: boolean;
