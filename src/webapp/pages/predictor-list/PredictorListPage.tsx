@@ -21,7 +21,7 @@ export const PredictorListPage: React.FC = () => {
     const onChangeSearch = useCallback(
         (search: string) => {
             if (tableProps.onChangeSearch) tableProps.onChangeSearch(search);
-            setState({ search });
+            setState(state => ({ ...state, search }));
         },
         [setState, tableProps]
     );

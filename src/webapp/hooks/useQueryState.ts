@@ -3,7 +3,7 @@ import qs from "qs";
 import { useCallback, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-export function useQueryState<Obj extends object>(initialState: Obj): [Obj, (state: Obj) => void] {
+export function useQueryState<Obj extends object>(initialState: Obj): ResultType<Obj> {
     const history = useHistory();
 
     const [state, setState] = useState<Obj>(() => {
@@ -12,9 +12,14 @@ export function useQueryState<Obj extends object>(initialState: Obj): [Obj, (sta
     });
 
     const updateState = useCallback(
-        (state: Obj) => {
-            history.push(`${history.location.pathname}?${qs.stringify(compactQuery(state))}`);
-            setState(state);
+        (update: SetStateAction<Obj>) => {
+            setState(prevState => {
+                const actualState = _.isFunction(update) ? update(prevState) : update;
+                history.push(
+                    `${history.location.pathname}?${qs.stringify(compactQuery(actualState))}`
+                );
+                return actualState;
+            });
         },
         [history]
     );
@@ -29,3 +34,6 @@ function compactQuery<T extends object>(query: T) {
         .fromPairs()
         .value();
 }
+
+type SetStateAction<S> = S | ((prevState: S) => S);
+type ResultType<Obj extends object> = [Obj, (state: SetStateAction<Obj>) => void];
