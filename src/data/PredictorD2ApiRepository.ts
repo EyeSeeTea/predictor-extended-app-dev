@@ -14,7 +14,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
     async get(
         search?: string,
-        paging?: { page: number, pageSize: number },
+        paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
         return this.api.models.predictors
