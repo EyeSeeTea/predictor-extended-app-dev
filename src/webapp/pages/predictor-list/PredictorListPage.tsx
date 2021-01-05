@@ -1,5 +1,5 @@
-import { Icon } from "@material-ui/core";
-import { useLoading } from "d2-ui-components";
+import { ArrowDownward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
+import { useLoading, useSnackbar } from "d2-ui-components";
 import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
@@ -12,6 +12,7 @@ import { useQueryState } from "../../hooks/useQueryState";
 export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const loading = useLoading();
+    const snackbar = useSnackbar();
 
     const [state, setState] = useQueryState<{ search: string }>({ search: "" });
 
@@ -23,6 +24,10 @@ export const PredictorListPage: React.FC = () => {
         },
         [compositionRoot, loading]
     );
+
+    const placeholderAction = useCallback(() => {
+        snackbar.info("Not implemented yet");
+    }, [snackbar]);
 
     const baseConfig: TableConfig<Predictor> = useMemo(() => {
         return {
@@ -74,11 +79,39 @@ export const PredictorListPage: React.FC = () => {
                     primary: true,
                 },
                 {
+                    name: "edit",
+                    text: i18n.t("Edit"),
+                    multiple: false,
+                    onClick: placeholderAction,
+                    icon: <Edit />,
+                },
+                {
+                    name: "delete",
+                    text: i18n.t("Delete"),
+                    multiple: true,
+                    onClick: placeholderAction,
+                    icon: <Delete />,
+                },
+                {
                     name: "execute",
                     text: i18n.t("Run"),
                     multiple: true,
                     onClick: runPredictors,
-                    icon: <Icon>queue_play_next</Icon>,
+                    icon: <QueuePlayNext />,
+                },
+                {
+                    name: "export",
+                    text: i18n.t("Export"),
+                    multiple: true,
+                    onClick: placeholderAction,
+                    icon: <ArrowDownward />,
+                },
+                {
+                    name: "validate",
+                    text: i18n.t("Validate"),
+                    multiple: true,
+                    onClick: placeholderAction,
+                    icon: <Sync />,
                 },
             ],
             initialSorting: {
@@ -91,7 +124,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors]);
+    }, [runPredictors, placeholderAction]);
 
     const tableProps = useObjectsTable(baseConfig, compositionRoot.predictors.get);
 

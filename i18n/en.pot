@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-04T07:25:16.494Z\n"
-"PO-Revision-Date: 2021-01-04T07:25:16.494Z\n"
+"POT-Creation-Date: 2021-01-05T10:36:55.993Z\n"
+"PO-Revision-Date: 2021-01-05T10:36:55.993Z\n"
 
 msgid "Search by name"
 msgstr ""
@@ -23,10 +23,13 @@ msgstr ""
 msgid "Running predictors"
 msgstr ""
 
-msgid "Name"
+msgid "Section sequence"
 msgstr ""
 
-msgid "Code"
+msgid "Variable sequence"
+msgstr ""
+
+msgid "Name"
 msgstr ""
 
 msgid "Output data element"
@@ -35,13 +38,22 @@ msgstr ""
 msgid "Output category option"
 msgstr ""
 
+msgid "Description"
+msgstr ""
+
+msgid "Formula"
+msgstr ""
+
+msgid "Predictor groups"
+msgstr ""
+
 msgid "Period type"
 msgstr ""
 
 msgid "Last Updated"
 msgstr ""
 
-msgid "Description"
+msgid "Code"
 msgstr ""
 
 msgid "Last updated"
@@ -59,5 +71,17 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
 msgid "Run"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Validate"
 msgstr ""
