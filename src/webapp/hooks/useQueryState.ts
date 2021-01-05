@@ -15,9 +15,11 @@ export function useQueryState<Obj extends object>(initialState: Obj): ResultType
         (update: SetStateAction<Obj>) => {
             setState(prevState => {
                 const actualState = _.isFunction(update) ? update(prevState) : update;
-                history.push(
-                    `${history.location.pathname}?${qs.stringify(compactQuery(actualState))}`
-                );
+                const query = qs.stringify(compactQuery(actualState), {
+                    arrayFormat: "comma",
+                });
+
+                history.push(`${history.location.pathname}?${query}`);
                 return actualState;
             });
         },
@@ -30,7 +32,7 @@ export function useQueryState<Obj extends object>(initialState: Obj): ResultType
 function compactQuery<T extends object>(query: T) {
     return _(query)
         .toPairs()
-        .filter(([, value]) => !!value)
+        .filter(([, value]) => !!value && (!Array.isArray(value) || value.length > 0))
         .fromPairs()
         .value();
 }

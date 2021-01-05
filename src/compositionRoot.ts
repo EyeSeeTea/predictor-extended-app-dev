@@ -1,4 +1,5 @@
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
+import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
 import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
 import { RunAllPredictorsUseCase } from "./domain/usecases/RunAllPredictorsUseCase";
 import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
@@ -9,6 +10,7 @@ export function getCompositionRoot(baseUrl: string) {
     return {
         predictors: getExecute({
             get: new GetPredictorsUseCase(predictorRepository),
+            getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             run: new RunPredictorsUseCase(predictorRepository),
             runAll: new RunAllPredictorsUseCase(predictorRepository),
         }),

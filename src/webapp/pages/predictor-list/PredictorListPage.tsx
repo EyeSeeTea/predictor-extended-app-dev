@@ -1,10 +1,21 @@
 import { ArrowDownward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
-import { useLoading, useSnackbar } from "d2-ui-components";
-import React, { useCallback, useMemo } from "react";
+import {
+    DropdownItem,
+    MultipleDropdown,
+    TablePagination,
+    TableSorting,
+    useLoading,
+    useSnackbar,
+} from "d2-ui-components";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
-import { TableConfig, useObjectsTable } from "../../components/objects-list/objects-list-hooks";
+import {
+    Pager,
+    TableConfig,
+    useObjectsTable,
+} from "../../components/objects-list/objects-list-hooks";
 import { ObjectsList } from "../../components/objects-list/ObjectsList";
 import { useAppContext } from "../../contexts/app-context";
 import { useQueryState } from "../../hooks/useQueryState";
@@ -14,7 +25,8 @@ export const PredictorListPage: React.FC = () => {
     const loading = useLoading();
     const snackbar = useSnackbar();
 
-    const [state, setState] = useQueryState<{ search: string }>({ search: "" });
+    const [state, setState] = useQueryState<Filters>({});
+    const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
 
     const runPredictors = useCallback(
         async (predictors: string[]) => {
@@ -126,23 +138,57 @@ export const PredictorListPage: React.FC = () => {
         };
     }, [runPredictors, placeholderAction]);
 
-    const tableProps = useObjectsTable(baseConfig, compositionRoot.predictors.get);
+    const refreshRows = useCallback(
+        (
+            search: string,
+            paging: TablePagination,
+            sorting: TableSorting<Predictor>
+        ): Promise<{ objects: Predictor[]; pager: Pager }> => {
+            return compositionRoot.predictors.get(
+                { search, predictorGroups: state.predictorGroups },
+                paging,
+                sorting
+            );
+        },
+        [compositionRoot, state]
+    );
 
-    const onChangeSearch = useCallback(
-        (search: string) => {
-            if (tableProps.onChangeSearch) tableProps.onChangeSearch(search);
-            setState(state => ({ ...state, search }));
+    const tableProps = useObjectsTable(baseConfig, refreshRows);
+
+    const onChangeFilter = useCallback(
+        (update: Partial<Filters>) => {
+            if (tableProps.onChangeSearch && update.search) {
+                tableProps.onChangeSearch(update.search);
+            }
+
+            setState(state => ({ ...state, ...update }));
         },
         [setState, tableProps]
     );
+
+    useEffect(() => {
+        compositionRoot.predictors.getGroups().then(groups => {
+            const options = groups.map(({ id, name }) => ({ value: id, text: name }));
+            setPredictorGroupOptions(options);
+        });
+    }, [compositionRoot]);
 
     return (
         <Wrapper>
             <ObjectsList<Predictor>
                 {...tableProps}
-                onChangeSearch={onChangeSearch}
-                initialSearch={state.search}
-            />
+                onChangeSearch={search => onChangeFilter({ search })}
+                initialSearch={state.search ?? ""}
+            >
+                <React.Fragment>
+                    <MultipleDropdown
+                        items={predictorGroupOptions}
+                        values={state.predictorGroups ?? []}
+                        onChange={predictorGroups => onChangeFilter({ predictorGroups })}
+                        label={i18n.t("Predictor groups")}
+                    />
+                </React.Fragment>
+            </ObjectsList>
         </Wrapper>
     );
 };
@@ -150,3 +196,8 @@ export const PredictorListPage: React.FC = () => {
 const Wrapper = styled.div`
     margin: 20px;
 `;
+
+interface Filters {
+    search?: string;
+    predictorGroups?: string[];
+}

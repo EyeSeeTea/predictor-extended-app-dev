@@ -1,5 +1,6 @@
 import { TableSorting } from "d2-ui-components";
 import { format } from "date-fns";
+import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
 import { D2Api } from "../types/d2-api";
@@ -15,13 +16,18 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async get(
-        search?: string,
+        filters?: { search?: string; predictorGroups?: string[] },
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
+        const { search, predictorGroups = [] } = filters ?? {};
+
         return this.api.models.predictors
             .get({
-                filter: { name: { token: search } },
+                filter: {
+                    name: search ? { token: search } : undefined,
+                    "predictorGroups.id": predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
+                },
                 page: paging?.page,
                 pageSize: paging?.pageSize,
                 order: sorting ? `${sorting.field}:${sorting.order}` : undefined,
@@ -60,6 +66,14 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 },
             })
             .getData();
+    }
+
+    public async getGroups(): Promise<NamedRef[]> {
+        const { objects } = await this.api.models.predictorGroups
+            .get({ paging: false, fields: { id: true, displayName: true } })
+            .getData();
+
+        return objects.map(({ id, displayName }) => ({ id, name: displayName }));
     }
 
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}
