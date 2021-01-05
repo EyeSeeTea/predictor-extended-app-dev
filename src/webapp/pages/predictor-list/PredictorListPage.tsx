@@ -27,10 +27,31 @@ export const PredictorListPage: React.FC = () => {
     const baseConfig: TableConfig<Predictor> = useMemo(() => {
         return {
             columns: [
+                {
+                    name: "sectionSequence",
+                    text: i18n.t("Section sequence"),
+                    sortable: true,
+                    hidden: true,
+                },
+                {
+                    name: "variableSequence",
+                    text: i18n.t("Variable sequence"),
+                    sortable: true,
+                    hidden: true,
+                },
                 { name: "name", text: i18n.t("Name"), sortable: true },
-                { name: "code", text: i18n.t("Code"), sortable: true, hidden: true },
                 { name: "output", text: i18n.t("Output data element"), sortable: true },
                 { name: "outputCombo", text: i18n.t("Output category option"), sortable: true },
+                { name: "description", text: i18n.t("Description"), sortable: false },
+                {
+                    name: "generator",
+                    text: i18n.t("Formula"),
+                    sortable: false,
+                    getValue: ({ generator }: Predictor) => {
+                        return generator.expression;
+                    },
+                },
+                { name: "predictorGroups", text: i18n.t("Predictor groups"), sortable: true },
                 { name: "periodType", text: i18n.t("Period type"), sortable: true },
                 { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
             ],

@@ -22,6 +22,8 @@ export interface Predictor {
     publicAccess: string;
     userAccesses: SharingSetting[];
     userGroupAccesses: SharingSetting[];
+    sectionSequence?: string;
+    variableSequence?: string;
 }
 
 export interface Expression {
