@@ -1,5 +1,5 @@
-import { UseCase } from "../../compositionRoot";
-import { PredictorRepository } from "../repositories/PredictorRepository";
+import { UseCase } from "../../../compositionRoot";
+import { PredictorRepository } from "../../repositories/PredictorRepository";
 
 export class RunPredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}

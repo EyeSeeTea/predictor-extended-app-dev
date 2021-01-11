@@ -1,8 +1,7 @@
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
-import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
-import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
-import { RunAllPredictorsUseCase } from "./domain/usecases/RunAllPredictorsUseCase";
-import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
+import { GetPredictorGroupsUseCase } from "./domain/usecases/predictors/GetPredictorGroupsUseCase";
+import { GetPredictorsUseCase } from "./domain/usecases/predictors/GetPredictorsUseCase";
+import { RunPredictorsUseCase } from "./domain/usecases/predictors/RunPredictorsUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
@@ -12,7 +11,6 @@ export function getCompositionRoot(baseUrl: string) {
             get: new GetPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             run: new RunPredictorsUseCase(predictorRepository),
-            runAll: new RunAllPredictorsUseCase(predictorRepository),
         }),
     };
 }
