@@ -7,7 +7,7 @@ export function getMajorVersion(version: string): number {
     return Number(apiVersion);
 }
 
-export function getD2APiFromInstance(
+export function getD2APiFromUrl(
     baseUrl: string,
     auth?: { username: string; password: string }
 ) {
