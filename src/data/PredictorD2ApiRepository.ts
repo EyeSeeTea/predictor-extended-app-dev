@@ -87,11 +87,6 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 .getData()
         );
     }
-
-    // TODO: Not tested, will likely require startDate and endDate
-    public async runAll(): Promise<void> {
-        await this.api.post(`/predictors/run`).getData();
-    }
 }
 
 function formatDate(date: Date): string {
