@@ -29,9 +29,18 @@ export const PredictorListPage: React.FC = () => {
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
 
     const runPredictors = useCallback(
-        async (predictors: string[]) => {
+        async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
-            await compositionRoot.predictors.run(predictors);
+            await compositionRoot.usecases.run(ids);
+            loading.reset();
+        },
+        [compositionRoot, loading]
+    );
+
+    const exportPredictors = useCallback(
+        async (ids: string[]) => {
+            loading.show(true, i18n.t("Exporting predictors"));
+            await compositionRoot.usecases.export(ids);
             loading.reset();
         },
         [compositionRoot, loading]
@@ -115,7 +124,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "export",
                     text: i18n.t("Export"),
                     multiple: true,
-                    onClick: placeholderAction,
+                    onClick: exportPredictors,
                     icon: <ArrowDownward />,
                 },
                 {
@@ -136,7 +145,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors, placeholderAction]);
+    }, [runPredictors, exportPredictors, placeholderAction]);
 
     const refreshRows = useCallback(
         (
@@ -144,7 +153,7 @@ export const PredictorListPage: React.FC = () => {
             paging: TablePagination,
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
-            return compositionRoot.predictors.get(
+            return compositionRoot.usecases.list(
                 { search, predictorGroups: state.predictorGroups },
                 paging,
                 sorting
@@ -167,7 +176,7 @@ export const PredictorListPage: React.FC = () => {
     );
 
     useEffect(() => {
-        compositionRoot.predictors.getGroups().then(groups => {
+        compositionRoot.usecases.getGroups().then(groups => {
             const options = groups.map(({ id, name }) => ({ value: id, text: name }));
             setPredictorGroupOptions(options);
         });

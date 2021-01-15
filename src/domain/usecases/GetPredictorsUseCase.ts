@@ -1,14 +1,14 @@
 import { TablePagination, TableSorting } from "d2-ui-components";
-import { UseCase } from "../../../compositionRoot";
-import { Predictor } from "../../entities/Predictor";
-import { PredictorRepository } from "../../repositories/PredictorRepository";
+import { UseCase } from "../../compositionRoot";
+import { Predictor } from "../entities/Predictor";
+import { PredictorRepository } from "../repositories/PredictorRepository";
 
 interface GetPredictorsFilters {
     search?: string;
     predictorGroups?: string[];
 }
 
-export class GetPredictorsUseCase implements UseCase {
+export class ListPredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}
 
     public execute(
@@ -16,6 +16,6 @@ export class GetPredictorsUseCase implements UseCase {
         paging: TablePagination,
         sorting: TableSorting<Predictor>
     ) {
-        return this.predictorRepository.get(filters, paging, sorting);
+        return this.predictorRepository.list(filters, paging, sorting);
     }
 }

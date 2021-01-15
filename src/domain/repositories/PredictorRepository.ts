@@ -4,7 +4,9 @@ import { NamedRef } from "../entities/DHIS2";
 import { Predictor } from "../entities/Predictor";
 
 export interface PredictorRepository {
-    get(
+    get(ids: string[]): Promise<Predictor[]>;
+
+    list(
         filters: { search?: string; predictorGroups?: string[] },
         paging: { page: number; pageSize: number },
         sorting: TableSorting<Predictor>

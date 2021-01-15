@@ -1,22 +1,20 @@
 import { ExcelXlsxPopulateRepository } from "./data/ExcelXlsxPopulateRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
-import { ExportExcelUseCase } from "./domain/usecases/excel/ExportExcelUseCase";
-import { GetPredictorGroupsUseCase } from "./domain/usecases/predictors/GetPredictorGroupsUseCase";
-import { GetPredictorsUseCase } from "./domain/usecases/predictors/GetPredictorsUseCase";
-import { RunPredictorsUseCase } from "./domain/usecases/predictors/RunPredictorsUseCase";
+import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
+import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
+import { ListPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
+import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
     const excelRepository = new ExcelXlsxPopulateRepository();
 
     return {
-        predictors: getExecute({
-            get: new GetPredictorsUseCase(predictorRepository),
+        usecases: getExecute({
+            list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             run: new RunPredictorsUseCase(predictorRepository),
-        }),
-        excel: getExecute({
-            export: new ExportExcelUseCase(excelRepository),
+            export: new ExportPredictorsUseCase(predictorRepository, excelRepository),
         }),
     };
 }

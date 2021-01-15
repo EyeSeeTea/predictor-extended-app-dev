@@ -7,9 +7,6 @@ export function getMajorVersion(version: string): number {
     return Number(apiVersion);
 }
 
-export function getD2APiFromUrl(
-    baseUrl: string,
-    auth?: { username: string; password: string }
-) {
+export function getD2APiFromUrl(baseUrl: string, auth?: { username: string; password: string }) {
     return new D2Api({ baseUrl, auth, backend: "fetch" });
 }
