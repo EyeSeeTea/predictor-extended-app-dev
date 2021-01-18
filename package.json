@@ -40,7 +40,6 @@
         "react-scripts": "4.0.0",
         "styled-components": "5.2.1",
         "styled-jsx": "3.3.2",
-        "xlsx-populate": "git+https://github.com/EyeSeeTea/xlsx-populate.git#feature/publish-package",
         "xlsx-populate-eyeseetea": "git+https://github.com/EyeSeeTea/xlsx-populate.git#feature/publish-package"
     },
     "scripts": {
