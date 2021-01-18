@@ -29,6 +29,7 @@
         "d2-manifest": "1.0.0",
         "d2-ui-components": "2.5.0-beta.1",
         "date-fns": "2.16.1",
+        "file-saver": "2.0.5",
         "font-awesome": "4.7.0",
         "lodash": "4.17.20",
         "postcss-rtl": "1.7.3",
@@ -39,7 +40,8 @@
         "react-scripts": "4.0.0",
         "styled-components": "5.2.1",
         "styled-jsx": "3.3.2",
-        "xlsx-populate": "git+https://github.com/EyeSeeTea/xlsx-populate.git#master"
+        "xlsx-populate": "git+https://github.com/EyeSeeTea/xlsx-populate.git#feature/publish-package",
+        "xlsx-populate-eyeseetea": "git+https://github.com/EyeSeeTea/xlsx-populate.git#feature/publish-package"
     },
     "scripts": {
         "prestart": "yarn localize && d2-manifest package.json manifest.webapp",
@@ -74,6 +76,7 @@
         "@types/argparse": "2.0.4",
         "@types/axios-mock-adapter": "1.10.0",
         "@types/classnames": "2.2.11",
+        "@types/file-saver": "2.0.1",
         "@types/jest": "26.0.19",
         "@types/lodash": "4.14.166",
         "@types/material-ui": "0.21.8",
@@ -83,7 +86,6 @@
         "@types/react-dom": "17.0.0",
         "@types/react-router-dom": "5.1.6",
         "@types/styled-components": "5.1.7",
-        "@types/xlsx-populate": "git+https://github.com/JanLoebel/types-xlsx-populate.git",
         "@typescript-eslint/eslint-plugin": "4.11.1",
         "@typescript-eslint/parser": "4.11.1",
         "axios-mock-adapter": "1.19.0",
