@@ -1,5 +1,5 @@
+import XLSX, { Cell, Range, Sheet, Workbook } from "@eyeseetea/xlsx-populate";
 import _ from "lodash";
-import XLSX, { Cell, Range, Sheet, Workbook } from "xlsx-populate-eyeseetea";
 import { Address, CellContents, CellRef, ExcelModel, RangeRef } from "../domain/entities/Excel";
 import { ExcelRepository, ReadOptions, WriteOptions } from "../domain/repositories/ExcelRepository";
 
