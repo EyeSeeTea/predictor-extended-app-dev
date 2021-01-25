@@ -49,9 +49,9 @@ export const PredictorListPage: React.FC = () => {
         [compositionRoot, loading]
     );
 
-    const importPredictors = useCallback(async () => {
+    const openImportDialog = useCallback(async () => {
         fileRef.current?.openDialog();
-    }, [compositionRoot, loading]);
+    }, [fileRef]);
 
     const placeholderAction = useCallback(() => {
         snackbar.info("Not implemented yet");
@@ -146,7 +146,7 @@ export const PredictorListPage: React.FC = () => {
                 {
                     name: "import",
                     text: i18n.t("Import"),
-                    onClick: importPredictors,
+                    onClick: openImportDialog,
                     icon: <ArrowUpward />,
                 },
             ],
@@ -160,7 +160,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors, exportPredictors, importPredictors, placeholderAction]);
+    }, [runPredictors, exportPredictors, openImportDialog, placeholderAction]);
 
     const refreshRows = useCallback(
         (
