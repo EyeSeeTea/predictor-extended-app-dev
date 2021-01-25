@@ -1,4 +1,4 @@
-import { ArrowDownward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
+import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import {
     DropdownItem,
     MultipleDropdown,
@@ -46,11 +46,17 @@ export const PredictorListPage: React.FC = () => {
         [compositionRoot, loading]
     );
 
+    const importPredictors = useCallback(async () => {
+        loading.show(true, i18n.t("Importing predictors"));
+        await compositionRoot.usecases.import();
+        loading.reset();
+    }, [compositionRoot, loading]);
+
     const placeholderAction = useCallback(() => {
         snackbar.info("Not implemented yet");
     }, [snackbar]);
 
-    const baseConfig: TableConfig<Predictor> = useMemo(() => {
+    const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
             columns: [
                 {
@@ -135,6 +141,14 @@ export const PredictorListPage: React.FC = () => {
                     icon: <Sync />,
                 },
             ],
+            globalActions: [
+                {
+                    name: "import",
+                    text: i18n.t("Import"),
+                    onClick: importPredictors,
+                    icon: <ArrowUpward />,
+                },
+            ],
             initialSorting: {
                 field: "name",
                 order: "asc",
@@ -145,7 +159,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors, exportPredictors, placeholderAction]);
+    }, [runPredictors, exportPredictors, importPredictors, placeholderAction]);
 
     const refreshRows = useCallback(
         (
