@@ -166,8 +166,8 @@ export const PredictorListPage: React.FC = () => {
 
     const onChangeFilter = useCallback(
         (update: Partial<Filters>) => {
-            if (tableProps.onChangeSearch && update.search) {
-                tableProps.onChangeSearch(update.search);
+            if (tableProps.onChangeSearch) {
+                tableProps.onChangeSearch(update.search ?? "");
             }
 
             setState(state => ({ ...state, ...update }));
