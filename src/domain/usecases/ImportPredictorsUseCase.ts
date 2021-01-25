@@ -9,6 +9,10 @@ export class ImportPredictorsUseCase implements UseCase {
     ) {}
 
     public async execute(files: File[]) {
-        console.log(files, this.predictorRepository, this.excelRepository);
+        for (const file of files) {
+            const buffer = await file.arrayBuffer();
+            const excelFile = await this.excelRepository.readFile(buffer);
+            console.log({ file, excelFile, predictors: this.predictorRepository });
+        }
     }
 }

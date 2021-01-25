@@ -9,7 +9,10 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
         return this.toBuffer(workbook);
     }
 
-    public async readFile(buffer: Buffer, _options?: ReadOptions): Promise<ExcelModel> {
+    public async readFile(
+        buffer: Buffer | ArrayBuffer,
+        _options?: ReadOptions
+    ): Promise<ExcelModel> {
         const workbook = await this.fromBuffer(buffer);
         const sheets = _(workbook.sheets())
             .map(sheet => {
@@ -55,7 +58,7 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
     }
 
     public async writeFile(
-        buffer: Buffer,
+        buffer: Buffer | ArrayBuffer,
         file: ExcelModel,
         _options?: WriteOptions
     ): Promise<Buffer> {
@@ -78,7 +81,7 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
         return this.toBuffer(workbook);
     }
 
-    private fromBuffer(buffer: Buffer): Promise<Workbook> {
+    private fromBuffer(buffer: Buffer | ArrayBuffer): Promise<Workbook> {
         return XLSX.fromDataAsync(buffer);
     }
 
