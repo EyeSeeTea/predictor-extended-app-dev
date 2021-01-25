@@ -7,10 +7,11 @@ import {
     useLoading,
     useSnackbar,
 } from "d2-ui-components";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
+import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import {
     Pager,
     TableConfig,
@@ -24,6 +25,8 @@ export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const loading = useLoading();
     const snackbar = useSnackbar();
+
+    const fileRef = useRef<DropzoneRef>(null);
 
     const [state, setState] = useQueryState<Filters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
@@ -47,9 +50,7 @@ export const PredictorListPage: React.FC = () => {
     );
 
     const importPredictors = useCallback(async () => {
-        loading.show(true, i18n.t("Importing predictors"));
-        await compositionRoot.usecases.import();
-        loading.reset();
+        fileRef.current?.openDialog();
     }, [compositionRoot, loading]);
 
     const placeholderAction = useCallback(() => {
@@ -198,26 +199,29 @@ export const PredictorListPage: React.FC = () => {
 
     return (
         <Wrapper>
-            <ObjectsList<Predictor>
-                {...tableProps}
-                onChangeSearch={search => onChangeFilter({ search })}
-                initialSearch={state.search ?? ""}
-            >
-                <React.Fragment>
-                    <MultipleDropdown
-                        items={predictorGroupOptions}
-                        values={state.predictorGroups ?? []}
-                        onChange={predictorGroups => onChangeFilter({ predictorGroups })}
-                        label={i18n.t("Predictor groups")}
-                    />
-                </React.Fragment>
-            </ObjectsList>
+            <Dropzone ref={fileRef}>
+                <ObjectsList<Predictor>
+                    {...tableProps}
+                    onChangeSearch={search => onChangeFilter({ search })}
+                    initialSearch={state.search ?? ""}
+                >
+                    <React.Fragment>
+                        <MultipleDropdown
+                            items={predictorGroupOptions}
+                            values={state.predictorGroups ?? []}
+                            onChange={predictorGroups => onChangeFilter({ predictorGroups })}
+                            label={i18n.t("Predictor groups")}
+                        />
+                    </React.Fragment>
+                </ObjectsList>
+            </Dropzone>
         </Wrapper>
     );
 };
 
 const Wrapper = styled.div`
-    margin: 20px;
+    padding: 20px;
+    height: 100%;
 `;
 
 interface Filters {
