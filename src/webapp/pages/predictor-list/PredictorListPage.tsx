@@ -8,6 +8,7 @@ import {
     useSnackbar,
 } from "d2-ui-components";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
@@ -56,6 +57,20 @@ export const PredictorListPage: React.FC = () => {
     const placeholderAction = useCallback(() => {
         snackbar.info("Not implemented yet");
     }, [snackbar]);
+
+    const handleFileUpload = useCallback(
+        async (files: File[], rejections: FileRejection[]) => {
+            if (files.length === 0 && rejections.length > 0) {
+                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
+                return;
+            }
+
+            loading.show(true, i18n.t("Reading files"));
+            await compositionRoot.usecases.import(files);
+            loading.reset();
+        },
+        [compositionRoot, loading, snackbar]
+    );
 
     const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
@@ -199,7 +214,11 @@ export const PredictorListPage: React.FC = () => {
 
     return (
         <Wrapper>
-            <Dropzone ref={fileRef}>
+            <Dropzone
+                ref={fileRef}
+                accept={"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+                onDrop={handleFileUpload}
+            >
                 <ObjectsList<Predictor>
                     {...tableProps}
                     onChangeSearch={search => onChangeFilter({ search })}

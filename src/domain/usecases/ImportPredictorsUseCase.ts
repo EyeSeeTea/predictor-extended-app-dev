@@ -8,7 +8,7 @@ export class ImportPredictorsUseCase implements UseCase {
         private excelRepository: ExcelRepository
     ) {}
 
-    public async execute() {
-        console.log(this.predictorRepository, this.excelRepository);
+    public async execute(files: File[]) {
+        console.log(files, this.predictorRepository, this.excelRepository);
     }
 }
