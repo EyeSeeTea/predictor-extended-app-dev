@@ -1,5 +1,6 @@
-import { FileRepository } from "../domain/repositories/FileRepository";
+import { saveAs } from "file-saver";
 import { File } from "../domain/entities/File";
+import { FileRepository } from "../domain/repositories/FileRepository";
 
 export class FileBrowserRepository implements FileRepository {
     public download(file: File): void {
