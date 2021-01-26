@@ -1,6 +1,13 @@
 import XLSX, { Cell, Range, Sheet, Workbook } from "@eyeseetea/xlsx-populate";
 import _ from "lodash";
-import { Address, CellContents, CellRef, ExcelModel, RangeRef } from "../domain/entities/Excel";
+import {
+    Address,
+    CellContents,
+    CellRef,
+    ExcelModel,
+    ExcelSheet,
+    RangeRef,
+} from "../domain/entities/Excel";
 import { ExcelRepository, ReadOptions, WriteOptions } from "../domain/repositories/ExcelRepository";
 
 export class ExcelXlsxPopulateRepository implements ExcelRepository {
@@ -14,25 +21,28 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
         _options?: ReadOptions
     ): Promise<ExcelModel> {
         const workbook = await this.fromBuffer(buffer);
-        const sheets = _(workbook.sheets())
+
+        const sheets: Record<string, ExcelSheet> = _(workbook.sheets())
             .map(sheet => {
                 const merged = sheet.merged();
                 return [
                     sheet.name(),
-                    _.flatMap(sheet.rows(), row =>
-                        row
-                            .cells()
-                            .filter(cell => cell.value() || cell.formula())
-                            .map(cell => {
-                                const range = merged.find((range: Range) =>
-                                    range.cells()[0]?.includes(cell)
-                                );
-                                return {
-                                    contents: buildCellContents(cell),
-                                    ref: range ? buildRangeRef(range) : buildCellRef(cell),
-                                };
-                            })
-                    ),
+                    {
+                        cells: _.flatMap(sheet.rows(), row =>
+                            row
+                                .cells()
+                                .filter(cell => cell.value() || cell.formula())
+                                .map(cell => {
+                                    const range = merged.find((range: Range) =>
+                                        range.cells()[0]?.includes(cell)
+                                    );
+                                    return {
+                                        contents: buildCellContents(cell),
+                                        ref: range ? buildRangeRef(range) : buildCellRef(cell),
+                                    };
+                                })
+                        ),
+                    },
                 ];
             })
             .fromPairs()
@@ -66,9 +76,9 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
 
         // TODO: Handle defined names
 
-        for (const [sheetName, { data }] of _.toPairs(file.sheets)) {
+        for (const [sheetName, { cells }] of _.toPairs(file.sheets)) {
             const sheet = getOrCreateSheet(workbook, sheetName);
-            for (const cell of data) {
+            for (const cell of cells) {
                 const location = parseLocation(sheet, cell.ref);
                 if (cell.contents.type === "formula") location.formula(cell.contents.value);
                 else location.value(cell.contents.value);

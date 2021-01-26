@@ -17,7 +17,7 @@ export class ExportPredictorsUseCase implements UseCase {
         const emptyFile = await this.excelRepository.createFile();
         const predictors = await this.predictorRepository.get(ids);
 
-        const data: ExcelCell[] = _.flatten([
+        const cells: ExcelCell[] = _.flatten([
             columns.map((column: string, index: number) => ({
                 ref: {
                     type: "cell" as const,
@@ -40,7 +40,7 @@ export class ExportPredictorsUseCase implements UseCase {
 
         const file: ExcelModel = {
             definedNames: {},
-            sheets: { Predictors: { data } },
+            sheets: { Predictors: { cells } },
         };
 
         const buffer = await this.excelRepository.writeFile(emptyFile, file);

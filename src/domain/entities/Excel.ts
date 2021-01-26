@@ -39,17 +39,26 @@ export interface CellFormulaContent {
 }
 
 export type CellContents = CellTextContent | CellFormulaContent;
+export type Ref = CellRef | RangeRef;
 
 export interface ExcelCell {
-    ref: CellRef | RangeRef;
+    ref: Ref;
     contents: CellContents;
 }
 
 export interface ExcelSheet {
-    data: ExcelCell[];
+    cells: ExcelCell[];
 }
 
 export interface ExcelModel {
     sheets: Record<string, ExcelSheet>;
     definedNames: Record<string, ExcelCell>;
+}
+
+export function getRow(ref: Ref): number {
+    return ref.type === "cell" ? ref.address.row : ref.start.row;
+}
+
+export function getColumn(ref: Ref): number {
+    return ref.type === "cell" ? ref.address.column : ref.start.column;
 }

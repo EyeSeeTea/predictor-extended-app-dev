@@ -160,7 +160,7 @@ export const PredictorListPage: React.FC = () => {
             globalActions: [
                 {
                     name: "import",
-                    text: i18n.t("Import"),
+                    text: i18n.t("Import excel"),
                     onClick: openImportDialog,
                     icon: <ArrowUpward />,
                 },
