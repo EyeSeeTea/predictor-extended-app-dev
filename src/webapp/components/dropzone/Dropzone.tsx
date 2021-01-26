@@ -54,8 +54,6 @@ export const Dropzone = React.forwardRef(
             getRootProps,
             getInputProps,
             isDragActive,
-            isDragAccept,
-            isDragReject,
             open,
         } = useDropzone({
             noClick: true,
@@ -70,7 +68,7 @@ export const Dropzone = React.forwardRef(
 
         return (
             <div
-                {...getRootProps({ isDragActive, isDragAccept, isDragReject })}
+                {...getRootProps()}
                 style={{ outline: "none" }}
             >
                 <div
