@@ -22,6 +22,7 @@
         "@material-ui/core": "4.11.2",
         "@material-ui/icons": "4.11.2",
         "@material-ui/styles": "4.11.2",
+        "antlr4ts": "0.5.0-alpha.4",
         "argparse": "2.0.1",
         "axios": "0.21.1",
         "classnames": "2.2.6",
@@ -60,7 +61,8 @@
         "cy:verify": "cypress verify",
         "cy:e2e:open": "NODE_ENV=test CYPRESS_E2E=true cypress open",
         "cy:e2e:run": "NODE_ENV=test CYPRESS_E2E=true cypress run --browser chrome",
-        "script-example": "npx ts-node -P tsconfig-cli.json src/scripts/example.ts"
+        "script-example": "npx ts-node -P tsconfig-cli.json src/scripts/example.ts",
+        "antlr4ts": "antlr4ts -visitor src/data/expression-parser/Expression.g4"
     },
     "husky": {
         "hooks": {
@@ -88,6 +90,7 @@
         "@types/styled-components": "5.1.7",
         "@typescript-eslint/eslint-plugin": "4.11.1",
         "@typescript-eslint/parser": "4.11.1",
+        "antlr4ts-cli": "0.5.0-alpha.4",
         "axios-mock-adapter": "1.19.0",
         "babel-core": "6.26.3",
         "babel-eslint": "10.1.0",

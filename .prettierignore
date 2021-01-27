@@ -1,6 +1,4 @@
 build
 node_modules
-
 *.min.js
-
 src/data/expression-parser
