@@ -72,6 +72,7 @@ export const PredictorListPage: React.FC = () => {
                 snackbar.warning(warnings.map(({ description }) => description).join("\n"));
             }
 
+            //@ts-ignore TODO FIXME
             await compositionRoot.usecases.import(predictors);
             loading.reset();
         },

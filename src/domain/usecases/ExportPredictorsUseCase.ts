@@ -53,9 +53,17 @@ const formatValue = (predictor: Predictor, key: keyof Predictor): string | numbe
     const value = predictor[key];
     if (!value) return "";
 
-    if (key === "output" || key === "outputCombo") return predictor[key]?.name ?? "";
-    if (key === "predictorGroups") return predictor[key]?.map(({ name }) => name).join(",") ?? "";
-    if (key === "generator" || key === "sampleSkipTest") return predictor[key]?.expression ?? "";
+    switch (key) {
+        case "output":
+        case "outputCombo":
+            return predictor[key]?.name ?? "";
+        case "predictorGroups":
+            return predictor[key]?.map(({ name }) => name).join(",") ?? "";
+        case "generator":
+        case "sampleSkipTest":
+            return predictor[key]?.expression ?? "";
+    }
+
     if (typeof value === "string" || typeof value === "number") return value;
 
     return "";

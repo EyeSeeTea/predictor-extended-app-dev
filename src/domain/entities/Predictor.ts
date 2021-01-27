@@ -28,9 +28,12 @@ export interface Predictor {
 
 export interface Expression {
     expression: string;
-    description: string;
-    missingValueStrategy: "NEVER_SKIP" | "SKIP_IF_ANY_VALUE_MISSING" | "SKIP_IF_ALL_VALUES_MISSING";
-    slidingWindow: boolean;
+    description?: string;
+    slidingWindow?: boolean;
+    missingValueStrategy?:
+        | "NEVER_SKIP"
+        | "SKIP_IF_ANY_VALUE_MISSING"
+        | "SKIP_IF_ALL_VALUES_MISSING";
 }
 
 export const predictorColumns: Array<keyof Predictor> = [

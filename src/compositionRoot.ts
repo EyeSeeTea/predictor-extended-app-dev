@@ -1,5 +1,6 @@
 import { ExcelXlsxPopulateRepository } from "./data/ExcelXlsxPopulateRepository";
 import { FileBrowserRepository } from "./data/FileBrowserRepository";
+import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
 import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
@@ -10,6 +11,7 @@ import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
+    const metadataRepository = new MetadataD2ApiRepository(baseUrl);
     const excelRepository = new ExcelXlsxPopulateRepository();
     const fileRepository = new FileBrowserRepository();
 
@@ -18,7 +20,7 @@ export function getCompositionRoot(baseUrl: string) {
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             run: new RunPredictorsUseCase(predictorRepository),
-            readExcel: new ReadPredictorsExcelUseCase(excelRepository),
+            readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
             import: new ImportPredictorsUseCase(predictorRepository),
             export: new ExportPredictorsUseCase(
                 predictorRepository,

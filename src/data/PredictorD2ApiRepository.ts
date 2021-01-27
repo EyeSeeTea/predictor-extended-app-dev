@@ -4,9 +4,9 @@ import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
 import { D2Api } from "../types/d2-api";
-import { getD2APiFromUrl } from "../utils/d2-api";
 import { promiseMap } from "../utils/promises";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
+import { getD2APiFromUrl } from "./utils/d2-api";
 
 export class PredictorD2ApiRepository implements PredictorRepository {
     private api: D2Api;

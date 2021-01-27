@@ -6,24 +6,28 @@ import { ExcelModel, getColumn, getRow } from "../entities/Excel";
 import { Predictor, predictorColumns } from "../entities/Predictor";
 import { Validation } from "../entities/Validation";
 import { ExcelRepository } from "../repositories/ExcelRepository";
+import { MetadataRepository } from "../repositories/MetadataRepository";
 
 export class ReadPredictorsExcelUseCase implements UseCase {
-    constructor(private excelRepository: ExcelRepository) {}
+    constructor(
+        private excelRepository: ExcelRepository,
+        private metadataRepository: MetadataRepository
+    ) {}
 
     public async execute(files: File[]): Promise<ImportResult> {
-        const listPredictors = await promiseMap(files, async file => {
+        const excelPredictors = await promiseMap(files, async file => {
             const buffer = await file.arrayBuffer();
             const excelFile = await this.excelRepository.readFile(buffer);
             return this.buildPredictors(excelFile);
         });
 
         return {
-            predictors: _.flatMap(listPredictors, ({ predictors }) => predictors),
-            warnings: _.flatMap(listPredictors, ({ warnings }) => warnings ?? []),
+            predictors: _.flatMap(excelPredictors, ({ predictors }) => predictors),
+            warnings: _.flatMap(excelPredictors, ({ warnings }) => warnings ?? []),
         };
     }
 
-    public buildPredictors(excelFile: ExcelModel): ImportResult {
+    public async buildPredictors(excelFile: ExcelModel): Promise<ImportResult> {
         const { cells } = excelFile.sheets["Predictors"];
 
         const columns: Record<number, string> = _(cells)
@@ -32,22 +36,23 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             .fromPairs()
             .value();
 
-        //@ts-ignore TODO FIXME Add validation
-        const predictors: Predictor[] = _(cells)
-            .groupBy(item => getRow(item.ref))
-            .omitBy((_value, key) => parseInt(key) <= 1)
-            .values()
-            .map(cells =>
-                _.fromPairs(
-                    _.compact(
-                        cells?.map(cell => {
-                            const column = columns[getColumn(cell.ref)];
-                            return column ? [column, String(cell.contents.value)] : undefined;
-                        })
+        const predictors = await this.cleanPredictors(
+            _(cells)
+                .groupBy(item => getRow(item.ref))
+                .omitBy((_value, key) => parseInt(key) <= 1)
+                .values()
+                .map(cells =>
+                    _.fromPairs(
+                        _.compact(
+                            cells?.map(cell => {
+                                const column = columns[getColumn(cell.ref)];
+                                return column ? [column, String(cell.contents.value)] : undefined;
+                            })
+                        )
                     )
                 )
-            )
-            .value();
+                .value()
+        );
 
         const warnings: Validation<"UNKNOWN_COLUMN">[] = _(columns)
             .values()
@@ -61,9 +66,43 @@ export class ReadPredictorsExcelUseCase implements UseCase {
 
         return { predictors, warnings };
     }
+
+    private async cleanPredictors(
+        objects: Record<string, string>[]
+    ): Promise<Partial<Predictor>[]> {
+        return promiseMap(objects, async object => {
+            const output = await this.metadataRepository.lookup("dataElements", object.output);
+            const outputCombo = await this.metadataRepository.lookup(
+                "categoryOptionCombos",
+                object.outputCombo
+            );
+
+            const predictorGroups = _.compact(
+                await promiseMap(object.predictorGroups?.split(",") ?? [], group =>
+                    this.metadataRepository.lookup("predictorGroups", group)
+                )
+            );
+
+            const organisationUnitLevels = _.compact(
+                await promiseMap(object.organisationUnitLevels?.split(",") ?? [], level =>
+                    this.metadataRepository.lookup("organisationUnitLevels", level)
+                )
+            );
+
+            return {
+                ...object,
+                output,
+                outputCombo,
+                predictorGroups,
+                organisationUnitLevels,
+                generator: { expression: object.generator },
+                sampleSkipTest: { expression: object.sampleSkipTest },
+            };
+        });
+    }
 }
 
 export interface ImportResult {
-    predictors: Predictor[];
+    predictors: Partial<Predictor>[];
     warnings?: Validation<"UNKNOWN_COLUMN">[];
 }
