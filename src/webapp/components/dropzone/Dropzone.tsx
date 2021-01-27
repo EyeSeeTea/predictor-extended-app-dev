@@ -50,12 +50,7 @@ export const Dropzone = React.forwardRef(
     (props: DropzoneProps, ref: React.ForwardedRef<DropzoneRef>) => {
         const childrenRef = useRef<HTMLDivElement>(null);
 
-        const {
-            getRootProps,
-            getInputProps,
-            isDragActive,
-            open,
-        } = useDropzone({
+        const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
             noClick: true,
             ...props,
         });
@@ -67,10 +62,7 @@ export const Dropzone = React.forwardRef(
         }));
 
         return (
-            <div
-                {...getRootProps()}
-                style={{ outline: "none" }}
-            >
+            <div {...getRootProps()} style={{ outline: "none" }}>
                 <div
                     style={{
                         position: "absolute",

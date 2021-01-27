@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { UseCase } from "../../compositionRoot";
 import { ExcelCell, ExcelModel } from "../entities/Excel";
-import { Predictor } from "../entities/Predictor";
+import { Predictor, predictorColumns } from "../entities/Predictor";
 import { ExcelRepository } from "../repositories/ExcelRepository";
 import { FileRepository } from "../repositories/FileRepository";
 import { PredictorRepository } from "../repositories/PredictorRepository";
@@ -18,7 +18,7 @@ export class ExportPredictorsUseCase implements UseCase {
         const predictors = await this.predictorRepository.get(ids);
 
         const cells: ExcelCell[] = _.flatten([
-            columns.map((column: string, index: number) => ({
+            predictorColumns.map((column: string, index: number) => ({
                 ref: {
                     type: "cell" as const,
                     sheet: "Predictors",
@@ -27,7 +27,7 @@ export class ExportPredictorsUseCase implements UseCase {
                 contents: { type: "text" as const, value: column },
             })),
             ...predictors.map((predictor: Predictor, row: number) =>
-                columns.map((key: keyof Predictor, column: number) => ({
+                predictorColumns.map((key: keyof Predictor, column: number) => ({
                     ref: {
                         type: "cell" as const,
                         sheet: "Predictors",
@@ -47,23 +47,6 @@ export class ExportPredictorsUseCase implements UseCase {
         this.fileRepository.download({ type: "excel", name: "Test", buffer });
     }
 }
-
-const columns: Array<keyof Predictor> = [
-    "id",
-    "code",
-    "name",
-    "description",
-    "output",
-    "outputCombo",
-    "periodType",
-    "annualSampleCount",
-    "generator",
-    "organisationUnitLevels",
-    "predictorGroups",
-    "sampleSkipTest",
-    "sequentialSampleCount",
-    "sequentialSkipCount",
-];
 
 // TODO: This should be a mapper and be improved
 const formatValue = (predictor: Predictor, key: keyof Predictor): string | number => {

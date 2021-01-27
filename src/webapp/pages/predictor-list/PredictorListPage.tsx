@@ -66,7 +66,13 @@ export const PredictorListPage: React.FC = () => {
             }
 
             loading.show(true, i18n.t("Reading files"));
-            await compositionRoot.usecases.import(files);
+            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
+
+            if (warnings && warnings.length > 0) {
+                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
+            }
+
+            await compositionRoot.usecases.import(predictors);
             loading.reset();
         },
         [compositionRoot, loading, snackbar]

@@ -68,6 +68,10 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 .getData()
         );
     }
+
+    public async save(predictors: Predictor[]): Promise<void> {
+        await this.api.metadata.post({ predictors }).getData();
+    }
 }
 
 function formatDate(date: Date): string {

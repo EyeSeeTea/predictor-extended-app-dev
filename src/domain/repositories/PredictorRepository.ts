@@ -15,4 +15,6 @@ export interface PredictorRepository {
     getGroups(): Promise<NamedRef[]>;
 
     run(ids: string[], startDate: Date, endDate: Date): Promise<void>;
+
+    save(predictors: Predictor[]): Promise<void>;
 }

@@ -5,6 +5,7 @@ import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCa
 import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
 import { ListPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
 import { ImportPredictorsUseCase } from "./domain/usecases/ImportPredictorsUseCase";
+import { ReadPredictorsExcelUseCase } from "./domain/usecases/ReadPredictorsExcelUseCase";
 import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
@@ -17,7 +18,8 @@ export function getCompositionRoot(baseUrl: string) {
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             run: new RunPredictorsUseCase(predictorRepository),
-            import: new ImportPredictorsUseCase(predictorRepository, excelRepository),
+            readExcel: new ReadPredictorsExcelUseCase(excelRepository),
+            import: new ImportPredictorsUseCase(predictorRepository),
             export: new ExportPredictorsUseCase(
                 predictorRepository,
                 excelRepository,
