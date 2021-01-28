@@ -236,7 +236,7 @@ export const PredictorListPage: React.FC = () => {
                     initialSearch={state.search ?? ""}
                 >
                     <React.Fragment>
-                        <MultipleDropdown
+                        <Filter
                             items={predictorGroupOptions}
                             values={state.predictorGroups ?? []}
                             onChange={predictorGroups => onChangeFilter({ predictorGroups })}
@@ -246,7 +246,9 @@ export const PredictorListPage: React.FC = () => {
                 </ObjectsList>
             </Dropzone>
 
-            {response && <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />}
+            {response && (
+                <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />
+            )}
         </Wrapper>
     );
 };
@@ -254,6 +256,10 @@ export const PredictorListPage: React.FC = () => {
 const Wrapper = styled.div`
     padding: 20px;
     height: 100%;
+`;
+
+const Filter = styled(MultipleDropdown)`
+    min-width: 200px;
 `;
 
 interface Filters {
