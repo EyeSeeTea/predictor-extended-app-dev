@@ -3,6 +3,7 @@ import { UseCase } from "../../compositionRoot";
 import i18n from "../../locales";
 import { promiseMap } from "../../utils/promises";
 import { getTemplates, interpolate } from "../../utils/strings";
+import { generateUid } from "../../utils/uid";
 import { ExcelCell, ExcelModel, getColumn, getRow } from "../entities/Excel";
 import { Predictor, predictorColumns } from "../entities/Predictor";
 import { Validation } from "../entities/Validation";
@@ -136,6 +137,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
 
             return {
                 ...object,
+                id: object.id ?? generateUid(),
                 output,
                 outputCombo,
                 predictorGroups,
