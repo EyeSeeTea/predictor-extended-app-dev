@@ -113,7 +113,10 @@ export class ReadPredictorsExcelUseCase implements UseCase {
         dictionary: Record<string, string>
     ): Promise<Partial<Predictor>[]> {
         return promiseMap(entries, async object => {
-            const output = await this.metadataRepository.search("dataElements", object.output ?? "");
+            const output = await this.metadataRepository.search(
+                "dataElements",
+                object.output ?? ""
+            );
             const outputCombo = await this.metadataRepository.search(
                 "categoryOptionCombos",
                 object.outputCombo ?? ""

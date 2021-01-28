@@ -10,9 +10,11 @@ import {
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
+import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
+import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import {
     Pager,
     TableConfig,
@@ -31,6 +33,7 @@ export const PredictorListPage: React.FC = () => {
 
     const [state, setState] = useQueryState<Filters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
+    const [response, setResponse] = useState<MetadataResponse>();
 
     const runPredictors = useCallback(
         async (ids: string[]) => {
@@ -72,8 +75,9 @@ export const PredictorListPage: React.FC = () => {
                 snackbar.warning(warnings.map(({ description }) => description).join("\n"));
             }
 
-            //@ts-ignore TODO FIXME
-            await compositionRoot.usecases.import(predictors);
+            //@ts-ignore TODO FIXME: Add validation
+            const response = await compositionRoot.usecases.import(predictors);
+            setResponse(response);
             loading.reset();
         },
         [compositionRoot, loading, snackbar]
@@ -241,6 +245,8 @@ export const PredictorListPage: React.FC = () => {
                     </React.Fragment>
                 </ObjectsList>
             </Dropzone>
+
+            {response && <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />}
         </Wrapper>
     );
 };
