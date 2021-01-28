@@ -17,4 +17,6 @@ export interface PredictorRepository {
     run(ids: string[], startDate: Date, endDate: Date): Promise<void>;
 
     save(predictors: Predictor[]): Promise<void>;
+
+    delete(ids: string[]): Promise<void>;
 }
