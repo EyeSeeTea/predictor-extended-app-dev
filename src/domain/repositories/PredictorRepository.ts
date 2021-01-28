@@ -18,5 +18,5 @@ export interface PredictorRepository {
 
     save(predictors: Predictor[]): Promise<void>;
 
-    delete(ids: string[]): Promise<void>;
+    delete(id: string): Promise<void>;
 }
