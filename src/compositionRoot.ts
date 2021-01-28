@@ -2,6 +2,7 @@ import { ExcelXlsxPopulateRepository } from "./data/ExcelXlsxPopulateRepository"
 import { FileBrowserRepository } from "./data/FileBrowserRepository";
 import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
+import { DeletePredictorsUseCase } from "./domain/usecases/DeletePredictorsUseCase";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
 import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
 import { ListPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
@@ -27,6 +28,7 @@ export function getCompositionRoot(baseUrl: string) {
                 excelRepository,
                 fileRepository
             ),
+            delete: new DeletePredictorsUseCase(predictorRepository),
         }),
     };
 }
