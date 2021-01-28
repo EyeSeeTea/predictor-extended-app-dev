@@ -72,6 +72,10 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     public async save(predictors: Predictor[]): Promise<void> {
         await this.api.metadata.post({ predictors }).getData();
     }
+
+    public async delete(ids: string[]): Promise<void>{
+        return this.api.models.delete({ids}).delete();
+    }
 }
 
 function formatDate(date: Date): string {
