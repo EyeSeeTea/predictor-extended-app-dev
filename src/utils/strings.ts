@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 // Match group between brackets {{template}}
-const bracketRegex = /\{\{(\w+)\}\}/g;
+const bracketRegex = /\{\{([^{].*?)\}\}/g;
 
 export function interpolate(
     string: string,
