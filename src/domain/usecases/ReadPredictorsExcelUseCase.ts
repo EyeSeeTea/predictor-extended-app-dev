@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Either, Left } from "purify-ts";
+import { Either } from "purify-ts";
 import { UseCase } from "../../compositionRoot";
 import i18n from "../../locales";
 import { promiseMap } from "../../utils/promises";
@@ -53,9 +53,9 @@ export class ReadPredictorsExcelUseCase implements UseCase {
 
         const { dictionary, warnings: dictionaryWarnings } = await this.buildDictionary(entries);
         const parseResults = await this.cleanPredictors(entries, dictionary);
-        const parseWarnings = parseResults.leftOrDefault([]);
+        const parseWarnings = Either.lefts(parseResults);
 
-        const predictors = parseResults.orDefault([]);
+        const predictors = _.flatten(Either.rights(parseResults));
         const warnings = [...columnWarnings, ...dictionaryWarnings, ...parseWarnings];
 
         return { predictors, warnings };
@@ -125,8 +125,8 @@ export class ReadPredictorsExcelUseCase implements UseCase {
     private async cleanPredictors(
         entries: Record<string, string | undefined>[],
         dictionary: Record<string, string>
-    ): Promise<Either<Validation<"PARSE_ERROR">[], Predictor[]>> {
-        const results = await promiseMap(entries, async object => {
+    ): Promise<Either<Validation<"PARSE_ERROR">, Predictor>[]> {
+        return promiseMap(entries, async object => {
             const output = await this.metadataRepository.search(
                 "dataElements",
                 object.output ?? ""
@@ -162,12 +162,9 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             }).mapLeft(description => ({
                 id: object.id ?? "",
                 error: "PARSE_ERROR" as const,
-                description,
+                description: description.replace(/\{.*\}/, ""),
             }));
         });
-
-        const errors = Either.lefts(results);
-        return errors.length > 0 ? Left(errors) : Either.of(Either.rights(results));
     }
 }
 
