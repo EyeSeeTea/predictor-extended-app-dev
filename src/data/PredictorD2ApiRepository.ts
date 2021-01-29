@@ -1,9 +1,9 @@
 import { TableSorting } from "@eyeseetea/d2-ui-components";
-import { format } from "date-fns";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse } from "../types/d2-api";
+import { formatDate } from "../utils/dates";
 import { promiseMap } from "../utils/promises";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
 import { getD2APiFromUrl } from "./utils/d2-api";
@@ -28,7 +28,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async list(
-        filters?: { search?: string; predictorGroups?: string[]; lastUpdated?: Date },
+        filters?: { search?: string; predictorGroups?: string[]; lastUpdated?: string },
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
@@ -40,7 +40,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                     name: search ? { token: search } : undefined,
                     "predictorGroups.id":
                         predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
-                    lastUpdated: lastUpdated ? { ge: formatDate(lastUpdated) } : undefined,
+                    lastUpdated: lastUpdated ? { ge: lastUpdated } : undefined,
                 },
                 page: paging?.page,
                 pageSize: paging?.pageSize,
@@ -74,10 +74,6 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         // TODO FIXME: Predictor groups need to be updated with predictors to be included
         return this.api.metadata.post({ predictors }).getData();
     }
-}
-
-function formatDate(date: Date): string {
-    return format(date, "yyyy-MM-dd");
 }
 
 const predictorFields = {
