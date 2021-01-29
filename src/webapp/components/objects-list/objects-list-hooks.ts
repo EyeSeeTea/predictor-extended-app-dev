@@ -1,56 +1,118 @@
-import React from "react";
 import {
-    TableColumn,
-    TableSorting,
-    ReferenceObject,
-    PaginationOptions,
-    TablePagination,
     ObjectsTableDetailField,
+    ObjectsTableProps,
+    PaginationOptions,
+    ReferenceObject,
+    TableAction,
+    TableColumn,
+    TablePagination,
+    TableSorting,
     TableState,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
+import _ from "lodash";
+import { parse } from "querystring";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
+import i18n from "../../../locales";
 import { ObjectsListProps } from "./ObjectsList";
 
-export interface Config<Row extends ReferenceObject> {
-    columns: TableColumn<Row>[];
-    paginationOptions: Partial<PaginationOptions>;
-    initialPagination: Partial<TablePagination>;
-    initialSorting: TableSorting<Row>;
-    details: ObjectsTableDetailField<Row>[];
-    getRows(): Promise<{ objects: Row[]; pager: Partial<TablePagination> }>;
+export interface TableConfig<Obj extends ReferenceObject>
+    extends Omit<
+        ObjectsTableProps<Obj>,
+        "rows" | "isLoading" | "onChange" | "pagination" | "onChangeSearch" | "reload"
+    > {
+    columns: TableColumn<Obj>[];
+    actions: TableAction<Obj>[];
+    paginationOptions: PaginationOptions;
+    initialSorting: TableSorting<Obj>;
+    details?: ObjectsTableDetailField<Obj>[];
+    searchBoxLabel?: string;
 }
 
-export function useObjectsTable<T extends ReferenceObject>(config: Config<T>): ObjectsListProps<T> {
-    const [rows, setRows] = React.useState<T[] | undefined>(undefined);
-    const [pagination, setPagination] = React.useState<Partial<TablePagination>>(
-        config.initialPagination
-    );
-    const [sorting, setSorting] = React.useState<TableSorting<T>>(config.initialSorting);
-    const [isLoading, setLoading] = React.useState(true);
+export interface Pager {
+    page: number;
+    pageCount: number;
+    total: number;
+    pageSize: number;
+}
 
-    const loadRows = React.useCallback(
-        async (sorting: TableSorting<T>, paginationOptions: Partial<TablePagination>) => {
-            const listPagination = { ...paginationOptions };
-            setLoading(true);
-            const res = await config.getRows();
-            setRows(res.objects);
-            setPagination({ ...listPagination, ...res.pager });
-            setSorting(sorting);
-            setLoading(false);
+type GetRows<Obj extends ReferenceObject> = (
+    search: string,
+    paging: TablePagination,
+    sorting: TableSorting<Obj>
+) => Promise<{ objects: Obj[]; pager: Pager }>;
+
+// Group state to avoid multiple re-renders on individual setState dispatchers
+interface State<Obj extends ReferenceObject> {
+    rows: Obj[] | undefined;
+    pagination: TablePagination;
+    sorting: TableSorting<Obj>;
+    isLoading: boolean;
+}
+
+export function useObjectsTable<Obj extends ReferenceObject>(
+    config: TableConfig<Obj>,
+    getRows: GetRows<Obj>
+): ObjectsListProps<Obj> {
+    const initialPagination: TablePagination = useMemo(
+        () => ({
+            page: 1,
+            pageSize: config.paginationOptions.pageSizeInitialValue ?? 20,
+            total: 0,
+        }),
+        [config.paginationOptions.pageSizeInitialValue]
+    );
+
+    const [state, setState] = useState<State<Obj>>(() => ({
+        rows: undefined,
+        pagination: initialPagination,
+        sorting: config.initialSorting,
+        isLoading: false,
+    }));
+
+    const match = useLocation();
+    const queryParams = parse(match.search.slice(1));
+    const initialSearch = _.castArray(queryParams.search)[0] || "";
+    const [search, setSearch] = useState(initialSearch);
+
+    const loadRows = useCallback(
+        async (sorting: TableSorting<Obj>, pagination: Partial<TablePagination>) => {
+            setState(state => ({ ...state, isLoading: true }));
+            const paging = { ...initialPagination, ...pagination };
+            const res = await getRows(search.trim(), paging, sorting);
+            setState({
+                rows: res.objects,
+                pagination: { ...pagination, ...res.pager },
+                sorting,
+                isLoading: false,
+            });
         },
-        [config]
+        [getRows, search, initialPagination]
     );
 
-    React.useEffect(() => {
-        loadRows(sorting, { ...config.initialPagination, page: 1 });
-    }, [loadRows, sorting, config.initialPagination]);
+    const reload = useCallback(async () => {
+        loadRows(state.sorting, state.pagination);
+    }, [loadRows, state.sorting, state.pagination]);
 
-    const onStateChange = React.useCallback(
-        (newState: TableState<T>) => {
-            const { pagination, sorting } = newState;
-            loadRows(sorting, pagination);
+    useEffect(() => {
+        loadRows(config.initialSorting, initialPagination);
+    }, [config.initialSorting, loadRows, initialPagination]);
+
+    const onChange = useCallback(
+        (newState: TableState<Obj>) => {
+            loadRows(newState.sorting, newState.pagination);
         },
         [loadRows]
     );
 
-    return { ...config, isLoading, rows, onStateChange, pagination };
+    return {
+        ...config,
+        isLoading: state.isLoading,
+        rows: state.rows ?? [],
+        onChange,
+        pagination: state.pagination,
+        searchBoxLabel: config.searchBoxLabel || i18n.t("Search by name"),
+        onChangeSearch: setSearch,
+        reload,
+    };
 }

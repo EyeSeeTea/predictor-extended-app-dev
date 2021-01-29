@@ -5,8 +5,65 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-11T10:10:17.826Z\n"
-"PO-Revision-Date: 2020-11-11T10:10:17.826Z\n"
+"POT-Creation-Date: 2021-01-29T21:38:03.199Z\n"
+"PO-Revision-Date: 2021-01-29T21:38:03.199Z\n"
+
+msgid "Column {{column}} not valid for type predictor"
+msgstr ""
+
+msgid "Reference {{template}} was not found on this instance"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Deleted"
+msgstr ""
+
+msgid "Ignored"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Identifier"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Import Results"
+msgstr ""
+
+msgid "Ok"
+msgstr ""
+
+msgid "Predictors"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "JSON Response"
+msgstr ""
+
+msgid "Search by name"
+msgstr ""
 
 msgid "Back"
 msgstr ""
@@ -14,11 +71,80 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-msgid "Click to show feedback"
+msgid "Create/Edit predictor"
 msgstr ""
 
-msgid "Add"
+msgid "Running predictors"
 msgstr ""
 
-msgid "List"
+msgid "Exporting predictors"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Output data element"
+msgstr ""
+
+msgid "Output category option"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Formula"
+msgstr ""
+
+msgid "Predictor groups"
+msgstr ""
+
+msgid "Period type"
+msgstr ""
+
+msgid "Sample skip test"
+msgstr ""
+
+msgid "Last Updated"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Last updated"
+msgstr ""
+
+msgid "Last updated by"
+msgstr ""
+
+msgid "Created by"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Run"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
+msgid "Import excel"
+msgstr ""
+
+msgid "Couldn't read the file because it's not valid"
+msgstr ""
+
+msgid "Reading files"
+msgstr ""
+
+msgid "Last updated date"
 msgstr ""
