@@ -68,7 +68,10 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             .get({ paging: false, fields: { output: { id: true, displayName: true } } })
             .getData();
 
-        return _.uniqBy(objects.map(({ output }) => ({ id: output.id, name: output.displayName })), "id");
+        return _.uniqBy(
+            objects.map(({ output }) => ({ id: output.id, name: output.displayName })),
+            "id"
+        );
     }
 
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}
