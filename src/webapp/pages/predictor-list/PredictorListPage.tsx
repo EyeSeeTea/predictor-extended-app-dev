@@ -89,6 +89,14 @@ export const PredictorListPage: React.FC = () => {
                 },
                 { name: "predictorGroups", text: i18n.t("Predictor groups"), sortable: true },
                 { name: "periodType", text: i18n.t("Period type"), sortable: true },
+                {
+                    name: "sampleSkipTest",
+                    text: i18n.t("Sample skip test"),
+                    sortable: false,
+                    getValue: ({ sampleSkipTest }: Predictor) => {
+                        return sampleSkipTest?.expression ?? "-";
+                    },
+                },
                 { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
             ],
             details: [
