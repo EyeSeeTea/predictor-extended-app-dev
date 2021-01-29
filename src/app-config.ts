@@ -1,7 +1,7 @@
 import { AppConfig } from "./webapp/components/app/App";
 
 export const appConfig: AppConfig = {
-    appKey: "dhis2-app-skeleton",
+    appKey: "predictor-extended",
     appearance: {
         showShareButton: true,
     },
@@ -10,7 +10,7 @@ export const appConfig: AppConfig = {
         createIssue: true,
         sendToDhis2UserGroups: ["Administrators"],
         issues: {
-            repository: "EyeSeeTea/dhis2-app-skeleton",
+            repository: "EyeSeeTea/predictor-extended-app",
             title: "[User feedback] {title}",
             body: "## dhis2\n\nUsername: {username}\n\n{body}",
         },
