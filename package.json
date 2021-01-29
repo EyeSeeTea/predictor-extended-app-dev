@@ -63,7 +63,6 @@
         "cy:verify": "cypress verify",
         "cy:e2e:open": "NODE_ENV=test CYPRESS_E2E=true cypress open",
         "cy:e2e:run": "NODE_ENV=test CYPRESS_E2E=true cypress run --browser chrome",
-        "script-example": "npx ts-node -P tsconfig-cli.json src/scripts/example.ts",
         "antlr4ts": "antlr4ts -visitor src/data/expression-parser/Expression.g4"
     },
     "husky": {
