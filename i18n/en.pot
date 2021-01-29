@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-29T11:28:51.485Z\n"
-"PO-Revision-Date: 2021-01-29T11:28:51.485Z\n"
+"POT-Creation-Date: 2021-01-29T11:51:28.584Z\n"
+"PO-Revision-Date: 2021-01-29T11:51:28.584Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -141,4 +141,7 @@ msgid "Couldn't read the file because it's not valid"
 msgstr ""
 
 msgid "Reading files"
+msgstr ""
+
+msgid "Last updated date"
 msgstr ""
