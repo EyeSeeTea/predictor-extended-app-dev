@@ -1,5 +1,6 @@
 import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import {
+    DatePicker,
     DropdownItem,
     MultipleDropdown,
     TablePagination,
@@ -180,7 +181,7 @@ export const PredictorListPage: React.FC = () => {
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
             return compositionRoot.usecases.list(
-                { search, predictorGroups: state.predictorGroups },
+                { search, predictorGroups: state.predictorGroups, lastUpdated: state.lastUpdated },
                 paging,
                 sorting
             );
@@ -251,6 +252,15 @@ export const PredictorListPage: React.FC = () => {
                             onChange={predictorGroups => onChangeFilter({ predictorGroups })}
                             label={i18n.t("Predictor groups")}
                         />
+
+                        <DatePicker
+                            placeholder={i18n.t("Last updated date")}
+                            value={state.lastUpdated ?? null}
+                            isFilter={true}
+                            onChange={(lastUpdated: { toDate(): Date }) =>
+                                onChangeFilter({ lastUpdated: lastUpdated.toDate() })
+                            }
+                        />
                     </React.Fragment>
                 </ObjectsList>
             </Dropzone>
@@ -274,4 +284,5 @@ const Filter = styled(MultipleDropdown)`
 interface Filters {
     search?: string;
     predictorGroups?: string[];
+    lastUpdated?: Date;
 }
