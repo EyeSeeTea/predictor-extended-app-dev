@@ -37,6 +37,7 @@ module.exports = {
         "@typescript-eslint/type-annotation-spacing": "off",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
+        "no-debugger": "off",
         "no-extra-semi": "off",
         "no-mixed-spaces-and-tabs": "off",
         "react-hooks/rules-of-hooks": "error",

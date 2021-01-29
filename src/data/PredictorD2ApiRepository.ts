@@ -70,6 +70,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async save(predictors: Predictor[]): Promise<MetadataResponse> {
+        // TODO FIXME: Predictor groups need to be updated with predictors to be included
         return this.api.metadata.post({ predictors }).getData();
     }
 }

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-28T17:37:08.895Z\n"
-"PO-Revision-Date: 2021-01-28T17:37:08.895Z\n"
+"POT-Creation-Date: 2021-01-29T08:31:45.894Z\n"
+"PO-Revision-Date: 2021-01-29T08:31:45.894Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -80,12 +80,6 @@ msgstr ""
 msgid "Exporting predictors"
 msgstr ""
 
-msgid "Couldn't read the file because it's not valid"
-msgstr ""
-
-msgid "Reading files"
-msgstr ""
-
 msgid "Section sequence"
 msgstr ""
 
@@ -147,4 +141,10 @@ msgid "Validate"
 msgstr ""
 
 msgid "Import excel"
+msgstr ""
+
+msgid "Couldn't read the file because it's not valid"
+msgstr ""
+
+msgid "Reading files"
 msgstr ""
