@@ -1,9 +1,9 @@
 import { TableSorting } from "@eyeseetea/d2-ui-components";
-import { format } from "date-fns";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse } from "../types/d2-api";
+import { formatDate } from "../utils/dates";
 import { promiseMap } from "../utils/promises";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
 import { getD2APiFromUrl } from "./utils/d2-api";
@@ -28,11 +28,16 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async list(
-        filters?: { search?: string; predictorGroups?: string[], dataElements?: string[] },
+        filters?: {
+            search?: string;
+            predictorGroups?: string[];
+            dataElements?: string[];
+            lastUpdated?: string;
+        },
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
-        const { search, predictorGroups = [], dataElements = [] } = filters ?? {};
+        const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
 
         return this.api.models.predictors
             .get({
@@ -41,6 +46,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                     "predictorGroups.id":
                         predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
                     "output.id": dataElements.length > 0 ? { in: dataElements } : undefined,
+                    lastUpdated: lastUpdated ? { ge: lastUpdated } : undefined,
                 },
                 page: paging?.page,
                 pageSize: paging?.pageSize,
@@ -61,21 +67,20 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     public async getDataElements(): Promise<NamedRef[]> {
         const outputObjects = (
             await this.api.models.predictors
-            .get({ paging: false, fields: { output: true } })
-            .getData())
-            .objects
-            .map(element => element.output.id);
+                .get({ paging: false, fields: { output: true } })
+                .getData()
+        ).objects.map(element => element.output.id);
 
         const dataElements = (
             await this.api.models.dataElements
-            .get({ 
-                filter: { id: { in: outputObjects } }, 
-                paging: false, 
-                fields: { id: true, displayName: true },
-            })
-            .getData())
-            .objects;
-            
+                .get({
+                    filter: { id: { in: outputObjects } },
+                    paging: false,
+                    fields: { id: true, displayName: true },
+                })
+                .getData()
+        ).objects;
+
         return dataElements.map(({ id, displayName }) => ({ id, name: displayName }));
     }
 
@@ -95,10 +100,6 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         // TODO FIXME: Predictor groups need to be updated with predictors to be included
         return this.api.metadata.post({ predictors }).getData();
     }
-}
-
-function formatDate(date: Date): string {
-    return format(date, "yyyy-MM-dd");
 }
 
 const predictorFields = {

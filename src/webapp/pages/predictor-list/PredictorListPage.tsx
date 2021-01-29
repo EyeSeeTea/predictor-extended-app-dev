@@ -1,5 +1,5 @@
-import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import {
+    DatePicker,
     DropdownItem,
     MultipleDropdown,
     TablePagination,
@@ -7,12 +7,15 @@ import {
     useLoading,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
+import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
+import { GetPredictorsFilters } from "../../../domain/usecases/GetPredictorsUseCase";
 import i18n from "../../../locales";
+import { formatDate } from "../../../utils/dates";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import {
@@ -31,7 +34,7 @@ export const PredictorListPage: React.FC = () => {
 
     const fileRef = useRef<DropzoneRef>(null);
 
-    const [state, setState] = useQueryState<Filters>({});
+    const [state, setState] = useQueryState<GetPredictorsFilters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
     const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
     const [response, setResponse] = useState<MetadataResponse>();
@@ -68,18 +71,6 @@ export const PredictorListPage: React.FC = () => {
                 {
                     name: "id",
                     text: i18n.t("Identifier"),
-                    sortable: true,
-                    hidden: true,
-                },
-                {
-                    name: "sectionSequence",
-                    text: i18n.t("Section sequence"),
-                    sortable: true,
-                    hidden: true,
-                },
-                {
-                    name: "variableSequence",
-                    text: i18n.t("Variable sequence"),
                     sortable: true,
                     hidden: true,
                 },
@@ -180,11 +171,7 @@ export const PredictorListPage: React.FC = () => {
             paging: TablePagination,
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
-            return compositionRoot.usecases.list(
-                { search, predictorGroups: state.predictorGroups, dataElements: state.dataElements },
-                paging,
-                sorting
-            );
+            return compositionRoot.usecases.list({ ...state, search }, paging, sorting);
         },
         [compositionRoot, state]
     );
@@ -216,7 +203,7 @@ export const PredictorListPage: React.FC = () => {
     );
 
     const onChangeFilter = useCallback(
-        (update: Partial<Filters>) => {
+        (update: Partial<GetPredictorsFilters>) => {
             if (tableProps.onChangeSearch) {
                 tableProps.onChangeSearch(update.search ?? "");
             }
@@ -226,11 +213,30 @@ export const PredictorListPage: React.FC = () => {
         [setState, tableProps]
     );
 
+    const onChangeGroupFilter = useCallback(
+        (predictorGroups: string[]) => onChangeFilter({ predictorGroups }),
+        [onChangeFilter]
+    );
+
+    const onChangeOutputFilter = useCallback(
+        (dataElements: string[]) => onChangeFilter({ dataElements }),
+        [onChangeFilter]
+    );
+
+    const onChangeLastUpdatedFilter = useCallback(
+        (lastUpdated: { toDate(): Date } | null) =>
+            onChangeFilter({
+                lastUpdated: lastUpdated ? formatDate(lastUpdated.toDate()) : undefined,
+            }),
+        [onChangeFilter]
+    );
+
     useEffect(() => {
         compositionRoot.usecases.getGroups().then(groups => {
             const options = groups.map(({ id, name }) => ({ value: id, text: name }));
             setPredictorGroupOptions(options);
         });
+
         compositionRoot.usecases.getDataElements().then(dataElements => {
             const options = dataElements.map(({ id, name }) => ({ value: id, text: name }));
             setDataElementsOptions(options);
@@ -253,14 +259,22 @@ export const PredictorListPage: React.FC = () => {
                         <Filter
                             items={predictorGroupOptions}
                             values={state.predictorGroups ?? []}
-                            onChange={(predictorGroups: any) => onChangeFilter({ predictorGroups })}
+                            onChange={onChangeGroupFilter}
                             label={i18n.t("Predictor groups")}
                         />
+
                         <Filter
                             items={dataElementsOptions}
                             values={state.dataElements ?? []}
-                            onChange={(dataElements: any) => onChangeFilter({ dataElements })}
+                            onChange={onChangeOutputFilter}
                             label={i18n.t("Output data element")}
+                        />
+
+                        <DatePicker
+                            placeholder={i18n.t("Last updated date")}
+                            value={state.lastUpdated ?? null}
+                            isFilter={true}
+                            onChange={onChangeLastUpdatedFilter}
                         />
                     </React.Fragment>
                 </ObjectsList>
@@ -281,9 +295,3 @@ const Wrapper = styled.div`
 const Filter = styled(MultipleDropdown)`
     min-width: 200px;
 `;
-
-interface Filters {
-    search?: string;
-    predictorGroups?: string[];
-    dataElements?: string[];
-}

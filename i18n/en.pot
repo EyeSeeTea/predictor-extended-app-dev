@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-29T16:39:22.184Z\n"
-"PO-Revision-Date: 2021-01-29T16:39:22.184Z\n"
+"POT-Creation-Date: 2021-01-29T18:09:54.863Z\n"
+"PO-Revision-Date: 2021-01-29T18:09:54.863Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -80,12 +80,6 @@ msgstr ""
 msgid "Exporting predictors"
 msgstr ""
 
-msgid "Section sequence"
-msgstr ""
-
-msgid "Variable sequence"
-msgstr ""
-
 msgid "Name"
 msgstr ""
 
@@ -149,5 +143,5 @@ msgstr ""
 msgid "Reading files"
 msgstr ""
 
-msgid "Output data elements"
+msgid "Last updated date"
 msgstr ""

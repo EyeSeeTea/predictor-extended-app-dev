@@ -3,10 +3,11 @@ import { UseCase } from "../../compositionRoot";
 import { Predictor } from "../entities/Predictor";
 import { PredictorRepository } from "../repositories/PredictorRepository";
 
-interface GetPredictorsFilters {
+export interface GetPredictorsFilters {
     search?: string;
     predictorGroups?: string[];
     dataElements?: string[];
+    lastUpdated?: string;
 }
 
 export class ListPredictorsUseCase implements UseCase {

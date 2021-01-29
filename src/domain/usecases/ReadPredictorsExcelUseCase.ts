@@ -1,11 +1,12 @@
 import _ from "lodash";
+import { Either } from "purify-ts";
 import { UseCase } from "../../compositionRoot";
 import i18n from "../../locales";
 import { promiseMap } from "../../utils/promises";
 import { getTemplates, interpolate } from "../../utils/strings";
 import { generateUid } from "../../utils/uid";
 import { ExcelCell, ExcelModel, getColumn, getRow } from "../entities/Excel";
-import { Predictor, predictorColumns } from "../entities/Predictor";
+import { Predictor, predictorColumns, PredictorModel } from "../entities/Predictor";
 import { Validation } from "../entities/Validation";
 import { ExcelRepository } from "../repositories/ExcelRepository";
 import { MetadataRepository } from "../repositories/MetadataRepository";
@@ -51,8 +52,11 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             .value();
 
         const { dictionary, warnings: dictionaryWarnings } = await this.buildDictionary(entries);
-        const predictors = await this.cleanPredictors(entries, dictionary);
-        const warnings = [...columnWarnings, ...dictionaryWarnings];
+        const parseResults = await this.cleanPredictors(entries, dictionary);
+        const parseWarnings = Either.lefts(parseResults);
+
+        const predictors = _.flatten(Either.rights(parseResults));
+        const warnings = [...columnWarnings, ...dictionaryWarnings, ...parseWarnings];
 
         return { predictors, warnings };
     }
@@ -121,12 +125,13 @@ export class ReadPredictorsExcelUseCase implements UseCase {
     private async cleanPredictors(
         entries: Record<string, string | undefined>[],
         dictionary: Record<string, string>
-    ): Promise<Partial<Predictor>[]> {
+    ): Promise<Either<Validation<"PARSE_ERROR">, Predictor>[]> {
         return promiseMap(entries, async object => {
             const output = await this.metadataRepository.search(
                 "dataElements",
                 object.output ?? ""
             );
+
             const outputCombo = await this.metadataRepository.search(
                 "categoryOptionCombos",
                 object.outputCombo ?? ""
@@ -144,7 +149,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                 )
             );
 
-            return {
+            return PredictorModel.decode({
                 ...object,
                 output,
                 outputCombo,
@@ -154,12 +159,16 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                 sampleSkipTest: {
                     expression: interpolate(object.sampleSkipTest ?? "", dictionary),
                 },
-            };
+            }).mapLeft(description => ({
+                id: object.id ?? "",
+                error: "PARSE_ERROR" as const,
+                description: description.replace(/\{.*\}/, ""),
+            }));
         });
     }
 }
 
 export interface ImportResult {
     predictors: Partial<Predictor>[];
-    warnings?: Validation<"UNKNOWN_COLUMN" | "UNKNOWN_REF">[];
+    warnings?: Validation<"UNKNOWN_COLUMN" | "UNKNOWN_REF" | "PARSE_ERROR">[];
 }
