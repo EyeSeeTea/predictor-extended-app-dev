@@ -28,11 +28,11 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async list(
-        filters?: { search?: string; predictorGroups?: string[] },
+        filters?: { search?: string; predictorGroups?: string[], dataElements?: string[] },
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
-        const { search, predictorGroups = [] } = filters ?? {};
+        const { search, predictorGroups = [], dataElements = [] } = filters ?? {};
 
         return this.api.models.predictors
             .get({
@@ -40,6 +40,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                     name: search ? { token: search } : undefined,
                     "predictorGroups.id":
                         predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
+                    "output.id": dataElements.length > 0 ? { in: dataElements } : undefined,
                 },
                 page: paging?.page,
                 pageSize: paging?.pageSize,
@@ -55,6 +56,27 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             .getData();
 
         return objects.map(({ id, displayName }) => ({ id, name: displayName }));
+    }
+
+    public async getDataElements(): Promise<NamedRef[]> {
+        const outputObjects = (
+            await this.api.models.predictors
+            .get({ paging: false, fields: { output: true } })
+            .getData())
+            .objects
+            .map(element => element.output.id);
+
+        const dataElements = (
+            await this.api.models.dataElements
+            .get({ 
+                filter: { id: { in: outputObjects } }, 
+                paging: false, 
+                fields: { id: true, displayName: true },
+            })
+            .getData())
+            .objects;
+            
+        return dataElements.map(({ id, displayName }) => ({ id, name: displayName }));
     }
 
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}

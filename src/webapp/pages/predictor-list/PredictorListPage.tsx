@@ -33,6 +33,7 @@ export const PredictorListPage: React.FC = () => {
 
     const [state, setState] = useQueryState<Filters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
+    const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
     const [response, setResponse] = useState<MetadataResponse>();
 
     const runPredictors = useCallback(
@@ -180,7 +181,7 @@ export const PredictorListPage: React.FC = () => {
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
             return compositionRoot.usecases.list(
-                { search, predictorGroups: state.predictorGroups },
+                { search, predictorGroups: state.predictorGroups, dataElements: state.dataElements },
                 paging,
                 sorting
             );
@@ -230,6 +231,10 @@ export const PredictorListPage: React.FC = () => {
             const options = groups.map(({ id, name }) => ({ value: id, text: name }));
             setPredictorGroupOptions(options);
         });
+        compositionRoot.usecases.getDataElements().then(dataElements => {
+            const options = dataElements.map(({ id, name }) => ({ value: id, text: name }));
+            setDataElementsOptions(options);
+        });
     }, [compositionRoot]);
 
     return (
@@ -248,8 +253,14 @@ export const PredictorListPage: React.FC = () => {
                         <Filter
                             items={predictorGroupOptions}
                             values={state.predictorGroups ?? []}
-                            onChange={predictorGroups => onChangeFilter({ predictorGroups })}
+                            onChange={(predictorGroups: any) => onChangeFilter({ predictorGroups })}
                             label={i18n.t("Predictor groups")}
+                        />
+                        <Filter
+                            items={dataElementsOptions}
+                            values={state.dataElements ?? []}
+                            onChange={(dataElements: any) => onChangeFilter({ dataElements })}
+                            label={i18n.t("Output data element")}
                         />
                     </React.Fragment>
                 </ObjectsList>
@@ -274,4 +285,5 @@ const Filter = styled(MultipleDropdown)`
 interface Filters {
     search?: string;
     predictorGroups?: string[];
+    dataElements?: string[];
 }
