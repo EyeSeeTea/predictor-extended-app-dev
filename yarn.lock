@@ -1594,10 +1594,29 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eyeseetea/xlsx-populate@4.0.0-beta.1":
-  version "4.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@eyeseetea/xlsx-populate/-/xlsx-populate-4.0.0-beta.1.tgz#e58c3d0fb8e95fc20340b795d88e6909d4220830"
-  integrity sha512-Vhwf0FTv5z81ZTie+glju8Hx5E7gC36u3+UG74c598SZFX1aIW+VDU26/2isEJAwBl33x2W2NoS3Oj6VphfUig==
+"@eyeseetea/d2-ui-components@2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-ui-components/-/d2-ui-components-2.5.1.tgz#48082f97a08370bba77e0b1ed962bb7b9c7cb121"
+  integrity sha512-nS/EDa9FELBtjSyuiyGcANdTHU/7h6aE8xd1v5M/KVXNufdTtVNBGsdB20oOiS9C/jal5dZ/R+jaiwMxe5a2yg==
+  dependencies:
+    "@date-io/core" "^1.3.6"
+    "@date-io/moment" "^1.0.2"
+    "@dhis2/d2-i18n" "1.0.6"
+    "@dhis2/d2-ui-core" "6.3.0"
+    "@material-ui/pickers" "3.2.10"
+    classnames "^2.2.6"
+    downshift "^5.4.2"
+    lodash "4.17.19"
+    moment "^2.22.2"
+    nano-memoize "1.1.10"
+    react-linkify "^1.0.0-alpha"
+    rxjs-compat "6.5.4"
+    throttle-debounce "^2.1.0"
+
+"@eyeseetea/xlsx-populate@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@eyeseetea/xlsx-populate/-/xlsx-populate-4.0.0.tgz#7316101921c882e084812900c049d3e3a426bb99"
+  integrity sha512-8X3zgreJeCMC0qYmNF+A7CXVWCPJ7y20fkHNuA2jjswYNJIlijxt/WvbKpP4g/TffoXJBHy1igN/elOtHXBM3w==
   dependencies:
     cfb "^1.1.3"
     jszip "^3.2.2"
@@ -5457,25 +5476,6 @@ d2-manifest@1.0.0:
     loglevel "^1.4.0"
     minimist "^1.1.0"
     readline-sync "^1.4.1"
-
-d2-ui-components@2.5.0-beta.1:
-  version "2.5.0-beta.1"
-  resolved "https://registry.yarnpkg.com/d2-ui-components/-/d2-ui-components-2.5.0-beta.1.tgz#5b892aa3eca6958ba4bb36b086704b42b01fbbc8"
-  integrity sha512-ZH4KOuwpYjCiLcdTkIk/R9OZCGpw0NwYN2HUzomXNeaclMrgQftlvuA64gH0qfaDElrn9pqXyy8pv4WPgGuFoA==
-  dependencies:
-    "@date-io/core" "^1.3.6"
-    "@date-io/moment" "^1.0.2"
-    "@dhis2/d2-i18n" "1.0.6"
-    "@dhis2/d2-ui-core" "6.3.0"
-    "@material-ui/pickers" "3.2.10"
-    classnames "^2.2.6"
-    downshift "^5.4.2"
-    lodash "4.17.19"
-    moment "^2.22.2"
-    nano-memoize "1.1.10"
-    react-linkify "^1.0.0-alpha"
-    rxjs-compat "6.5.4"
-    throttle-debounce "^2.1.0"
 
 d2@31.9.0:
   version "31.9.0"
