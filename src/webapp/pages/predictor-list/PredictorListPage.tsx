@@ -70,18 +70,6 @@ export const PredictorListPage: React.FC = () => {
                     sortable: true,
                     hidden: true,
                 },
-                {
-                    name: "sectionSequence",
-                    text: i18n.t("Section sequence"),
-                    sortable: true,
-                    hidden: true,
-                },
-                {
-                    name: "variableSequence",
-                    text: i18n.t("Variable sequence"),
-                    sortable: true,
-                    hidden: true,
-                },
                 { name: "name", text: i18n.t("Name"), sortable: true },
                 { name: "output", text: i18n.t("Output data element"), sortable: true },
                 { name: "outputCombo", text: i18n.t("Output category option"), sortable: true },

@@ -121,7 +121,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
     private async cleanPredictors(
         entries: Record<string, string | undefined>[],
         dictionary: Record<string, string>
-    ): Promise<Partial<Predictor>[]> {
+    ): Promise<Partial<any>[]> {
         return promiseMap(entries, async object => {
             const output = await this.metadataRepository.search(
                 "dataElements",
