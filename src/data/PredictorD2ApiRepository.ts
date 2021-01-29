@@ -1,12 +1,12 @@
-import { TableSorting } from "d2-ui-components";
+import { TableSorting } from "@eyeseetea/d2-ui-components";
 import { format } from "date-fns";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
-import { D2Api } from "../types/d2-api";
-import { getD2APiFromUrl } from "../utils/d2-api";
+import { D2Api, MetadataResponse } from "../types/d2-api";
 import { promiseMap } from "../utils/promises";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
+import { getD2APiFromUrl } from "./utils/d2-api";
 
 export class PredictorD2ApiRepository implements PredictorRepository {
     private api: D2Api;
@@ -15,7 +15,19 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
-    public async get(
+    public async get(ids: string[]): Promise<Predictor[]> {
+        const { objects } = await this.api.models.predictors
+            .get({
+                filter: { id: { in: ids } },
+                paging: false,
+                fields: predictorFields,
+            })
+            .getData();
+
+        return objects;
+    }
+
+    public async list(
         filters?: { search?: string; predictorGroups?: string[] },
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
@@ -26,44 +38,13 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             .get({
                 filter: {
                     name: search ? { token: search } : undefined,
-                    "predictorGroups.id": predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
+                    "predictorGroups.id":
+                        predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
                 },
                 page: paging?.page,
                 pageSize: paging?.pageSize,
                 order: sorting ? `${sorting.field}:${sorting.order}` : undefined,
-                fields: {
-                    id: true,
-                    code: true,
-                    name: true,
-                    description: true,
-                    output: { id: true, name: true },
-                    outputCombo: { id: true, name: true },
-                    periodType: true,
-                    annualSampleCount: true,
-                    generator: {
-                        expression: true,
-                        description: true,
-                        missingValueStrategy: true,
-                        slidingWindow: true,
-                    },
-                    organisationUnitLevels: true,
-                    predictorGroups: { id: true, name: true },
-                    sampleSkipTest: {
-                        expression: true,
-                        description: true,
-                        missingValueStrategy: true,
-                        slidingWindow: true,
-                    },
-                    sequentialSampleCount: true,
-                    sequentialSkipCount: true,
-                    lastUpdated: true,
-                    lastUpdatedBy: { id: true, name: true },
-                    created: true,
-                    user: { id: true, name: true },
-                    publicAccess: true,
-                    userAccesses: { id: true, access: true, displayName: true },
-                    userGroupAccesses: { id: true, access: true, displayName: true },
-                },
+                fields: predictorFields,
             })
             .getData();
     }
@@ -87,8 +68,47 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 .getData()
         );
     }
+
+    public async save(predictors: Predictor[]): Promise<MetadataResponse> {
+        // TODO FIXME: Predictor groups need to be updated with predictors to be included
+        return this.api.metadata.post({ predictors }).getData();
+    }
 }
 
 function formatDate(date: Date): string {
     return format(date, "yyyy-MM-dd");
 }
+
+const predictorFields = {
+    id: true,
+    code: true,
+    name: true,
+    description: true,
+    output: { id: true, name: true },
+    outputCombo: { id: true, name: true },
+    periodType: true,
+    annualSampleCount: true,
+    generator: {
+        expression: true,
+        description: true,
+        missingValueStrategy: true,
+        slidingWindow: true,
+    },
+    organisationUnitLevels: true,
+    predictorGroups: { id: true, name: true },
+    sampleSkipTest: {
+        expression: true,
+        description: true,
+        missingValueStrategy: true,
+        slidingWindow: true,
+    },
+    sequentialSampleCount: true,
+    sequentialSkipCount: true,
+    lastUpdated: true,
+    lastUpdatedBy: { id: true, name: true },
+    created: true,
+    user: { id: true, name: true },
+    publicAccess: true,
+    userAccesses: { id: true, access: true, displayName: true },
+    userGroupAccesses: { id: true, access: true, displayName: true },
+};

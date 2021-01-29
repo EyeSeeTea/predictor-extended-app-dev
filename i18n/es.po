@@ -1,12 +1,66 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2021-01-05T10:36:55.993Z\n"
+"POT-Creation-Date: 2021-01-29T08:31:45.894Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "Column {{column}} not valid for type predictor"
+msgstr ""
+
+msgid "Reference {{template}} was not found on this instance"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Deleted"
+msgstr ""
+
+msgid "Ignored"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Identifier"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Import Results"
+msgstr ""
+
+msgid "Ok"
+msgstr ""
+
+msgid "Predictors"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "JSON Response"
+msgstr ""
 
 msgid "Search by name"
 msgstr ""
@@ -21,6 +75,9 @@ msgid "Create/Edit predictor"
 msgstr ""
 
 msgid "Running predictors"
+msgstr ""
+
+msgid "Exporting predictors"
 msgstr ""
 
 msgid "Section sequence"
@@ -62,9 +119,6 @@ msgstr ""
 msgid "Last updated by"
 msgstr ""
 
-msgid "Created"
-msgstr ""
-
 msgid "Created by"
 msgstr ""
 
@@ -84,6 +138,15 @@ msgid "Export"
 msgstr ""
 
 msgid "Validate"
+msgstr ""
+
+msgid "Import excel"
+msgstr ""
+
+msgid "Couldn't read the file because it's not valid"
+msgstr ""
+
+msgid "Reading files"
 msgstr ""
 
 #~ msgid "Add"

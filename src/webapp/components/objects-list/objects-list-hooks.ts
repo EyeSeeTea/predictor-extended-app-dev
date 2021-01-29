@@ -1,5 +1,6 @@
 import {
     ObjectsTableDetailField,
+    ObjectsTableProps,
     PaginationOptions,
     ReferenceObject,
     TableAction,
@@ -7,7 +8,7 @@ import {
     TablePagination,
     TableSorting,
     TableState,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import { parse } from "querystring";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -15,7 +16,11 @@ import { useLocation } from "react-router-dom";
 import i18n from "../../../locales";
 import { ObjectsListProps } from "./ObjectsList";
 
-export interface TableConfig<Obj extends ReferenceObject> {
+export interface TableConfig<Obj extends ReferenceObject>
+    extends Omit<
+        ObjectsTableProps<Obj>,
+        "rows" | "isLoading" | "onChange" | "pagination" | "onChangeSearch" | "reload"
+    > {
     columns: TableColumn<Obj>[];
     actions: TableAction<Obj>[];
     paginationOptions: PaginationOptions;

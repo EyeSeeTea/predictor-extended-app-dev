@@ -3,7 +3,7 @@ import { AppConfig } from "./webapp/components/app/App";
 export const appConfig: AppConfig = {
     appKey: "predictor-extended",
     appearance: {
-        showShareButton: true,
+        showShareButton: false,
     },
     feedback: {
         token: ["03242fc6b0c5a48582", "2e6b8d3e8337b5a0b95fe2"],

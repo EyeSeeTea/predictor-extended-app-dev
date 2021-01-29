@@ -1,4 +1,4 @@
-import { ArrowDownward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
+import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import {
     DropdownItem,
     MultipleDropdown,
@@ -6,11 +6,15 @@ import {
     TableSorting,
     useLoading,
     useSnackbar,
-} from "d2-ui-components";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+} from "@eyeseetea/d2-ui-components";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
+import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
+import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
+import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import {
     Pager,
     TableConfig,
@@ -25,25 +29,47 @@ export const PredictorListPage: React.FC = () => {
     const loading = useLoading();
     const snackbar = useSnackbar();
 
+    const fileRef = useRef<DropzoneRef>(null);
+
     const [state, setState] = useQueryState<Filters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
+    const [response, setResponse] = useState<MetadataResponse>();
 
     const runPredictors = useCallback(
-        async (predictors: string[]) => {
+        async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
-            await compositionRoot.predictors.run(predictors);
+            await compositionRoot.usecases.run(ids);
             loading.reset();
         },
         [compositionRoot, loading]
     );
 
+    const exportPredictors = useCallback(
+        async (ids: string[]) => {
+            loading.show(true, i18n.t("Exporting predictors"));
+            await compositionRoot.usecases.export(ids);
+            loading.reset();
+        },
+        [compositionRoot, loading]
+    );
+
+    const openImportDialog = useCallback(async () => {
+        fileRef.current?.openDialog();
+    }, [fileRef]);
+
     const placeholderAction = useCallback(() => {
         snackbar.info("Not implemented yet");
     }, [snackbar]);
 
-    const baseConfig: TableConfig<Predictor> = useMemo(() => {
+    const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
             columns: [
+                {
+                    name: "id",
+                    text: i18n.t("Identifier"),
+                    sortable: true,
+                    hidden: true,
+                },
                 {
                     name: "sectionSequence",
                     text: i18n.t("Section sequence"),
@@ -73,6 +99,7 @@ export const PredictorListPage: React.FC = () => {
                 { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
             ],
             details: [
+                { name: "id", text: i18n.t("Identifier") },
                 { name: "code", text: i18n.t("Code") },
                 { name: "name", text: i18n.t("Name") },
                 { name: "description", text: i18n.t("Description") },
@@ -115,7 +142,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "export",
                     text: i18n.t("Export"),
                     multiple: true,
-                    onClick: placeholderAction,
+                    onClick: exportPredictors,
                     icon: <ArrowDownward />,
                 },
                 {
@@ -124,6 +151,14 @@ export const PredictorListPage: React.FC = () => {
                     multiple: true,
                     onClick: placeholderAction,
                     icon: <Sync />,
+                },
+            ],
+            globalActions: [
+                {
+                    name: "import",
+                    text: i18n.t("Import excel"),
+                    onClick: openImportDialog,
+                    icon: <ArrowUpward />,
                 },
             ],
             initialSorting: {
@@ -136,7 +171,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors, placeholderAction]);
+    }, [runPredictors, exportPredictors, openImportDialog, placeholderAction]);
 
     const refreshRows = useCallback(
         (
@@ -144,7 +179,7 @@ export const PredictorListPage: React.FC = () => {
             paging: TablePagination,
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
-            return compositionRoot.predictors.get(
+            return compositionRoot.usecases.list(
                 { search, predictorGroups: state.predictorGroups },
                 paging,
                 sorting
@@ -155,10 +190,34 @@ export const PredictorListPage: React.FC = () => {
 
     const tableProps = useObjectsTable(baseConfig, refreshRows);
 
+    const handleFileUpload = useCallback(
+        async (files: File[], rejections: FileRejection[]) => {
+            if (files.length === 0 && rejections.length > 0) {
+                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
+                return;
+            }
+
+            loading.show(true, i18n.t("Reading files"));
+
+            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
+            if (warnings && warnings.length > 0) {
+                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
+            }
+
+            //@ts-ignore TODO FIXME: Add validation
+            const response = await compositionRoot.usecases.import(predictors);
+            setResponse(response);
+
+            loading.reset();
+            tableProps.reload();
+        },
+        [compositionRoot, tableProps, loading, snackbar]
+    );
+
     const onChangeFilter = useCallback(
         (update: Partial<Filters>) => {
-            if (tableProps.onChangeSearch && update.search) {
-                tableProps.onChangeSearch(update.search);
+            if (tableProps.onChangeSearch) {
+                tableProps.onChangeSearch(update.search ?? "");
             }
 
             setState(state => ({ ...state, ...update }));
@@ -167,7 +226,7 @@ export const PredictorListPage: React.FC = () => {
     );
 
     useEffect(() => {
-        compositionRoot.predictors.getGroups().then(groups => {
+        compositionRoot.usecases.getGroups().then(groups => {
             const options = groups.map(({ id, name }) => ({ value: id, text: name }));
             setPredictorGroupOptions(options);
         });
@@ -175,26 +234,41 @@ export const PredictorListPage: React.FC = () => {
 
     return (
         <Wrapper>
-            <ObjectsList<Predictor>
-                {...tableProps}
-                onChangeSearch={search => onChangeFilter({ search })}
-                initialSearch={state.search ?? ""}
+            <Dropzone
+                ref={fileRef}
+                accept={"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+                onDrop={handleFileUpload}
             >
-                <React.Fragment>
-                    <MultipleDropdown
-                        items={predictorGroupOptions}
-                        values={state.predictorGroups ?? []}
-                        onChange={predictorGroups => onChangeFilter({ predictorGroups })}
-                        label={i18n.t("Predictor groups")}
-                    />
-                </React.Fragment>
-            </ObjectsList>
+                <ObjectsList<Predictor>
+                    {...tableProps}
+                    onChangeSearch={search => onChangeFilter({ search })}
+                    initialSearch={state.search ?? ""}
+                >
+                    <React.Fragment>
+                        <Filter
+                            items={predictorGroupOptions}
+                            values={state.predictorGroups ?? []}
+                            onChange={predictorGroups => onChangeFilter({ predictorGroups })}
+                            label={i18n.t("Predictor groups")}
+                        />
+                    </React.Fragment>
+                </ObjectsList>
+            </Dropzone>
+
+            {response && (
+                <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />
+            )}
         </Wrapper>
     );
 };
 
 const Wrapper = styled.div`
-    margin: 20px;
+    padding: 20px;
+    height: 100%;
+`;
+
+const Filter = styled(MultipleDropdown)`
+    min-width: 200px;
 `;
 
 interface Filters {
