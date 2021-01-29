@@ -75,8 +75,8 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}
-    public async run(ids: string[], startDate: Date, endDate: Date): Promise<void> {
-        await promiseMap(ids, id =>
+    public async run(ids: string[], startDate: Date, endDate: Date): Promise<any> {
+        return promiseMap(ids, id =>
             this.api
                 .post(`/predictors/${id}/run`, {
                     startDate: formatDate(startDate),

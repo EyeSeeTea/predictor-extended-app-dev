@@ -42,10 +42,11 @@ export const PredictorListPage: React.FC = () => {
     const runPredictors = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
-            await compositionRoot.usecases.run(ids);
+            const results = await compositionRoot.usecases.run(ids);
+            snackbar.info(results.map((response: any) => response?.message).join("\n"));
             loading.reset();
         },
-        [compositionRoot, loading]
+        [compositionRoot, loading, snackbar]
     );
 
     const exportPredictors = useCallback(
@@ -126,7 +127,7 @@ export const PredictorListPage: React.FC = () => {
                 {
                     name: "execute",
                     text: i18n.t("Run"),
-                    multiple: true,
+                    multiple: false,
                     onClick: runPredictors,
                     icon: <QueuePlayNext />,
                 },

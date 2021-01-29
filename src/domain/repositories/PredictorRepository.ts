@@ -17,7 +17,7 @@ export interface PredictorRepository {
 
     getDataElements(): Promise<NamedRef[]>;
 
-    run(ids: string[], startDate: Date, endDate: Date): Promise<void>;
+    run(ids: string[], startDate: Date, endDate: Date): Promise<any>;
 
     save(predictors: Predictor[]): Promise<MetadataResponse>;
 }
