@@ -7,7 +7,7 @@ import {
     number,
     oneOf,
     optional,
-    string
+    string,
 } from "purify-ts";
 
 const Ref = Codec.interface({
