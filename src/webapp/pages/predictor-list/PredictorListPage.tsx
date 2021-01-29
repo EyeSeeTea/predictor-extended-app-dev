@@ -61,28 +61,6 @@ export const PredictorListPage: React.FC = () => {
         snackbar.info("Not implemented yet");
     }, [snackbar]);
 
-    const handleFileUpload = useCallback(
-        async (files: File[], rejections: FileRejection[]) => {
-            if (files.length === 0 && rejections.length > 0) {
-                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
-                return;
-            }
-
-            loading.show(true, i18n.t("Reading files"));
-            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
-
-            if (warnings && warnings.length > 0) {
-                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
-            }
-
-            //@ts-ignore TODO FIXME: Add validation
-            const response = await compositionRoot.usecases.import(predictors);
-            setResponse(response);
-            loading.reset();
-        },
-        [compositionRoot, loading, snackbar]
-    );
-
     const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
             columns: [
@@ -211,6 +189,30 @@ export const PredictorListPage: React.FC = () => {
     );
 
     const tableProps = useObjectsTable(baseConfig, refreshRows);
+
+    const handleFileUpload = useCallback(
+        async (files: File[], rejections: FileRejection[]) => {
+            if (files.length === 0 && rejections.length > 0) {
+                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
+                return;
+            }
+
+            loading.show(true, i18n.t("Reading files"));
+
+            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
+            if (warnings && warnings.length > 0) {
+                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
+            }
+
+            //@ts-ignore TODO FIXME: Add validation
+            const response = await compositionRoot.usecases.import(predictors);
+            setResponse(response);
+
+            loading.reset();
+            tableProps.reload();
+        },
+        [compositionRoot, loading, snackbar]
+    );
 
     const onChangeFilter = useCallback(
         (update: Partial<Filters>) => {
