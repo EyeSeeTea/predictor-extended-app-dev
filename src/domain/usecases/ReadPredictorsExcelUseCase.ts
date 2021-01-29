@@ -47,6 +47,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                     )
                 )
             )
+            .map(({ id, ...rest }) => ({ id: id ?? generateUid(), ...rest }))
             .value();
 
         const { dictionary, warnings: dictionaryWarnings } = await this.buildDictionary(entries);
@@ -77,6 +78,11 @@ export class ReadPredictorsExcelUseCase implements UseCase {
     }
 
     private async buildDictionary(entries: Record<string, string>[]) {
+        const newPredictors = _.flatMap(entries, ({ id, name, code }) => [
+            [name, id],
+            [code, id],
+        ]);
+
         const templates = _(entries)
             .flatMap(({ generator, sampleSkipTest }) => [generator, sampleSkipTest])
             .compact()
@@ -92,6 +98,9 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                 [name, id],
                 [code, id],
             ])
+            .union(newPredictors)
+            .uniqBy(([key]) => key)
+            .filter(([key]) => key !== undefined)
             .fromPairs()
             .value();
 
@@ -137,7 +146,6 @@ export class ReadPredictorsExcelUseCase implements UseCase {
 
             return {
                 ...object,
-                id: object.id ?? generateUid(),
                 output,
                 outputCombo,
                 predictorGroups,
