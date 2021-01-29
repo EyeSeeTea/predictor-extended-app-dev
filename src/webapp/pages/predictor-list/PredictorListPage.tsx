@@ -220,12 +220,8 @@ export const PredictorListPage: React.FC = () => {
             if (tableProps.onChangeSearch) {
                 tableProps.onChangeSearch(update.search ?? "");
             }
-            if (update.lastUpdated) {
-                const convertedLastUpdated = new Date(update.lastUpdated);
-                setState(state => ({ ...state, lastUpdated: convertedLastUpdated }));
-            } else {
-                setState(state => ({ ...state, ...update }));
-            }
+
+            setState(state => ({ ...state, ...update }));
         },
         [setState, tableProps]
     );
@@ -260,8 +256,10 @@ export const PredictorListPage: React.FC = () => {
                         <DatePicker
                             placeholder={i18n.t("Last updated date")}
                             value={state.lastUpdated ?? null}
-                            onChange={lastUpdated => onChangeFilter({ lastUpdated })}
                             isFilter={true}
+                            onChange={(lastUpdated: { toDate(): Date }) =>
+                                onChangeFilter({ lastUpdated: lastUpdated.toDate() })
+                            }
                         />
                     </React.Fragment>
                 </ObjectsList>
