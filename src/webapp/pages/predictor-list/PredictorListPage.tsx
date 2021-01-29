@@ -211,7 +211,7 @@ export const PredictorListPage: React.FC = () => {
             loading.reset();
             tableProps.reload();
         },
-        [compositionRoot, loading, snackbar]
+        [compositionRoot, tableProps, loading, snackbar]
     );
 
     const onChangeFilter = useCallback(
