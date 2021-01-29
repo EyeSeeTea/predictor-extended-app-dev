@@ -28,18 +28,19 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async list(
-        filters?: { search?: string; predictorGroups?: string[], lastUpdated?: Date },
+        filters?: { search?: string; predictorGroups?: string[]; lastUpdated?: Date },
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
         const { search, predictorGroups = [], lastUpdated } = filters ?? {};
+        
         return this.api.models.predictors
             .get({
                 filter: {
                     name: search ? { token: search } : undefined,
                     "predictorGroups.id":
                         predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
-                    "lastUpdated": lastUpdated ? { ge: formatDate(lastUpdated) } : undefined,
+                    lastUpdated: lastUpdated ? { ge: formatDate(lastUpdated) } : undefined,
                 },
                 page: paging?.page,
                 pageSize: paging?.pageSize,

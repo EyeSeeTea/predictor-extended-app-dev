@@ -188,7 +188,7 @@ export const PredictorListPage: React.FC = () => {
         },
         [compositionRoot, state]
     );
-    
+
     const tableProps = useObjectsTable(baseConfig, refreshRows);
 
     const handleFileUpload = useCallback(
@@ -220,14 +220,12 @@ export const PredictorListPage: React.FC = () => {
             if (tableProps.onChangeSearch) {
                 tableProps.onChangeSearch(update.search ?? "");
             }
-            if(update.lastUpdated) {
+            if (update.lastUpdated) {
                 const convertedLastUpdated = new Date(update.lastUpdated);
                 setState(state => ({ ...state, lastUpdated: convertedLastUpdated }));
-            }
-            else {
+            } else {
                 setState(state => ({ ...state, ...update }));
             }
-            
         },
         [setState, tableProps]
     );
@@ -258,13 +256,13 @@ export const PredictorListPage: React.FC = () => {
                             onChange={predictorGroups => onChangeFilter({ predictorGroups })}
                             label={i18n.t("Predictor groups")}
                         />
-                    <DatePicker
-                        placeholder={i18n.t("Last updated date")}
-                        value={state.lastUpdated ?? null}
-                        onChange={lastUpdated => onChangeFilter({ lastUpdated })}
-                        isFilter={true}
-                            /> 
-            
+                        
+                        <DatePicker
+                            placeholder={i18n.t("Last updated date")}
+                            value={state.lastUpdated ?? null}
+                            onChange={lastUpdated => onChangeFilter({ lastUpdated })}
+                            isFilter={true}
+                        />
                     </React.Fragment>
                 </ObjectsList>
             </Dropzone>
