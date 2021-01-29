@@ -1,20 +1,13 @@
 import { TablePagination, TableSorting } from "@eyeseetea/d2-ui-components";
 import { UseCase } from "../../compositionRoot";
 import { Predictor } from "../entities/Predictor";
-import { PredictorRepository } from "../repositories/PredictorRepository";
-
-export interface GetPredictorsFilters {
-    search?: string;
-    predictorGroups?: string[];
-    dataElements?: string[];
-    lastUpdated?: string;
-}
+import { ListPredictorsFilters, PredictorRepository } from "../repositories/PredictorRepository";
 
 export class ListPredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}
 
     public execute(
-        filters: GetPredictorsFilters,
+        filters: ListPredictorsFilters,
         paging: TablePagination,
         sorting: TableSorting<Predictor>
     ) {

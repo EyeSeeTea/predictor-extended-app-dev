@@ -1,7 +1,11 @@
 import { TableSorting } from "@eyeseetea/d2-ui-components";
+import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
-import { PredictorRepository } from "../domain/repositories/PredictorRepository";
+import {
+    ListPredictorsFilters,
+    PredictorRepository,
+} from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse } from "../types/d2-api";
 import { formatDate } from "../utils/dates";
 import { promiseMap } from "../utils/promises";
@@ -28,12 +32,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async list(
-        filters?: {
-            search?: string;
-            predictorGroups?: string[];
-            dataElements?: string[];
-            lastUpdated?: string;
-        },
+        filters?: ListPredictorsFilters,
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
@@ -65,23 +64,11 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async getDataElements(): Promise<NamedRef[]> {
-        const outputObjects = (
-            await this.api.models.predictors
-                .get({ paging: false, fields: { output: true } })
-                .getData()
-        ).objects.map(element => element.output.id);
+        const { objects } = await this.api.models.predictors
+            .get({ paging: false, fields: { output: { id: true, displayName: true } } })
+            .getData();
 
-        const dataElements = (
-            await this.api.models.dataElements
-                .get({
-                    filter: { id: { in: outputObjects } },
-                    paging: false,
-                    fields: { id: true, displayName: true },
-                })
-                .getData()
-        ).objects;
-
-        return dataElements.map(({ id, displayName }) => ({ id, name: displayName }));
+        return _.uniqBy(objects.map(({ output }) => ({ id: output.id, name: output.displayName })), "id");
     }
 
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}

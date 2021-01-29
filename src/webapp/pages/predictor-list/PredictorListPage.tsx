@@ -13,7 +13,7 @@ import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
-import { GetPredictorsFilters } from "../../../domain/usecases/GetPredictorsUseCase";
+import { ListPredictorsFilters } from "../../../domain/repositories/PredictorRepository";
 import i18n from "../../../locales";
 import { formatDate } from "../../../utils/dates";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
@@ -34,7 +34,7 @@ export const PredictorListPage: React.FC = () => {
 
     const fileRef = useRef<DropzoneRef>(null);
 
-    const [state, setState] = useQueryState<GetPredictorsFilters>({});
+    const [state, setState] = useQueryState<ListPredictorsFilters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
     const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
     const [response, setResponse] = useState<MetadataResponse>();
@@ -203,7 +203,7 @@ export const PredictorListPage: React.FC = () => {
     );
 
     const onChangeFilter = useCallback(
-        (update: Partial<GetPredictorsFilters>) => {
+        (update: Partial<ListPredictorsFilters>) => {
             if (tableProps.onChangeSearch) {
                 tableProps.onChangeSearch(update.search ?? "");
             }
