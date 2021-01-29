@@ -159,7 +159,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                     expression: interpolate(object.generator ?? "", dictionary),
                     description: "Description",
                 },
-                sampleSkipTest: !!object.sampleSkipTest ? {
+                sampleSkipTest: object.sampleSkipTest ? {
                     expression: interpolate(object.sampleSkipTest, dictionary),
                     description: "Description",
                 } : undefined,
