@@ -1,26 +1,9 @@
 import { render, RenderResult } from "@testing-library/react";
-import { SnackbarProvider } from "d2-ui-components";
+import { SnackbarProvider } from "@eyeseetea/d2-ui-components";
 import React, { ReactNode } from "react";
 import { getCompositionRoot } from "../compositionRoot";
 import { getMockApi } from "../types/d2-api";
-import { AppContext } from "../webapp/contexts/app-context";
-import { User } from "./../models/User";
-
-export function getTestUser() {
-    return new User({
-        id: "xE7jOejl9FI",
-        displayName: "John Traore",
-        username: "admin",
-        organisationUnits: [
-            {
-                level: 1,
-                id: "ImspTQPwCqd",
-                path: "/ImspTQPwCqd",
-            },
-        ],
-        userRoles: [],
-    });
-}
+import { AppContext, AppContextState } from "../webapp/contexts/app-context";
 
 export function getTestConfig() {
     return {};
@@ -33,17 +16,13 @@ export function getTestD2() {
 export function getTestContext() {
     const { api, mock } = getMockApi();
     const context = {
-        api: api,
-        d2: getTestD2(),
-        currentUser: getTestUser(),
-        config: getTestConfig(),
-        compositionRoot: getCompositionRoot(api),
+        compositionRoot: getCompositionRoot(""),
     };
 
     return { mock, api, context };
 }
 
-export function getReactComponent(children: ReactNode, context: AppContext): RenderResult {
+export function getReactComponent(children: ReactNode, context: AppContextState): RenderResult {
     return render(
         <AppContext.Provider value={context}>
             <SnackbarProvider>{children}</SnackbarProvider>
