@@ -159,10 +159,10 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                     expression: interpolate(object.generator ?? "", dictionary),
                     description: "Description",
                 },
-                sampleSkipTest: {
-                    expression: interpolate(object.sampleSkipTest ?? "", dictionary),
+                sampleSkipTest: !!object.sampleSkipTest ? {
+                    expression: interpolate(object.sampleSkipTest, dictionary),
                     description: "Description",
-                },
+                } : undefined,
             }).mapLeft(description => ({
                 id: object.id ?? "",
                 error: "PARSE_ERROR" as const,
