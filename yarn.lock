@@ -1594,10 +1594,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eyeseetea/d2-ui-components@2.5.1":
-  version "2.5.1"
-  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-ui-components/-/d2-ui-components-2.5.1.tgz#48082f97a08370bba77e0b1ed962bb7b9c7cb121"
-  integrity sha512-nS/EDa9FELBtjSyuiyGcANdTHU/7h6aE8xd1v5M/KVXNufdTtVNBGsdB20oOiS9C/jal5dZ/R+jaiwMxe5a2yg==
+"@eyeseetea/d2-ui-components@2.5.2":
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-ui-components/-/d2-ui-components-2.5.2.tgz#febf1644481a68e55d03aec0076a2ff67f90cd15"
+  integrity sha512-r7esgwLrCuMU5c5hIfHA2C4GDDrD3EpUc4U6kgsDNApSUwCT6QU4+YKHe1Tgy8FgKg1woXVmxYzD7MYgM7GyWw==
   dependencies:
     "@date-io/core" "^1.3.6"
     "@date-io/moment" "^1.0.2"

@@ -9,10 +9,10 @@ import {
     TableCell,
     TableHead,
     TableRow,
-    Typography
+    Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { ConfirmationDialog } from "d2-ui-components";
+import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import React, { useCallback } from "react";
 import ReactJson from "react-json-view";

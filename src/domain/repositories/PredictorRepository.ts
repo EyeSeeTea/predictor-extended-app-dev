@@ -1,4 +1,4 @@
-import { TableSorting } from "d2-ui-components";
+import { TableSorting } from "@eyeseetea/d2-ui-components";
 import { Pager } from "../../webapp/components/objects-list/objects-list-hooks";
 import { NamedRef } from "../entities/DHIS2";
 import { MetadataResponse } from "../entities/Metadata";

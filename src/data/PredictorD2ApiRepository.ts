@@ -1,4 +1,4 @@
-import { TableSorting } from "d2-ui-components";
+import { TableSorting } from "@eyeseetea/d2-ui-components";
 import { format } from "date-fns";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
