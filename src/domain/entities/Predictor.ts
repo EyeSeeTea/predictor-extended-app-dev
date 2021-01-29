@@ -1,14 +1,7 @@
-import {
-    array,
-    boolean,
-    Codec,
-    exactly,
-    GetType,
-    number,
-    oneOf,
-    optional,
-    string,
-} from "purify-ts";
+import { array, boolean, Codec, exactly, GetType, oneOf, optional, string } from "purify-ts";
+import { Integer, NumberFromString } from "purify-ts-extra-codec";
+
+const number = oneOf([Integer, NumberFromString]);
 
 const Ref = Codec.interface({
     id: string,
@@ -68,7 +61,7 @@ export const PredictorModel = Codec.interface({
     sampleSkipTest: optional(FormulaModel),
     sequentialSampleCount: number,
     annualSampleCount: number,
-    sequentialSkipCount: number,
+    sequentialSkipCount: optional(number),
     predictorGroups: optional(array(Ref)),
     lastUpdated: optional(string),
     lastUpdatedBy: optional(Ref),

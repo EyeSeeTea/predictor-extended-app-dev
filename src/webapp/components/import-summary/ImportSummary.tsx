@@ -133,7 +133,7 @@ export const ImportSummary = ({ results, onClose }: ImportSummaryProps) => {
             fullWidth={true}
         >
             <DialogContent>
-                {results.map(({ status, typeReports }, idx) => {
+                {results.map(({ status, typeReports = [] }, idx) => {
                     const stats = typeReports.map(({ stats }) => ({
                         type: i18n.t("Predictors"),
                         ...stats,
@@ -166,9 +166,11 @@ export const ImportSummary = ({ results, onClose }: ImportSummaryProps) => {
                                 <Typography variant="overline">{i18n.t("Summary")}</Typography>
                             </AccordionDetails>
 
-                            <AccordionDetails className={classes.accordionDetails}>
-                                {buildSummaryTable(stats)}
-                            </AccordionDetails>
+                            {stats && (
+                                <AccordionDetails className={classes.accordionDetails}>
+                                    {buildSummaryTable(stats)}
+                                </AccordionDetails>
+                            )}
 
                             {errors.length > 0 && (
                                 <div>
