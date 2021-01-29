@@ -162,7 +162,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             }).mapLeft(description => ({
                 id: object.id ?? "",
                 error: "PARSE_ERROR" as const,
-                description: description.replace(/\{.*\}/, ""),
+                description: `${object.name ?? object.id}: ${description.replace(/\{.*\}/, "")}`,
             }));
         });
     }
