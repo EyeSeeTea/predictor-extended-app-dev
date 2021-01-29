@@ -155,9 +155,13 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                 outputCombo,
                 predictorGroups,
                 organisationUnitLevels,
-                generator: { expression: interpolate(object.generator ?? "", dictionary) },
+                generator: {
+                    expression: interpolate(object.generator ?? "", dictionary),
+                    description: "Description",
+                },
                 sampleSkipTest: {
                     expression: interpolate(object.sampleSkipTest ?? "", dictionary),
+                    description: "Description",
                 },
             }).mapLeft(description => ({
                 id: object.id ?? "",
