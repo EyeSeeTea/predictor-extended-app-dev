@@ -4,6 +4,7 @@ import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
 import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
+import { GetDataElementsUseCase } from "./domain/usecases/GetDataElementsUseCase";
 import { ListPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
 import { ImportPredictorsUseCase } from "./domain/usecases/ImportPredictorsUseCase";
 import { ReadPredictorsExcelUseCase } from "./domain/usecases/ReadPredictorsExcelUseCase";
@@ -19,6 +20,7 @@ export function getCompositionRoot(baseUrl: string) {
         usecases: getExecute({
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
+            getDataElements: new GetDataElementsUseCase(predictorRepository),
             run: new RunPredictorsUseCase(predictorRepository),
             readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
             import: new ImportPredictorsUseCase(predictorRepository),

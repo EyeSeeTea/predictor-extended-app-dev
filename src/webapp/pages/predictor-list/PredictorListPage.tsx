@@ -13,7 +13,7 @@ import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
-import { GetPredictorsFilters } from "../../../domain/usecases/GetPredictorsUseCase";
+import { ListPredictorsFilters } from "../../../domain/repositories/PredictorRepository";
 import i18n from "../../../locales";
 import { formatDate } from "../../../utils/dates";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
@@ -34,8 +34,9 @@ export const PredictorListPage: React.FC = () => {
 
     const fileRef = useRef<DropzoneRef>(null);
 
-    const [state, setState] = useQueryState<GetPredictorsFilters>({});
+    const [state, setState] = useQueryState<ListPredictorsFilters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
+    const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
     const [response, setResponse] = useState<MetadataResponse>();
 
     const runPredictors = useCallback(
@@ -202,7 +203,7 @@ export const PredictorListPage: React.FC = () => {
     );
 
     const onChangeFilter = useCallback(
-        (update: Partial<GetPredictorsFilters>) => {
+        (update: Partial<ListPredictorsFilters>) => {
             if (tableProps.onChangeSearch) {
                 tableProps.onChangeSearch(update.search ?? "");
             }
@@ -214,6 +215,11 @@ export const PredictorListPage: React.FC = () => {
 
     const onChangeGroupFilter = useCallback(
         (predictorGroups: string[]) => onChangeFilter({ predictorGroups }),
+        [onChangeFilter]
+    );
+
+    const onChangeOutputFilter = useCallback(
+        (dataElements: string[]) => onChangeFilter({ dataElements }),
         [onChangeFilter]
     );
 
@@ -229,6 +235,11 @@ export const PredictorListPage: React.FC = () => {
         compositionRoot.usecases.getGroups().then(groups => {
             const options = groups.map(({ id, name }) => ({ value: id, text: name }));
             setPredictorGroupOptions(options);
+        });
+
+        compositionRoot.usecases.getDataElements().then(dataElements => {
+            const options = dataElements.map(({ id, name }) => ({ value: id, text: name }));
+            setDataElementsOptions(options);
         });
     }, [compositionRoot]);
 
@@ -250,6 +261,13 @@ export const PredictorListPage: React.FC = () => {
                             values={state.predictorGroups ?? []}
                             onChange={onChangeGroupFilter}
                             label={i18n.t("Predictor groups")}
+                        />
+
+                        <Filter
+                            items={dataElementsOptions}
+                            values={state.dataElements ?? []}
+                            onChange={onChangeOutputFilter}
+                            label={i18n.t("Output data element")}
                         />
 
                         <DatePicker

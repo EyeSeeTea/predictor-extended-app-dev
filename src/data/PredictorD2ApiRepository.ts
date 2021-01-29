@@ -1,7 +1,11 @@
 import { TableSorting } from "@eyeseetea/d2-ui-components";
+import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
-import { PredictorRepository } from "../domain/repositories/PredictorRepository";
+import {
+    ListPredictorsFilters,
+    PredictorRepository,
+} from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse } from "../types/d2-api";
 import { formatDate } from "../utils/dates";
 import { promiseMap } from "../utils/promises";
@@ -28,11 +32,11 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async list(
-        filters?: { search?: string; predictorGroups?: string[]; lastUpdated?: string },
+        filters?: ListPredictorsFilters,
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
-        const { search, predictorGroups = [], lastUpdated } = filters ?? {};
+        const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
 
         return this.api.models.predictors
             .get({
@@ -40,6 +44,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                     name: search ? { token: search } : undefined,
                     "predictorGroups.id":
                         predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
+                    "output.id": dataElements.length > 0 ? { in: dataElements } : undefined,
                     lastUpdated: lastUpdated ? { ge: lastUpdated } : undefined,
                 },
                 page: paging?.page,
@@ -56,6 +61,14 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             .getData();
 
         return objects.map(({ id, displayName }) => ({ id, name: displayName }));
+    }
+
+    public async getDataElements(): Promise<NamedRef[]> {
+        const { objects } = await this.api.models.predictors
+            .get({ paging: false, fields: { output: { id: true, displayName: true } } })
+            .getData();
+
+        return _.uniqBy(objects.map(({ output }) => ({ id: output.id, name: output.displayName })), "id");
     }
 
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}

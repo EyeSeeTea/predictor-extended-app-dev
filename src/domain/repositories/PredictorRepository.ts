@@ -8,14 +8,23 @@ export interface PredictorRepository {
     get(ids: string[]): Promise<Predictor[]>;
 
     list(
-        filters: { search?: string; predictorGroups?: string[] },
+        filters: ListPredictorsFilters,
         paging: { page: number; pageSize: number },
         sorting: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }>;
 
     getGroups(): Promise<NamedRef[]>;
 
+    getDataElements(): Promise<NamedRef[]>;
+
     run(ids: string[], startDate: Date, endDate: Date): Promise<void>;
 
     save(predictors: Predictor[]): Promise<MetadataResponse>;
+}
+
+export interface ListPredictorsFilters {
+    search?: string;
+    predictorGroups?: string[];
+    dataElements?: string[];
+    lastUpdated?: string;
 }
