@@ -1,5 +1,6 @@
 import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import {
+    DatePicker,
     DropdownItem,
     MultipleDropdown,
     TablePagination,
@@ -191,14 +192,14 @@ export const PredictorListPage: React.FC = () => {
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
             return compositionRoot.usecases.list(
-                { search, predictorGroups: state.predictorGroups },
+                { search, predictorGroups: state.predictorGroups, lastUpdated: state.lastUpdated },
                 paging,
                 sorting
             );
         },
         [compositionRoot, state]
     );
-
+    
     const tableProps = useObjectsTable(baseConfig, refreshRows);
 
     const onChangeFilter = useCallback(
@@ -206,8 +207,14 @@ export const PredictorListPage: React.FC = () => {
             if (tableProps.onChangeSearch) {
                 tableProps.onChangeSearch(update.search ?? "");
             }
-
-            setState(state => ({ ...state, ...update }));
+            if(update.lastUpdated) {
+                const convertedLastUpdated = new Date(update.lastUpdated);
+                setState(state => ({ ...state, lastUpdated: convertedLastUpdated }));
+            }
+            else {
+                setState(state => ({ ...state, ...update }));
+            }
+            
         },
         [setState, tableProps]
     );
@@ -238,6 +245,13 @@ export const PredictorListPage: React.FC = () => {
                             onChange={predictorGroups => onChangeFilter({ predictorGroups })}
                             label={i18n.t("Predictor groups")}
                         />
+                    <DatePicker
+                        placeholder={i18n.t("Last updated date")}
+                        value={state.lastUpdated ?? null}
+                        onChange={lastUpdated => onChangeFilter({ lastUpdated })}
+                        isFilter={true}
+                            /> 
+            
                     </React.Fragment>
                 </ObjectsList>
             </Dropzone>
@@ -253,4 +267,5 @@ const Wrapper = styled.div`
 interface Filters {
     search?: string;
     predictorGroups?: string[];
+    lastUpdated?: Date;
 }

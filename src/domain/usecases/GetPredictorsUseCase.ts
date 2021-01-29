@@ -6,6 +6,7 @@ import { PredictorRepository } from "../repositories/PredictorRepository";
 interface GetPredictorsFilters {
     search?: string;
     predictorGroups?: string[];
+    lastUpdated?: Date;
 }
 
 export class ListPredictorsUseCase implements UseCase {
