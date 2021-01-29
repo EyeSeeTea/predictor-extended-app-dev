@@ -9,7 +9,7 @@ export class FileBrowserRepository implements FileRepository {
                 const blob = new Blob([file.buffer], {
                     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 });
-                saveAs(blob, file.name);
+                saveAs(blob, `${file.name}.xlsx`);
                 return;
             }
             default: {
