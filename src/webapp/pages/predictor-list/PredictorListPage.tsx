@@ -87,6 +87,12 @@ export const PredictorListPage: React.FC = () => {
         return {
             columns: [
                 {
+                    name: "id",
+                    text: i18n.t("Identifier"),
+                    sortable: true,
+                    hidden: true,
+                },
+                {
                     name: "sectionSequence",
                     text: i18n.t("Section sequence"),
                     sortable: true,
@@ -115,6 +121,7 @@ export const PredictorListPage: React.FC = () => {
                 { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
             ],
             details: [
+                { name: "id", text: i18n.t("Identifier") },
                 { name: "code", text: i18n.t("Code") },
                 { name: "name", text: i18n.t("Name") },
                 { name: "description", text: i18n.t("Description") },
