@@ -8,7 +8,7 @@ import {
     TablePagination,
     TableSorting,
     TableState,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import { parse } from "querystring";
 import { useCallback, useEffect, useMemo, useState } from "react";

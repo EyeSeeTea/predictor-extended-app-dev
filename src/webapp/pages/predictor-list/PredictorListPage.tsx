@@ -7,13 +7,15 @@ import {
     TableSorting,
     useLoading,
     useSnackbar,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
+import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
+import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import {
     Pager,
     TableConfig,
@@ -32,6 +34,7 @@ export const PredictorListPage: React.FC = () => {
 
     const [state, setState] = useQueryState<Filters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
+    const [response, setResponse] = useState<MetadataResponse>();
 
     const runPredictors = useCallback(
         async (ids: string[]) => {
@@ -59,30 +62,15 @@ export const PredictorListPage: React.FC = () => {
         snackbar.info("Not implemented yet");
     }, [snackbar]);
 
-    const handleFileUpload = useCallback(
-        async (files: File[], rejections: FileRejection[]) => {
-            if (files.length === 0 && rejections.length > 0) {
-                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
-                return;
-            }
-
-            loading.show(true, i18n.t("Reading files"));
-            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
-
-            if (warnings && warnings.length > 0) {
-                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
-            }
-
-            //@ts-ignore TODO FIXME
-            await compositionRoot.usecases.import(predictors);
-            loading.reset();
-        },
-        [compositionRoot, loading, snackbar]
-    );
-
     const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
             columns: [
+                {
+                    name: "id",
+                    text: i18n.t("Identifier"),
+                    sortable: true,
+                    hidden: true,
+                },
                 {
                     name: "sectionSequence",
                     text: i18n.t("Section sequence"),
@@ -112,6 +100,7 @@ export const PredictorListPage: React.FC = () => {
                 { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
             ],
             details: [
+                { name: "id", text: i18n.t("Identifier") },
                 { name: "code", text: i18n.t("Code") },
                 { name: "name", text: i18n.t("Name") },
                 { name: "description", text: i18n.t("Description") },
@@ -202,6 +191,30 @@ export const PredictorListPage: React.FC = () => {
     
     const tableProps = useObjectsTable(baseConfig, refreshRows);
 
+    const handleFileUpload = useCallback(
+        async (files: File[], rejections: FileRejection[]) => {
+            if (files.length === 0 && rejections.length > 0) {
+                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
+                return;
+            }
+
+            loading.show(true, i18n.t("Reading files"));
+
+            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
+            if (warnings && warnings.length > 0) {
+                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
+            }
+
+            //@ts-ignore TODO FIXME: Add validation
+            const response = await compositionRoot.usecases.import(predictors);
+            setResponse(response);
+
+            loading.reset();
+            tableProps.reload();
+        },
+        [compositionRoot, tableProps, loading, snackbar]
+    );
+
     const onChangeFilter = useCallback(
         (update: Partial<Filters>) => {
             if (tableProps.onChangeSearch) {
@@ -239,7 +252,7 @@ export const PredictorListPage: React.FC = () => {
                     initialSearch={state.search ?? ""}
                 >
                     <React.Fragment>
-                        <MultipleDropdown
+                        <Filter
                             items={predictorGroupOptions}
                             values={state.predictorGroups ?? []}
                             onChange={predictorGroups => onChangeFilter({ predictorGroups })}
@@ -255,6 +268,10 @@ export const PredictorListPage: React.FC = () => {
                     </React.Fragment>
                 </ObjectsList>
             </Dropzone>
+
+            {response && (
+                <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />
+            )}
         </Wrapper>
     );
 };
@@ -262,6 +279,10 @@ export const PredictorListPage: React.FC = () => {
 const Wrapper = styled.div`
     padding: 20px;
     height: 100%;
+`;
+
+const Filter = styled(MultipleDropdown)`
+    min-width: 200px;
 `;
 
 interface Filters {

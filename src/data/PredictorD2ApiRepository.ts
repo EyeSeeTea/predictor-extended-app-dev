@@ -1,9 +1,9 @@
-import { TableSorting } from "d2-ui-components";
+import { TableSorting } from "@eyeseetea/d2-ui-components";
 import { format } from "date-fns";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
 import { PredictorRepository } from "../domain/repositories/PredictorRepository";
-import { D2Api } from "../types/d2-api";
+import { D2Api, MetadataResponse } from "../types/d2-api";
 import { promiseMap } from "../utils/promises";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
 import { getD2APiFromUrl } from "./utils/d2-api";
@@ -69,8 +69,9 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         );
     }
 
-    public async save(predictors: Predictor[]): Promise<void> {
-        await this.api.metadata.post({ predictors }).getData();
+    public async save(predictors: Predictor[]): Promise<MetadataResponse> {
+        // TODO FIXME: Predictor groups need to be updated with predictors to be included
+        return this.api.metadata.post({ predictors }).getData();
     }
 }
 

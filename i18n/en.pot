@@ -5,10 +5,61 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-28T12:42:03.448Z\n"
-"PO-Revision-Date: 2021-01-28T12:42:03.448Z\n"
+"POT-Creation-Date: 2021-01-29T08:31:45.894Z\n"
+"PO-Revision-Date: 2021-01-29T08:31:45.894Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
+msgstr ""
+
+msgid "Reference {{template}} was not found on this instance"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Deleted"
+msgstr ""
+
+msgid "Ignored"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Identifier"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Import Results"
+msgstr ""
+
+msgid "Ok"
+msgstr ""
+
+msgid "Predictors"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "JSON Response"
 msgstr ""
 
 msgid "Search by name"
@@ -27,12 +78,6 @@ msgid "Running predictors"
 msgstr ""
 
 msgid "Exporting predictors"
-msgstr ""
-
-msgid "Couldn't read the file because it's not valid"
-msgstr ""
-
-msgid "Reading files"
 msgstr ""
 
 msgid "Section sequence"
@@ -74,9 +119,6 @@ msgstr ""
 msgid "Last updated by"
 msgstr ""
 
-msgid "Created"
-msgstr ""
-
 msgid "Created by"
 msgstr ""
 
@@ -101,5 +143,8 @@ msgstr ""
 msgid "Import excel"
 msgstr ""
 
-msgid "Last updated date"
+msgid "Couldn't read the file because it's not valid"
+msgstr ""
+
+msgid "Reading files"
 msgstr ""
