@@ -256,7 +256,7 @@ export const PredictorListPage: React.FC = () => {
                             onChange={predictorGroups => onChangeFilter({ predictorGroups })}
                             label={i18n.t("Predictor groups")}
                         />
-                        
+
                         <DatePicker
                             placeholder={i18n.t("Last updated date")}
                             value={state.lastUpdated ?? null}

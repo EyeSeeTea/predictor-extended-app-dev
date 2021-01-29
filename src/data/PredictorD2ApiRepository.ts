@@ -33,7 +33,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
         const { search, predictorGroups = [], lastUpdated } = filters ?? {};
-        
+
         return this.api.models.predictors
             .get({
                 filter: {
