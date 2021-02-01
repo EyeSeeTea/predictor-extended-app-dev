@@ -73,15 +73,15 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         await this.api.metadata.post({ predictors }).getData();
     }
 
-   public async delete(ids: string[]): Promise<void>{
-       await promiseMap(ids, id =>
-            this.api.models.predictors.delete({
-                id: id
-            }).getData()
+    public async delete(ids: string[]): Promise<void> {
+        await promiseMap(ids, id =>
+            this.api.models.predictors
+                .delete({
+                    id: id,
+                })
+                .getData()
         );
-        //this.api.models.predictors.delete({
-         //  id: ids
-       //});
+
     }
 }
 

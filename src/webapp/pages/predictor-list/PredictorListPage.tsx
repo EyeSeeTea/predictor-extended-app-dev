@@ -53,7 +53,7 @@ export const PredictorListPage: React.FC = () => {
     const deletePredictor = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Deleting predictors"));
-            await compositionRoot.usecases.delete(ids);//usecases.delete(id);
+            await compositionRoot.usecases.delete(ids); //usecases.delete(id);
             loading.reset();
         },
         [compositionRoot, loading]
@@ -148,7 +148,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "delete",
                     text: i18n.t("Delete"),
                     multiple: true,
-                    onClick: deletePredictor,//placeholderAction,
+                    onClick: deletePredictor, 
                     icon: <Delete />,
                 },
                 {
