@@ -191,7 +191,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors, exportPredictors, openImportDialog, placeholderAction]);
+    }, [runPredictors, exportPredictors, deletePredictor, openImportDialog, placeholderAction]);
 
     const refreshRows = useCallback(
         (
