@@ -5,7 +5,7 @@ export class DeletePredictorsUseCase implements UseCase{
 
     constructor(private predictorRepository: PredictorRepository){}
 
-    public async execute(id: string): Promise<void>{
-        return this.predictorRepository.delete(id);
+    public async execute(ids: string[]): Promise<void>{
+        return this.predictorRepository.delete(ids);
     }
 }
