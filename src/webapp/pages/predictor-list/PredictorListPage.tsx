@@ -50,6 +50,15 @@ export const PredictorListPage: React.FC = () => {
         [compositionRoot, loading]
     );
 
+    const deletePredictor = useCallback(
+        async (ids: string[]) => {
+            loading.show(true, i18n.t("Deleting predictors"));
+            await compositionRoot.usecases.delete(ids);//usecases.delete(id);
+            loading.reset();
+        },
+        [compositionRoot, loading]
+    );
+
     const openImportDialog = useCallback(async () => {
         fileRef.current?.openDialog();
     }, [fileRef]);
@@ -139,7 +148,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "delete",
                     text: i18n.t("Delete"),
                     multiple: true,
-                    onClick: placeholderAction,
+                    onClick: deletePredictor,//placeholderAction,
                     icon: <Delete />,
                 },
                 {
