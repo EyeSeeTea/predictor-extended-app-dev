@@ -9,7 +9,7 @@ import {
     TablePagination,
     TableSorting,
     TableState,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import React, { PropsWithChildren } from "react";
 import { Spinner } from "../objects-list/Spinner";
 

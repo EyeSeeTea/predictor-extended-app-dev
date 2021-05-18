@@ -1,18 +1,23 @@
-import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import {
+    DatePicker,
     DropdownItem,
     MultipleDropdown,
     TablePagination,
     TableSorting,
     useLoading,
     useSnackbar,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
+import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import styled from "styled-components";
+import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
+import { ListPredictorsFilters } from "../../../domain/repositories/PredictorRepository";
 import i18n from "../../../locales";
+import { formatDate } from "../../../utils/dates";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
+import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import {
     Pager,
     TableConfig,
@@ -29,16 +34,19 @@ export const PredictorListPage: React.FC = () => {
 
     const fileRef = useRef<DropzoneRef>(null);
 
-    const [state, setState] = useQueryState<Filters>({});
+    const [state, setState] = useQueryState<ListPredictorsFilters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
+    const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
+    const [response, setResponse] = useState<MetadataResponse>();
 
     const runPredictors = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
-            await compositionRoot.usecases.run(ids);
+            const results = await compositionRoot.usecases.run(ids);
+            snackbar.info(results.map((response: any) => response?.message).join("\n"));
             loading.reset();
         },
-        [compositionRoot, loading]
+        [compositionRoot, loading, snackbar]
     );
 
     const exportPredictors = useCallback(
@@ -67,39 +75,12 @@ export const PredictorListPage: React.FC = () => {
         snackbar.info("Not implemented yet");
     }, [snackbar]);
 
-    const handleFileUpload = useCallback(
-        async (files: File[], rejections: FileRejection[]) => {
-            if (files.length === 0 && rejections.length > 0) {
-                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
-                return;
-            }
-
-            loading.show(true, i18n.t("Reading files"));
-            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
-
-            if (warnings && warnings.length > 0) {
-                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
-            }
-
-            //@ts-ignore TODO FIXME
-            await compositionRoot.usecases.import(predictors);
-            loading.reset();
-        },
-        [compositionRoot, loading, snackbar]
-    );
-
     const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
             columns: [
                 {
-                    name: "sectionSequence",
-                    text: i18n.t("Section sequence"),
-                    sortable: true,
-                    hidden: true,
-                },
-                {
-                    name: "variableSequence",
-                    text: i18n.t("Variable sequence"),
+                    name: "id",
+                    text: i18n.t("Identifier"),
                     sortable: true,
                     hidden: true,
                 },
@@ -117,9 +98,18 @@ export const PredictorListPage: React.FC = () => {
                 },
                 { name: "predictorGroups", text: i18n.t("Predictor groups"), sortable: true },
                 { name: "periodType", text: i18n.t("Period type"), sortable: true },
+                {
+                    name: "sampleSkipTest",
+                    text: i18n.t("Sample skip test"),
+                    sortable: false,
+                    getValue: ({ sampleSkipTest }: Predictor) => {
+                        return sampleSkipTest?.expression ?? "-";
+                    },
+                },
                 { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
             ],
             details: [
+                { name: "id", text: i18n.t("Identifier") },
                 { name: "code", text: i18n.t("Code") },
                 { name: "name", text: i18n.t("Name") },
                 { name: "description", text: i18n.t("Description") },
@@ -148,13 +138,13 @@ export const PredictorListPage: React.FC = () => {
                     name: "delete",
                     text: i18n.t("Delete"),
                     multiple: true,
-                    onClick: deletePredictor, 
+                    onClick: deletePredictor,
                     icon: <Delete />,
                 },
                 {
                     name: "execute",
                     text: i18n.t("Run"),
-                    multiple: true,
+                    multiple: false,
                     onClick: runPredictors,
                     icon: <QueuePlayNext />,
                 },
@@ -199,19 +189,39 @@ export const PredictorListPage: React.FC = () => {
             paging: TablePagination,
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
-            return compositionRoot.usecases.list(
-                { search, predictorGroups: state.predictorGroups },
-                paging,
-                sorting
-            );
+            return compositionRoot.usecases.list({ ...state, search }, paging, sorting);
         },
         [compositionRoot, state]
     );
 
     const tableProps = useObjectsTable(baseConfig, refreshRows);
 
+    const handleFileUpload = useCallback(
+        async (files: File[], rejections: FileRejection[]) => {
+            if (files.length === 0 && rejections.length > 0) {
+                snackbar.error(i18n.t("Couldn't read the file because it's not valid"));
+                return;
+            }
+
+            loading.show(true, i18n.t("Reading files"));
+
+            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
+            if (warnings && warnings.length > 0) {
+                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
+            }
+
+            //@ts-ignore TODO FIXME: Add validation
+            const response = await compositionRoot.usecases.import(predictors);
+            setResponse(response);
+
+            loading.reset();
+            tableProps.reload();
+        },
+        [compositionRoot, tableProps, loading, snackbar]
+    );
+
     const onChangeFilter = useCallback(
-        (update: Partial<Filters>) => {
+        (update: Partial<ListPredictorsFilters>) => {
             if (tableProps.onChangeSearch) {
                 tableProps.onChangeSearch(update.search ?? "");
             }
@@ -221,10 +231,33 @@ export const PredictorListPage: React.FC = () => {
         [setState, tableProps]
     );
 
+    const onChangeGroupFilter = useCallback(
+        (predictorGroups: string[]) => onChangeFilter({ predictorGroups }),
+        [onChangeFilter]
+    );
+
+    const onChangeOutputFilter = useCallback(
+        (dataElements: string[]) => onChangeFilter({ dataElements }),
+        [onChangeFilter]
+    );
+
+    const onChangeLastUpdatedFilter = useCallback(
+        (lastUpdated: { toDate(): Date } | null) =>
+            onChangeFilter({
+                lastUpdated: lastUpdated ? formatDate(lastUpdated.toDate()) : undefined,
+            }),
+        [onChangeFilter]
+    );
+
     useEffect(() => {
         compositionRoot.usecases.getGroups().then(groups => {
             const options = groups.map(({ id, name }) => ({ value: id, text: name }));
             setPredictorGroupOptions(options);
+        });
+
+        compositionRoot.usecases.getDataElements().then(dataElements => {
+            const options = dataElements.map(({ id, name }) => ({ value: id, text: name }));
+            setDataElementsOptions(options);
         });
     }, [compositionRoot]);
 
@@ -241,15 +274,33 @@ export const PredictorListPage: React.FC = () => {
                     initialSearch={state.search ?? ""}
                 >
                     <React.Fragment>
-                        <MultipleDropdown
+                        <Filter
                             items={predictorGroupOptions}
                             values={state.predictorGroups ?? []}
-                            onChange={predictorGroups => onChangeFilter({ predictorGroups })}
+                            onChange={onChangeGroupFilter}
                             label={i18n.t("Predictor groups")}
+                        />
+
+                        <Filter
+                            items={dataElementsOptions}
+                            values={state.dataElements ?? []}
+                            onChange={onChangeOutputFilter}
+                            label={i18n.t("Output data element")}
+                        />
+
+                        <DatePicker
+                            placeholder={i18n.t("Last updated date")}
+                            value={state.lastUpdated ?? null}
+                            isFilter={true}
+                            onChange={onChangeLastUpdatedFilter}
                         />
                     </React.Fragment>
                 </ObjectsList>
             </Dropzone>
+
+            {response && (
+                <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />
+            )}
         </Wrapper>
     );
 };
@@ -259,7 +310,6 @@ const Wrapper = styled.div`
     height: 100%;
 `;
 
-interface Filters {
-    search?: string;
-    predictorGroups?: string[];
-}
+const Filter = styled(MultipleDropdown)`
+    min-width: 200px;
+`;

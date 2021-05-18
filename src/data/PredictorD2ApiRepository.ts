@@ -1,9 +1,13 @@
-import { TableSorting } from "d2-ui-components";
-import { format } from "date-fns";
+import { TableSorting } from "@eyeseetea/d2-ui-components";
+import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
-import { PredictorRepository } from "../domain/repositories/PredictorRepository";
-import { D2Api } from "../types/d2-api";
+import {
+    ListPredictorsFilters,
+    PredictorRepository,
+} from "../domain/repositories/PredictorRepository";
+import { D2Api, MetadataResponse } from "../types/d2-api";
+import { formatDate } from "../utils/dates";
 import { promiseMap } from "../utils/promises";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
 import { getD2APiFromUrl } from "./utils/d2-api";
@@ -28,11 +32,11 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public async list(
-        filters?: { search?: string; predictorGroups?: string[] },
+        filters?: ListPredictorsFilters,
         paging?: { page: number; pageSize: number },
         sorting?: TableSorting<Predictor>
     ): Promise<{ pager: Pager; objects: Predictor[] }> {
-        const { search, predictorGroups = [] } = filters ?? {};
+        const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
 
         return this.api.models.predictors
             .get({
@@ -40,6 +44,8 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                     name: search ? { token: search } : undefined,
                     "predictorGroups.id":
                         predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
+                    "output.id": dataElements.length > 0 ? { in: dataElements } : undefined,
+                    lastUpdated: lastUpdated ? { ge: lastUpdated } : undefined,
                 },
                 page: paging?.page,
                 pageSize: paging?.pageSize,
@@ -57,9 +63,20 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         return objects.map(({ id, displayName }) => ({ id, name: displayName }));
     }
 
+    public async getDataElements(): Promise<NamedRef[]> {
+        const { objects } = await this.api.models.predictors
+            .get({ paging: false, fields: { output: { id: true, displayName: true } } })
+            .getData();
+
+        return _.uniqBy(
+            objects.map(({ output }) => ({ id: output.id, name: output.displayName })),
+            "id"
+        );
+    }
+
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}
-    public async run(ids: string[], startDate: Date, endDate: Date): Promise<void> {
-        await promiseMap(ids, id =>
+    public async run(ids: string[], startDate: Date, endDate: Date): Promise<any> {
+        return promiseMap(ids, id =>
             this.api
                 .post(`/predictors/${id}/run`, {
                     startDate: formatDate(startDate),
@@ -69,8 +86,9 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         );
     }
 
-    public async save(predictors: Predictor[]): Promise<void> {
-        await this.api.metadata.post({ predictors }).getData();
+    public async save(predictors: Predictor[]): Promise<MetadataResponse> {
+        // TODO FIXME: Predictor groups need to be updated with predictors to be included
+        return this.api.metadata.post({ predictors }).getData();
     }
 
     public async delete(ids: string[]): Promise<void> {
@@ -81,12 +99,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 })
                 .getData()
         );
-
     }
-}
-
-function formatDate(date: Date): string {
-    return format(date, "yyyy-MM-dd");
 }
 
 const predictorFields = {

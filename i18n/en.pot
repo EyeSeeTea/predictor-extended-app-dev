@@ -5,10 +5,61 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-27T07:54:02.227Z\n"
-"PO-Revision-Date: 2021-01-27T07:54:02.227Z\n"
+"POT-Creation-Date: 2021-05-18T09:59:31.975Z\n"
+"PO-Revision-Date: 2021-05-18T09:59:31.975Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
+msgstr ""
+
+msgid "Reference {{template}} was not found on this instance"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Deleted"
+msgstr ""
+
+msgid "Ignored"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Identifier"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Import Results"
+msgstr ""
+
+msgid "Ok"
+msgstr ""
+
+msgid "Predictors"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "JSON Response"
 msgstr ""
 
 msgid "Search by name"
@@ -29,16 +80,7 @@ msgstr ""
 msgid "Exporting predictors"
 msgstr ""
 
-msgid "Couldn't read the file because it's not valid"
-msgstr ""
-
-msgid "Reading files"
-msgstr ""
-
-msgid "Section sequence"
-msgstr ""
-
-msgid "Variable sequence"
+msgid "Deleting predictors"
 msgstr ""
 
 msgid "Name"
@@ -62,6 +104,9 @@ msgstr ""
 msgid "Period type"
 msgstr ""
 
+msgid "Sample skip test"
+msgstr ""
+
 msgid "Last Updated"
 msgstr ""
 
@@ -72,9 +117,6 @@ msgid "Last updated"
 msgstr ""
 
 msgid "Last updated by"
-msgstr ""
-
-msgid "Created"
 msgstr ""
 
 msgid "Created by"
@@ -99,4 +141,13 @@ msgid "Validate"
 msgstr ""
 
 msgid "Import excel"
+msgstr ""
+
+msgid "Couldn't read the file because it's not valid"
+msgstr ""
+
+msgid "Reading files"
+msgstr ""
+
+msgid "Last updated date"
 msgstr ""
