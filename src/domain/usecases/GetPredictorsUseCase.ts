@@ -6,11 +6,7 @@ import { ListPredictorsFilters, PredictorRepository } from "../repositories/Pred
 export class ListPredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}
 
-    public execute(
-        filters: ListPredictorsFilters,
-        paging: TablePagination,
-        sorting: TableSorting<Predictor>
-    ) {
+    public execute(filters: ListPredictorsFilters, paging: TablePagination, sorting: TableSorting<Predictor>) {
         return this.predictorRepository.list(filters, paging, sorting);
     }
 }

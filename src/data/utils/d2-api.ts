@@ -1,4 +1,4 @@
-import { FilterBase } from "d2-api/api/common";
+import { FilterBase } from "@eyeseetea/d2-api/api/common";
 import _ from "lodash";
 import { D2Api } from "../../types/d2-api";
 

@@ -2,10 +2,7 @@ import { TableSorting } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Predictor } from "../domain/entities/Predictor";
-import {
-    ListPredictorsFilters,
-    PredictorRepository,
-} from "../domain/repositories/PredictorRepository";
+import { ListPredictorsFilters, PredictorRepository } from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse } from "../types/d2-api";
 import { formatDate } from "../utils/dates";
 import { promiseMap } from "../utils/promises";
@@ -42,8 +39,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             .get({
                 filter: {
                     name: search ? { token: search } : undefined,
-                    "predictorGroups.id":
-                        predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
+                    "predictorGroups.id": predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
                     "output.id": dataElements.length > 0 ? { in: dataElements } : undefined,
                     lastUpdated: lastUpdated ? { ge: lastUpdated } : undefined,
                 },

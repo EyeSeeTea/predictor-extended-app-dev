@@ -25,11 +25,7 @@ export function getCompositionRoot(baseUrl: string) {
             run: new RunPredictorsUseCase(predictorRepository),
             readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
             import: new ImportPredictorsUseCase(predictorRepository),
-            export: new ExportPredictorsUseCase(
-                predictorRepository,
-                excelRepository,
-                fileRepository
-            ),
+            export: new ExportPredictorsUseCase(predictorRepository, excelRepository, fileRepository),
             delete: new DeletePredictorsUseCase(predictorRepository),
         }),
     };

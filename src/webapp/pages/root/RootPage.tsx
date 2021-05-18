@@ -1,4 +1,3 @@
-import React from "react";
 import { HashRouter, Route, Switch } from "react-router-dom";
 import { PredictorEditPage } from "../predictor-edit/PredictorEditPage";
 import { PredictorListPage } from "../predictor-list/PredictorListPage";

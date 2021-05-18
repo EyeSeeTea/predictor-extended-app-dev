@@ -12,10 +12,7 @@ import { ExcelRepository } from "../repositories/ExcelRepository";
 import { MetadataRepository } from "../repositories/MetadataRepository";
 
 export class ReadPredictorsExcelUseCase implements UseCase {
-    constructor(
-        private excelRepository: ExcelRepository,
-        private metadataRepository: MetadataRepository
-    ) {}
+    constructor(private excelRepository: ExcelRepository, private metadataRepository: MetadataRepository) {}
 
     public async execute(files: File[]): Promise<ImportResult> {
         const excelPredictors = await promiseMap(files, async file => {
@@ -31,7 +28,10 @@ export class ReadPredictorsExcelUseCase implements UseCase {
     }
 
     public async buildPredictors(excelFile: ExcelModel): Promise<ImportResult> {
-        const { cells } = excelFile.sheets["Predictors"];
+        const sheet = excelFile.sheets["Predictors"];
+        if (!sheet) throw new Error("Invalid excel file");
+
+        const { cells } = sheet;
         const { columns, warnings: columnWarnings } = this.buildColumns(cells);
 
         const entries = _(cells)
@@ -127,15 +127,9 @@ export class ReadPredictorsExcelUseCase implements UseCase {
         dictionary: Record<string, string>
     ): Promise<Either<Validation<"PARSE_ERROR">, Predictor>[]> {
         return promiseMap(entries, async object => {
-            const output = await this.metadataRepository.search(
-                "dataElements",
-                object.output ?? ""
-            );
+            const output = await this.metadataRepository.search("dataElements", object.output ?? "");
 
-            const outputCombo = await this.metadataRepository.search(
-                "categoryOptionCombos",
-                object.outputCombo ?? ""
-            );
+            const outputCombo = await this.metadataRepository.search("categoryOptionCombos", object.outputCombo ?? "");
 
             const predictorGroups = _.compact(
                 await promiseMap(object.predictorGroups?.split(",") ?? [], group =>
