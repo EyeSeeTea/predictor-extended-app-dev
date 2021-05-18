@@ -5,7 +5,7 @@ import {
     TablePagination,
     TableSorting,
     useLoading,
-    useSnackbar,
+    useSnackbar
 } from "@eyeseetea/d2-ui-components";
 import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -26,6 +26,7 @@ import {
 import { ObjectsList } from "../../components/objects-list/ObjectsList";
 import { useAppContext } from "../../contexts/app-context";
 import { useQueryState } from "../../hooks/useQueryState";
+import { useReload } from "../../hooks/useReload";
 
 export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
@@ -38,6 +39,7 @@ export const PredictorListPage: React.FC = () => {
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
     const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
     const [response, setResponse] = useState<MetadataResponse>();
+    const [reloadKey, reload] = useReload();
 
     const runPredictors = useCallback(
         async (ids: string[]) => {
@@ -56,6 +58,16 @@ export const PredictorListPage: React.FC = () => {
             loading.reset();
         },
         [compositionRoot, loading]
+    );
+
+    const deletePredictor = useCallback(
+        async (ids: string[]) => {
+            loading.show(true, i18n.t("Deleting predictors"));
+            await compositionRoot.usecases.delete(ids);
+            loading.reset();
+            reload();
+        },
+        [compositionRoot, loading, reload]
     );
 
     const openImportDialog = useCallback(async () => {
@@ -129,7 +141,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "delete",
                     text: i18n.t("Delete"),
                     multiple: true,
-                    onClick: placeholderAction,
+                    onClick: deletePredictor,
                     icon: <Delete />,
                 },
                 {
@@ -172,7 +184,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors, exportPredictors, openImportDialog, placeholderAction]);
+    }, [runPredictors, exportPredictors, deletePredictor, openImportDialog, placeholderAction]);
 
     const refreshRows = useCallback(
         (
@@ -180,9 +192,10 @@ export const PredictorListPage: React.FC = () => {
             paging: TablePagination,
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
+            console.log("Reloading", reloadKey);
             return compositionRoot.usecases.list({ ...state, search }, paging, sorting);
         },
-        [compositionRoot, state]
+        [compositionRoot, state, reloadKey]
     );
 
     const tableProps = useObjectsTable(baseConfig, refreshRows);

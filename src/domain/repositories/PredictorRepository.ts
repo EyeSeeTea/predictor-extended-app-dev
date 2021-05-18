@@ -20,6 +20,8 @@ export interface PredictorRepository {
     run(ids: string[], startDate: Date, endDate: Date): Promise<any>;
 
     save(predictors: Predictor[]): Promise<MetadataResponse>;
+
+    delete(ids: string[]): Promise<void>;
 }
 
 export interface ListPredictorsFilters {

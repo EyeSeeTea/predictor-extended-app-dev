@@ -90,6 +90,16 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         // TODO FIXME: Predictor groups need to be updated with predictors to be included
         return this.api.metadata.post({ predictors }).getData();
     }
+
+    public async delete(ids: string[]): Promise<void> {
+        await promiseMap(ids, id =>
+            this.api.models.predictors
+                .delete({
+                    id: id,
+                })
+                .getData()
+        );
+    }
 }
 
 const predictorFields = {
