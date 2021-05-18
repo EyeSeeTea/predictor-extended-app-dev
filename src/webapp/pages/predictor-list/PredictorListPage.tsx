@@ -188,7 +188,7 @@ export const PredictorListPage: React.FC = () => {
             paging: TablePagination,
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
-            console.log("Reloading", reloadKey);
+            console.debug("Reloading", reloadKey);
             return compositionRoot.usecases.list({ ...state, search }, paging, sorting);
         },
         [compositionRoot, state, reloadKey]
@@ -231,15 +231,13 @@ export const PredictorListPage: React.FC = () => {
         [setState, tableProps]
     );
 
-    const onChangeGroupFilter = useCallback(
-        (predictorGroups: string[]) => onChangeFilter({ predictorGroups }),
-        [onChangeFilter]
-    );
+    const onChangeGroupFilter = useCallback((predictorGroups: string[]) => onChangeFilter({ predictorGroups }), [
+        onChangeFilter,
+    ]);
 
-    const onChangeOutputFilter = useCallback(
-        (dataElements: string[]) => onChangeFilter({ dataElements }),
-        [onChangeFilter]
-    );
+    const onChangeOutputFilter = useCallback((dataElements: string[]) => onChangeFilter({ dataElements }), [
+        onChangeFilter,
+    ]);
 
     const onChangeLastUpdatedFilter = useCallback(
         (lastUpdated: { toDate(): Date } | null) =>
