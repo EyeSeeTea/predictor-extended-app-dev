@@ -231,13 +231,15 @@ export const PredictorListPage: React.FC = () => {
         [setState, tableProps]
     );
 
-    const onChangeGroupFilter = useCallback((predictorGroups: string[]) => onChangeFilter({ predictorGroups }), [
-        onChangeFilter,
-    ]);
+    const onChangeGroupFilter = useCallback(
+        (predictorGroups: string[]) => onChangeFilter({ predictorGroups }),
+        [onChangeFilter]
+    );
 
-    const onChangeOutputFilter = useCallback((dataElements: string[]) => onChangeFilter({ dataElements }), [
-        onChangeFilter,
-    ]);
+    const onChangeOutputFilter = useCallback(
+        (dataElements: string[]) => onChangeFilter({ dataElements }),
+        [onChangeFilter]
+    );
 
     const onChangeLastUpdatedFilter = useCallback(
         (lastUpdated: { toDate(): Date } | null) =>
