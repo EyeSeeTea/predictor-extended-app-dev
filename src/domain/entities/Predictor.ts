@@ -34,11 +34,7 @@ export const FormulaModel = Codec.interface({
     description: optional(string),
     slidingWindow: optional(boolean),
     missingValueStrategy: optional(
-        oneOf([
-            exactly("NEVER_SKIP"),
-            exactly("SKIP_IF_ANY_VALUE_MISSING"),
-            exactly("SKIP_IF_ALL_VALUES_MISSING"),
-        ])
+        oneOf([exactly("NEVER_SKIP"), exactly("SKIP_IF_ANY_VALUE_MISSING"), exactly("SKIP_IF_ALL_VALUES_MISSING")])
     ),
 });
 

@@ -1,7 +1,7 @@
-import { D2Api } from "d2-api/2.32";
 import _ from "lodash";
 import { Metadata, MetadataPackage, MetadataType } from "../domain/entities/Metadata";
 import { MetadataRepository } from "../domain/repositories/MetadataRepository";
+import { D2Api } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { getD2APiFromUrl, getFieldsAsString, getFilterAsString } from "./utils/d2-api";
 
