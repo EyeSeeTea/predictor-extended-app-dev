@@ -1,12 +1,13 @@
 import _ from "lodash";
 import { Either } from "purify-ts";
 import { UseCase } from "../../compositionRoot";
+import { PredictorModel } from "../../data/models/PredictorModel";
 import i18n from "../../locales";
 import { promiseMap } from "../../utils/promises";
 import { getTemplates, interpolate } from "../../utils/strings";
 import { generateUid } from "../../utils/uid";
 import { ExcelCell, ExcelModel, getColumn, getRow } from "../entities/Excel";
-import { Predictor, predictorColumns, PredictorModel } from "../entities/Predictor";
+import { Predictor, predictorColumns } from "../entities/Predictor";
 import { Validation } from "../entities/Validation";
 import { ExcelRepository } from "../repositories/ExcelRepository";
 import { MetadataRepository } from "../repositories/MetadataRepository";

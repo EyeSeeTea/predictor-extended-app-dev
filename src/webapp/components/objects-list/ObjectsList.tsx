@@ -39,7 +39,7 @@ export function ObjectsList<T extends ReferenceObject>(
     props: PropsWithChildren<ObjectsListProps<T>>
 ): React.ReactElement<ObjectsListProps<T>> {
     const {
-        className,
+        className = "objects-list",
         children,
         isLoading,
         rows,

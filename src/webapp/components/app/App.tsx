@@ -1,12 +1,9 @@
-//@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
-//@ts-ignore
-import { HeaderBar } from "@dhis2/ui-widgets";
+import { HeaderBar } from "@dhis2/ui";
 import { LinearProgress } from "@material-ui/core";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
-//@ts-ignore
 import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import React, { useEffect, useState } from "react";
 import { appConfig } from "../../../app-config";
