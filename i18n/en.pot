@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-05-18T09:59:31.975Z\n"
-"PO-Revision-Date: 2021-05-18T09:59:31.975Z\n"
+"POT-Creation-Date: 2021-06-26T06:39:17.836Z\n"
+"PO-Revision-Date: 2021-06-26T06:39:17.836Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -74,6 +74,33 @@ msgstr ""
 msgid "Create/Edit predictor"
 msgstr ""
 
+msgid "Name (*)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Sequential sample count (*)"
+msgstr ""
+
+msgid "Sequential sample count"
+msgstr ""
+
+msgid "Annual sample count (*)"
+msgstr ""
+
+msgid "Annual sample count"
+msgstr ""
+
+msgid "Sequential skip count"
+msgstr ""
+
 msgid "Running predictors"
 msgstr ""
 
@@ -83,16 +110,10 @@ msgstr ""
 msgid "Deleting predictors"
 msgstr ""
 
-msgid "Name"
-msgstr ""
-
 msgid "Output data element"
 msgstr ""
 
 msgid "Output category option"
-msgstr ""
-
-msgid "Description"
 msgstr ""
 
 msgid "Formula"
@@ -108,9 +129,6 @@ msgid "Sample skip test"
 msgstr ""
 
 msgid "Last Updated"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "Last updated"

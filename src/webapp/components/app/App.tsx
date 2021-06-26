@@ -36,7 +36,7 @@ function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
     }
 }
 
-const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
+const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
     const { baseUrl } = useConfig();
 
     const [showShareButton, setShowShareButton] = useState(false);
@@ -46,7 +46,7 @@ const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
     useEffect(() => {
         async function setup() {
             const compositionRoot = getCompositionRoot(baseUrl);
-            const appContext: AppContextState = { config: {}, compositionRoot };
+            const appContext: AppContextState = { api, compositionRoot };
 
             setAppContext(appContext);
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
@@ -54,7 +54,7 @@ const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
             setLoading(false);
         }
         setup();
-    }, [d2, baseUrl]);
+    }, [d2, api, baseUrl]);
 
     if (loading) {
         return (

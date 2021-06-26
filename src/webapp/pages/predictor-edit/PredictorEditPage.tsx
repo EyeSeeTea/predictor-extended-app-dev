@@ -6,6 +6,7 @@ import i18n from "../../../locales";
 import { NumberInput } from "../../components/form/fields/NumberInput";
 import { TextInput } from "../../components/form/fields/TextInput";
 import { DefaultButton, PrimaryButton, StyledForm } from "../../components/form/StyledForm";
+import { ExpressionEditor } from "../../components/expression-editor/ExpressionEditor";
 import PageHeader from "../../components/page-header/PageHeader";
 
 const onSubmit = async (values: any) => {
@@ -62,7 +63,7 @@ export const PredictorEditPage: React.FC = () => {
                                     placeholder={i18n.t("Sequential skip count")}
                                 />
                             </div>
-                            
+
                             <div className="buttons">
                                 <PrimaryButton type="submit" disabled={submitting || pristine}>
                                     Submit
@@ -71,6 +72,9 @@ export const PredictorEditPage: React.FC = () => {
                                     Reset
                                 </DefaultButton>
                             </div>
+
+                            <ExpressionEditor type="predictor-generator" />
+
                             <pre>{JSON.stringify(values, undefined, 4)}</pre>
                         </StyledForm>
                     )}
