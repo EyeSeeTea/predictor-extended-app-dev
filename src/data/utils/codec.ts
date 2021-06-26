@@ -20,7 +20,7 @@ import {
     record,
     Right,
     string,
-    unknown
+    unknown,
 } from "purify-ts";
 import {
     chainCodec,
@@ -32,7 +32,8 @@ import {
     JsonFromString,
     NonEmptyString,
     NumberFromString,
-    NumberRangedIn, StringLengthRangedIn
+    NumberRangedIn,
+    StringLengthRangedIn,
 } from "purify-ts-extra-codec";
 import { Either } from "../../domain/entities/Either";
 
@@ -120,4 +121,3 @@ export declare type FromType<T> = {
 
 export { Codec, parseError as parseSchemaError } from "purify-ts";
 export type { DecodeError as SchemaDecodeError } from "purify-ts";
-

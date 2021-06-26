@@ -1,11 +1,11 @@
+import { Button, composeValidators, createMinNumber, InputFieldFF, integer } from "@dhis2/ui";
 import { Paper } from "@material-ui/core";
 import React from "react";
 import { Field, Form } from "react-final-form";
 import styled from "styled-components";
 import i18n from "../../../locales";
-import { NumberInput } from "../../components/form/fields/NumberInput";
-import { TextInput } from "../../components/form/fields/TextInput";
-import { DefaultButton, PrimaryButton, StyledForm } from "../../components/form/StyledForm";
+import { ExpressionDialog } from "../../components/expression-dialog/ExpressionDialog";
+import { StyledForm } from "../../components/form/StyledForm";
 import PageHeader from "../../components/page-header/PageHeader";
 
 const onSubmit = async (values: any) => {
@@ -20,57 +20,65 @@ export const PredictorEditPage: React.FC = () => {
                 <Form
                     onSubmit={onSubmit}
                     initialValues={{}}
-                    render={({ handleSubmit, form, submitting, pristine, values }) => (
+                    render={({ handleSubmit, values }) => (
                         <StyledForm onSubmit={handleSubmit}>
                             <div>
                                 <label>{i18n.t("Name (*)")}</label>
-                                <Field<string> name="name" component={TextInput} placeholder={i18n.t("Name")} />
+                                <Field<string> name="name" component={InputFieldFF} placeholder={i18n.t("Name")} />
                             </div>
                             <div>
                                 <label>{i18n.t("Code")}</label>
-                                <Field<string> name="code" component={TextInput} placeholder={i18n.t("Code")} />
+                                <Field<string> name="code" component={InputFieldFF} placeholder={i18n.t("Code")} />
                             </div>
                             <div>
                                 <label>{i18n.t("Description")}</label>
                                 <Field<string>
                                     name="description"
-                                    component={TextInput}
+                                    component={InputFieldFF}
                                     placeholder={i18n.t("Description")}
                                 />
                             </div>
                             <div>
                                 <label>{i18n.t("Sequential sample count (*)")}</label>
                                 <Field<number>
-                                    name="age"
-                                    component={NumberInput}
+                                    name="sequentialSampleCount"
+                                    component={InputFieldFF}
                                     placeholder={i18n.t("Sequential sample count")}
+                                    type="number"
+                                    validate={composeValidators(integer, createMinNumber(0))}
                                 />
                             </div>
                             <div>
                                 <label>{i18n.t("Annual sample count (*)")}</label>
                                 <Field<number>
-                                    name="age"
-                                    component={NumberInput}
+                                    name="annualSampleCount"
+                                    component={InputFieldFF}
                                     placeholder={i18n.t("Annual sample count")}
+                                    type="number"
+                                    validate={composeValidators(integer, createMinNumber(0))}
                                 />
                             </div>
                             <div>
                                 <label>{i18n.t("Sequential skip count")}</label>
                                 <Field<number>
-                                    name="age"
-                                    component={NumberInput}
+                                    name="sequentialSkipCount"
+                                    component={InputFieldFF}
                                     placeholder={i18n.t("Sequential skip count")}
+                                    type="number"
+                                    validate={composeValidators(integer, createMinNumber(0))}
                                 />
                             </div>
-                            
+
                             <div className="buttons">
-                                <PrimaryButton type="submit" disabled={submitting || pristine}>
-                                    Submit
-                                </PrimaryButton>
-                                <DefaultButton type="button" onClick={form.reset} disabled={submitting || pristine}>
-                                    Reset
-                                </DefaultButton>
+                                <Button type="submit" primary>
+                                    Submit form
+                                </Button>
+
+                                <Button type="reset">Reset</Button>
                             </div>
+
+                            <ExpressionDialog />
+
                             <pre>{JSON.stringify(values, undefined, 4)}</pre>
                         </StyledForm>
                     )}

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2021-05-18T09:59:31.975Z\n"
+"POT-Creation-Date: 2021-06-23T08:39:15.151Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -12,6 +12,27 @@ msgid "Column {{column}} not valid for type predictor"
 msgstr ""
 
 msgid "Reference {{template}} was not found on this instance"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Field is required"
+msgstr ""
+
+msgid "Data elements"
+msgstr ""
+
+msgid "Programs"
+msgstr ""
+
+msgid "Org Unit Counts"
+msgstr ""
+
+msgid "Constants"
+msgstr ""
+
+msgid "Reporting rates"
 msgstr ""
 
 msgid "Type"
@@ -74,6 +95,30 @@ msgstr "Ayuda"
 msgid "Create/Edit predictor"
 msgstr ""
 
+msgid "Name (*)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Sequential sample count (*)"
+msgstr ""
+
+msgid "Sequential sample count"
+msgstr ""
+
+msgid "Annual sample count (*)"
+msgstr ""
+
+msgid "Annual sample count"
+msgstr ""
+
+msgid "Sequential skip count"
+msgstr ""
+
 msgid "Running predictors"
 msgstr ""
 
@@ -83,16 +128,10 @@ msgstr ""
 msgid "Deleting predictors"
 msgstr ""
 
-msgid "Name"
-msgstr ""
-
 msgid "Output data element"
 msgstr ""
 
 msgid "Output category option"
-msgstr ""
-
-msgid "Description"
 msgstr ""
 
 msgid "Formula"
@@ -108,9 +147,6 @@ msgid "Sample skip test"
 msgstr ""
 
 msgid "Last Updated"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "Last updated"

@@ -3,6 +3,4 @@ import { FieldRenderProps } from "react-final-form";
 
 type Props = FieldRenderProps<string, any>;
 
-export const MultiCheckboxInput: React.FC<Props> = ({ input }: Props) => (
-    <input {...input} type="checkbox" />
-);
+export const MultiCheckboxInput: React.FC<Props> = ({ input }: Props) => <input {...input} type="checkbox" />;

@@ -5,13 +5,34 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-05-18T09:59:31.975Z\n"
-"PO-Revision-Date: 2021-05-18T09:59:31.975Z\n"
+"POT-Creation-Date: 2021-06-23T08:39:15.151Z\n"
+"PO-Revision-Date: 2021-06-23T08:39:15.151Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
 
 msgid "Reference {{template}} was not found on this instance"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Field is required"
+msgstr ""
+
+msgid "Data elements"
+msgstr ""
+
+msgid "Programs"
+msgstr ""
+
+msgid "Org Unit Counts"
+msgstr ""
+
+msgid "Constants"
+msgstr ""
+
+msgid "Reporting rates"
 msgstr ""
 
 msgid "Type"
@@ -74,6 +95,30 @@ msgstr ""
 msgid "Create/Edit predictor"
 msgstr ""
 
+msgid "Name (*)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Sequential sample count (*)"
+msgstr ""
+
+msgid "Sequential sample count"
+msgstr ""
+
+msgid "Annual sample count (*)"
+msgstr ""
+
+msgid "Annual sample count"
+msgstr ""
+
+msgid "Sequential skip count"
+msgstr ""
+
 msgid "Running predictors"
 msgstr ""
 
@@ -83,16 +128,10 @@ msgstr ""
 msgid "Deleting predictors"
 msgstr ""
 
-msgid "Name"
-msgstr ""
-
 msgid "Output data element"
 msgstr ""
 
 msgid "Output category option"
-msgstr ""
-
-msgid "Description"
 msgstr ""
 
 msgid "Formula"
@@ -108,9 +147,6 @@ msgid "Sample skip test"
 msgstr ""
 
 msgid "Last Updated"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "Last updated"
