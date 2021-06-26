@@ -1,7 +1,16 @@
 import { languages, editor, Position, CancellationToken, MarkerSeverity } from "monaco-editor";
 import { PredictorSuggestions } from "../suggestions/predictors";
+import { ValidationMarker, Variable } from "../types";
 
-export const buildPredictorsCompletionProvider = (): languages.CompletionItemProvider => ({
+export interface CompletionProviderOptions {
+    variables?: Variable[];
+    includeNameAndCodeSuggestions?: boolean;
+    onValidate?: (expression: string) => Promise<ValidationMarker[] | undefined>;
+}
+
+export const buildPredictorsCompletionProvider = ({
+    variables = [],
+}: CompletionProviderOptions): languages.CompletionItemProvider => ({
     provideCompletionItems: async (
         model: editor.ITextModel,
         position: Position,
@@ -11,7 +20,6 @@ export const buildPredictorsCompletionProvider = (): languages.CompletionItemPro
         console.log({ model, position, context, token });
 
         const item = model.getWordUntilPosition(position);
-        const { dataElements = [] } = {};
 
         const range = {
             startLineNumber: position.lineNumber,
@@ -34,12 +42,21 @@ export const buildPredictorsCompletionProvider = (): languages.CompletionItemPro
         return {
             suggestions: [
                 ...PredictorSuggestions.map(item => ({ ...item, range })),
-                ...dataElements.map(({ name }) => ({
+                ...variables.map(({ name }) => ({
                     label: name,
                     kind: languages.CompletionItemKind.Constant,
                     insertText: name,
                     range,
                 })),
+                ...variables
+                    .filter(item => item.code !== undefined)
+                    .map(({ name, code = "" }) => ({
+                        label: name,
+                        filterText: code,
+                        kind: languages.CompletionItemKind.Constant,
+                        insertText: code,
+                        range,
+                    })),
             ],
         };
     },

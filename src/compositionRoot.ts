@@ -10,6 +10,7 @@ import { ListPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
 import { ImportPredictorsUseCase } from "./domain/usecases/ImportPredictorsUseCase";
 import { ReadPredictorsExcelUseCase } from "./domain/usecases/ReadPredictorsExcelUseCase";
 import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
+import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpressionSuggestionsUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
@@ -22,6 +23,7 @@ export function getCompositionRoot(baseUrl: string) {
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             getDataElements: new GetDataElementsUseCase(predictorRepository),
+            getExpressionSuggestions: new GetExpressionSuggestionsUseCase(metadataRepository),
             run: new RunPredictorsUseCase(predictorRepository),
             readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
             import: new ImportPredictorsUseCase(predictorRepository),

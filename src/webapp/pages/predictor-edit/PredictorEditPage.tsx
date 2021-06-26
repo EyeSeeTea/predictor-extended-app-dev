@@ -1,5 +1,5 @@
 import { Paper } from "@material-ui/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import styled from "styled-components";
 import i18n from "../../../locales";
@@ -8,12 +8,21 @@ import { TextInput } from "../../components/form/fields/TextInput";
 import { DefaultButton, PrimaryButton, StyledForm } from "../../components/form/StyledForm";
 import { ExpressionEditor } from "../../components/expression-editor/ExpressionEditor";
 import PageHeader from "../../components/page-header/PageHeader";
+import { Variable } from "../../components/expression-editor/types";
+import { useAppContext } from "../../contexts/app-context";
 
 const onSubmit = async (values: any) => {
     window.alert(JSON.stringify(values, undefined, 2));
 };
 
 export const PredictorEditPage: React.FC = () => {
+    const { compositionRoot } = useAppContext();
+    const [variables, setVariables] = useState<Variable[]>([]);
+
+    useEffect(() => {
+        compositionRoot.usecases.getExpressionSuggestions().then(setVariables);
+    }, [compositionRoot]);
+
     return (
         <Wrapper>
             <PageHeader onBackClick={() => {}} title={i18n.t("Create/Edit predictor")} />
@@ -73,7 +82,7 @@ export const PredictorEditPage: React.FC = () => {
                                 </DefaultButton>
                             </div>
 
-                            <ExpressionEditor type="predictor-generator" />
+                            <ExpressionEditor type="predictor-generator" variables={variables} />
 
                             <pre>{JSON.stringify(values, undefined, 4)}</pre>
                         </StyledForm>
