@@ -12,6 +12,17 @@ export class MetadataD2ApiRepository implements MetadataRepository {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
+    public async list(types: MetadataType[]): Promise<MetadataPackage> {
+        const fields = { id: true, name: true, code: true } as const;
+        const params = _.zipObject(
+            types,
+            types.map(() => ({ fields }))
+        );
+
+        const result = await this.api.metadata.get(params).getData();
+        return result as MetadataPackage;
+    }
+
     @cache()
     public async search(type: MetadataType, query: string): Promise<Metadata | undefined> {
         const { objects: exact } = await this.api.models[type]

@@ -36,7 +36,7 @@ function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
     }
 }
 
-const App = ({ d2, api }: { api: D2Api; d2: D2 }) => {
+const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
     const { baseUrl } = useConfig();
 
     const [showShareButton, setShowShareButton] = useState(false);
@@ -54,7 +54,7 @@ const App = ({ d2, api }: { api: D2Api; d2: D2 }) => {
             setLoading(false);
         }
         setup();
-    }, [d2, baseUrl, api]);
+    }, [d2, api, baseUrl]);
 
     if (loading) {
         return (
