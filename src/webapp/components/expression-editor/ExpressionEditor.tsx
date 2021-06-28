@@ -5,6 +5,7 @@ import { PredictorsLanguageConfiguration } from "./language/predictors";
 import { ValidationMarker, Variable } from "./types";
 
 export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
+    className,
     variables,
     onValidate,
     includeNameAndCodeSuggestions,
@@ -24,17 +25,22 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
 
     return (
         <Editor
+            className={className}
             height="15vh"
             defaultLanguage="dhis"
             options={{
                 minimap: { enabled: false },
                 lineNumbers: "off",
+                renderLineHighlight: "none",
+                scrollbar: { useShadows: false, vertical: "hidden" },
+                suggest: { snippetsPreventQuickSuggestions: false },
             }}
         />
     );
 };
 
 export interface ExpressionEditorProps {
+    className?: string;
     type: "predictor-generator" | "predictor-sample-skip";
     variables?: Variable[];
     includeNameAndCodeSuggestions?: boolean;

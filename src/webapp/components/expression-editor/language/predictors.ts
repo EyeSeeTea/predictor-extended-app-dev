@@ -1,7 +1,7 @@
 import { languages } from "monaco-editor";
 
 export const PredictorsLanguageConfiguration: languages.LanguageConfiguration = {
-    wordPattern: /(-?\d*\.\d\w*)|([^`~!@%^&*()\-=+\\|;:'",.<>/?\s]+)/g,
+    wordPattern: /(-?\d*\.\d\w*)|([^`~!@%^&*()\-=+\\|#{};:'",.<>/?\s]+)/g,
     brackets: [["(", ")"]],
     autoClosingPairs: [
         { open: "{", close: "}" },

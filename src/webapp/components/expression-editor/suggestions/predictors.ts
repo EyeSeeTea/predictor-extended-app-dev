@@ -14,8 +14,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "if",
-            parameters: "(test, valueIfTrue, valueIfFalse)",
+            name: "if(",
+            parameters: "test, valueIfTrue, valueIfFalse)",
             qualifier: "Function",
         },
         kind: languages.CompletionItemKind.Function,
@@ -25,8 +25,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "isNull",
-            parameters: "(item)",
+            name: "isNull(",
+            parameters: "item)",
             qualifier: "Function",
         },
         kind: languages.CompletionItemKind.Function,
@@ -36,8 +36,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "isNotNull",
-            parameters: "(item)",
+            name: "isNotNull(",
+            parameters: "item)",
             qualifier: "Function",
         },
         kind: languages.CompletionItemKind.Function,
@@ -47,8 +47,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "firstNonNull",
-            parameters: "(item1, item2 [, ...])",
+            name: "firstNonNull(",
+            parameters: "item1, item2 [, ...])",
             qualifier: "Function",
         },
         kind: languages.CompletionItemKind.Function,
@@ -58,8 +58,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "greatest",
-            parameters: "(item1, item2 [, ...])",
+            name: "greatest(",
+            parameters: "item1, item2 [, ...])",
             qualifier: "Function",
         },
         kind: languages.CompletionItemKind.Function,
@@ -69,8 +69,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "least",
-            parameters: "(item1, item2 [, ...])",
+            name: "least(",
+            parameters: "item1, item2 [, ...])",
             qualifier: "Function",
         },
         kind: languages.CompletionItemKind.Function,
@@ -80,8 +80,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "avg",
-            parameters: "(x)",
+            name: "avg(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -91,8 +91,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "count",
-            parameters: "(x)",
+            name: "count(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -102,8 +102,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "max",
-            parameters: "(x)",
+            name: "max(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -113,8 +113,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "median",
-            parameters: "(x)",
+            name: "median(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -124,8 +124,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "min",
-            parameters: "(x)",
+            name: "min(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -135,8 +135,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "percentileCont",
-            parameters: "(p, x)",
+            name: "percentileCont(",
+            parameters: "p, x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -146,8 +146,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "stddev",
-            parameters: "(x)",
+            name: "stddev(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -157,8 +157,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "stddevPop",
-            parameters: "(x)",
+            name: "stddevPop(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -168,8 +168,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "stddevSamp",
-            parameters: "(x)",
+            name: "stddevSamp(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,
@@ -179,8 +179,8 @@ export const PredictorSuggestions: Suggestion[] = [
     },
     {
         label: {
-            name: "sum",
-            parameters: "(x)",
+            name: "sum(",
+            parameters: "x)",
             qualifier: "Aggregation",
         },
         kind: languages.CompletionItemKind.Function,

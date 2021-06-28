@@ -14,11 +14,9 @@ export const buildPredictorsCompletionProvider = ({
     provideCompletionItems: async (
         model: editor.ITextModel,
         position: Position,
-        context: languages.CompletionContext,
-        token: CancellationToken
+        _context: languages.CompletionContext,
+        _token: CancellationToken
     ): Promise<languages.CompletionList | null | undefined> => {
-        console.log({ model, position, context, token });
-
         const item = model.getWordUntilPosition(position);
 
         const range = {

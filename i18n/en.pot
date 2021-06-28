@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-06-23T08:39:15.151Z\n"
-"PO-Revision-Date: 2021-06-23T08:39:15.151Z\n"
+"POT-Creation-Date: 2021-06-28T07:02:51.970Z\n"
+"PO-Revision-Date: 2021-06-28T07:02:51.970Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -33,6 +33,9 @@ msgid "Constants"
 msgstr ""
 
 msgid "Reporting rates"
+msgstr ""
+
+msgid "Search by name"
 msgstr ""
 
 msgid "Type"
@@ -81,9 +84,6 @@ msgid "Messages"
 msgstr ""
 
 msgid "JSON Response"
-msgstr ""
-
-msgid "Search by name"
 msgstr ""
 
 msgid "Back"
