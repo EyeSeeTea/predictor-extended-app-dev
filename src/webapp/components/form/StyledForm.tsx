@@ -32,8 +32,7 @@ export const DefaultButton = Button("#ffffff", "#d5d5d5");
 export const PrimaryButton = Button("#4f93ce", "#285f8f");
 
 export const StyledForm = styled.form`
-    margin: 10px auto;
-    padding: 20px;
+    padding: 40px;
 
     & > div {
         line-height: 3em;

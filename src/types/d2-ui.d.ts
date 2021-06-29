@@ -51,18 +51,20 @@ declare module "@dhis2/ui" {
         onFocus?: (...args: any[]) => any;
     };
     export function InputField(props: InputFieldProps): React.ReactElement;
-    export function InputFieldFF(props: InputFieldProps & {
-        input: any;
-        meta: any;
-        error?: boolean;
-        loading?: boolean;
-        showLoadingStatus?: boolean;
-        showValidStatus?: boolean;
-        valid?: boolean;
-        validationText?: string;
-        onBlur?: (...args: any[]) => any;
-        onFocus?: (...args: any[]) => any;
-    }): React.ReactElement;
+    export function InputFieldFF(
+        props: InputFieldProps & {
+            input: any;
+            meta: any;
+            error?: boolean;
+            loading?: boolean;
+            showLoadingStatus?: boolean;
+            showValidStatus?: boolean;
+            valid?: boolean;
+            validationText?: string;
+            onBlur?: (...args: any[]) => any;
+            onFocus?: (...args: any[]) => any;
+        }
+    ): React.ReactElement;
     export function Button(props: {
         children?: ReactNode;
         className?: string;
@@ -80,9 +82,9 @@ declare module "@dhis2/ui" {
         toggled?: boolean;
         type?: "submit" | "reset" | "button";
         value?: string;
-        onBlur?: (...args: any[]) => any;
-        onClick?: (...args: any[]) => any;
-        onFocus?: (...args: any[]) => any;
+        onBlur?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
+        onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
     }): React.ReactElement;
     export function Transfer(props: {
         options: {
@@ -244,4 +246,22 @@ declare module "@dhis2/ui" {
     export function composeValidators(...validators: any[]): any;
     export function integer(): any;
     export function createMinNumber(min: number): any;
+    export type TabProps = {
+        children: React.ReactNode;
+        className?: string;
+        dataTest?: string;
+        disabled?: boolean;
+        icon?: JSX.Element;
+        selected?: boolean;
+        onClick?: (...args: any[]) => any;
+    };
+    export function Tab(props: TabProps): React.ReactElement;
+    export type TabBarProps = {
+        children: React.ReactNode;
+        className?: string;
+        dataTest?: string;
+        fixed?: boolean;
+        scrollable?: boolean;
+    };
+    export function TabBar(props: TabBarProps): React.ReactElement;
 }

@@ -1,5 +1,5 @@
-import { LinearProgress, TextField } from "@material-ui/core";
-import React, { useState } from "react";
+import { TextField } from "@material-ui/core";
+import React from "react";
 import i18n from "../../../locales";
 
 const styles = {
@@ -24,20 +24,7 @@ interface DataElementOperandSelectorProps {
     listStyle?: object;
 }
 
-interface DataElementOperandSelectorState {
-    isLoading: boolean;
-    pager: { hasNextPage: () => boolean; hasPreviousPage: () => boolean };
-}
-
 export const ExpressionSelector: React.FC<DataElementOperandSelectorProps> = () => {
-    const [state] = useState<DataElementOperandSelectorState>({
-        isLoading: true,
-        pager: {
-            hasNextPage: () => false,
-            hasPreviousPage: () => false,
-        },
-    });
-
     return (
         <div className="data-element-operand-selector">
             <div style={styles.pagination}>
@@ -49,7 +36,6 @@ export const ExpressionSelector: React.FC<DataElementOperandSelectorProps> = () 
           />**/}
             </div>
             <TextField style={styles.textField} label={i18n.t("Search by name")} onChange={() => {}} />
-            {state.isLoading && <LinearProgress />}
             {/**<ListSelectAsync
           size={12}
           onItemDoubleClick={onSelect}

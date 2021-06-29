@@ -8,29 +8,20 @@ import {
     Transfer,
 } from "@dhis2/ui";
 import { Paper } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Form } from "react-final-form";
 import styled from "styled-components";
 import i18n from "../../../locales";
-import { ExpressionEditor } from "../../components/expression-editor/ExpressionEditor";
-import { Variable } from "../../components/expression-editor/types";
+import { ExpressionDialog } from "../../components/expression-dialog/ExpressionDialog";
 import { FormField } from "../../components/form/FormField";
 import { StyledForm } from "../../components/form/StyledForm";
 import PageHeader from "../../components/page-header/PageHeader";
-import { useAppContext } from "../../contexts/app-context";
 
 const onSubmit = async (values: any) => {
     window.alert(JSON.stringify(values, undefined, 2));
 };
 
 export const PredictorEditPage: React.FC = () => {
-    const { compositionRoot } = useAppContext();
-    const [variables, setVariables] = useState<Variable[]>([]);
-
-    useEffect(() => {
-        compositionRoot.usecases.getExpressionSuggestions().then(setVariables);
-    }, [compositionRoot]);
-
     return (
         <Wrapper>
             <PageHeader onBackClick={() => {}} title={i18n.t("Create/Edit predictor")} />
@@ -64,7 +55,7 @@ export const PredictorEditPage: React.FC = () => {
                                 <label>{i18n.t("Period type (*)")}</label>
                                 <FormField
                                     name="periodType"
-                                    component={SingleSelectFieldFF}
+                                    component={SelectFieldFF}
                                     clearable={true}
                                     options={[
                                         {
@@ -138,7 +129,7 @@ export const PredictorEditPage: React.FC = () => {
 
                             <div>
                                 <label>{i18n.t("Generator (*)")}</label>
-                                <FormulaEditor type="predictor-generator" variables={variables} />
+                                <ExpressionDialog />
                             </div>
 
                             <div className="buttons">
@@ -159,22 +150,12 @@ export const PredictorEditPage: React.FC = () => {
 };
 
 const Wrapper = styled.div`
-    margin: 20px;
+    margin: 20px 30px;
 `;
 
-const FormulaEditor = styled(ExpressionEditor)`
-    box-sizing: border-box;
-    font-size: 14px;
-    line-height: 16px;
-    user-select: text;
-    color: rgb(33, 41, 52);
-    background-color: white;
-    padding: 12px 11px 10px;
-    outline: 0px;
-    border: 1px solid rgb(160, 173, 186);
-    border-radius: 3px;
-    box-shadow: rgb(48 54 60 / 10%) 0px 1px 2px 0px inset;
-    text-overflow: ellipsis;
+const SelectFieldFF = styled(SingleSelectFieldFF)`
+    line-height: 1em;
+    padding: 0;
 `;
 
 interface FormItemBase {

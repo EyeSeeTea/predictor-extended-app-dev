@@ -8,6 +8,8 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
     className,
     variables,
     onValidate,
+    onChange,
+    value,
     includeNameAndCodeSuggestions,
 }) => {
     const monaco = useMonaco();
@@ -28,6 +30,8 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
             className={className}
             height="15vh"
             defaultLanguage="dhis"
+            onChange={onChange}
+            value={value}
             options={{
                 minimap: { enabled: false },
                 lineNumbers: "off",
@@ -45,4 +49,6 @@ export interface ExpressionEditorProps {
     variables?: Variable[];
     includeNameAndCodeSuggestions?: boolean;
     onValidate?: (expression: string) => Promise<ValidationMarker[] | undefined>;
+    onChange?: (expression?: string) => void;
+    value: string;
 }

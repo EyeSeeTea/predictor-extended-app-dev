@@ -1,120 +1,39 @@
-import { Divider, Paper, Tab, Tabs } from "@material-ui/core";
-import { useState } from "react";
+import { InputFieldFF } from "@dhis2/ui";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import i18n from "../../../locales";
-//import { useAppContext } from "../../contexts/app-context";
-import { ExpressionDescription } from "./ExpressionDescription";
-import { ExpressionFormula } from "./ExpressionFormula";
+import { useAppContext } from "../../contexts/app-context";
+import { ExpressionEditor } from "../expression-editor/ExpressionEditor";
+import { Variable } from "../expression-editor/types";
+import { FormField } from "../form/FormField";
+import { TabRow } from "../tab-row/TabRow";
 import { ExpressionFunctions } from "./ExpressionFunctions";
-import { ExpressionOperators } from "./ExpressionOperators";
 import { ExpressionSelector } from "./ExpressionSelector";
 
-const styles = {
-    expressionDescription: {
-        padding: "1rem",
-        margin: "1rem 0",
-    },
-    expressionMessage: {
-        valid: {
-            padding: "1rem",
-            color: "#006400",
-        },
-        invalid: {
-            padding: "1rem",
-            color: "#8B0000",
-        },
-    },
-    list: {
-        width: "100%",
-        outline: "none",
-        border: "none",
-        padding: "0rem 1rem",
-    },
-    expressionFormulaWrap: {
-        padding: "1rem",
-        maxWidth: "650px",
-        marginRight: "1rem",
-    },
-    expressionValueOptionsWrap: {
-        minHeight: 400,
-        minWidth: 600,
-    },
-    expressionContentWrap: {
-        minHeight: 360,
-    },
-    tabItemContainer: {
-        backgroundColor: "rgb(33, 150, 243)",
-    },
-    tabs: {
-        color: "white",
-    },
-    divider: {
-        padding: "0 1rem 2rem",
-    },
-};
-
 interface ExpressionManagerProps {
-    expressionChanged: (...args: any[]) => any;
-    descriptionValue?: string;
-    formulaValue?: string;
-    titleText?: string;
-    validateExpression?: (...args: any[]) => any;
+    expressionChanged?: (value: string) => void;
+    validateExpression?: (value: string) => Promise<string | undefined>;
     expressionType: "indicator" | "programIndicator" | "validationRule" | "predictor";
 }
 
-interface ExpressionManagerState {
-    formula?: any;
-    description?: any;
-    expressionStatus?: { description: string; isValid: boolean; message?: any };
-}
+export const ExpressionManager: React.FC<ExpressionManagerProps> = ({ expressionType, validateExpression }) => {
+    const { compositionRoot } = useAppContext();
+    const [formula, setFormula] = useState<string>("");
+    const [variables, setVariables] = useState<Variable[]>([]);
+    const [expressionValidation, setValidation] = useState<string>();
 
-export const ExpressionManager: React.FC<ExpressionManagerProps> = ({
-    expressionChanged,
-    expressionType,
-    descriptionValue = "",
-    formulaValue = "",
-    titleText = "",
-}) => {
-    //const { api } = useAppContext();
+    useEffect(() => {
+        compositionRoot.usecases.getExpressionSuggestions().then(setVariables);
+    }, [compositionRoot]);
 
-    const [state, setState] = useState<ExpressionManagerState>({
-        formula: formulaValue,
-        description: descriptionValue,
-        expressionStatus: {
-            description: "",
-            isValid: false,
-        },
-    });
-
-    const descriptionChange = (newDescription: any) => {
-        setState({ description: newDescription });
-        expressionChanged({
-            formula: state.formula,
-            description: state.description,
-            expressionStatus: state.expressionStatus,
-        });
-    };
-
-    const formulaChange = (newFormula: string) => {
-        setState({
-            formula: newFormula,
-        });
-        requestExpressionStatus();
-    };
-
-    const addOperatorToFormula = (operator: string) => {
-        appendToFormula(operator);
-    };
-
-    const programOperandSelected = (programFormulaPart: string) => {
-        appendToFormula(programFormulaPart);
+    const formulaChange = (formula = "") => {
+        setFormula(formula);
+        if (validateExpression) validateExpression(formula).then(message => setValidation(message));
+        console.log("foo", formula);
     };
 
     const appendToFormula = (partToAppend: string) => {
-        setState({
-            formula: [state.formula, partToAppend].join(""),
-        });
-        requestExpressionStatus();
+        formulaChange(`${trimTrailing(formula)} ${partToAppend}`);
     };
 
     const dataElementOperandSelected = (dataElementOperandId: string) => {
@@ -122,85 +41,77 @@ export const ExpressionManager: React.FC<ExpressionManagerProps> = ({
         appendToFormula(dataElementOperandFormula);
     };
 
-    const requestExpressionStatus = () => {
-        //requestExpressionStatusAction(state.formula);
-    };
-
-    /**const validateExpression = async (formula: string) => {
-        const encodedFormula = encodeURIComponent(formula);
-        const response = await api.get<any>(`expressions/description?expression=${encodedFormula}`).getData();
-        setState(state => ({
-            ...state,
-            expressionStatus: {
-                description: response.description,
-                isValid: response.status === "OK",
-                message: response.message,
-            },
-        }));
-    };**/
-
-    const isDescriptionValid = () => state.description && state.description.trim();
-
     return (
-        <Column>
-            <h3>{titleText}</h3>
-            <Row>
-                <Paper style={styles.expressionFormulaWrap}>
-                    <Column>
-                        <ExpressionDescription
-                            descriptionValue={state.description}
-                            descriptionLabel={i18n.t("Description")}
-                            onDescriptionChange={descriptionChange}
-                            errorText={!isDescriptionValid() ? i18n.t("Field is required") : undefined}
-                        />
-                        <ExpressionFormula onFormulaChange={formulaChange} formula={state.formula} />
-                        <ExpressionOperators operatorClicked={addOperatorToFormula} />
-                        <ExpressionFunctions onFunctionClick={appendToFormula} expressionType={expressionType} />
-                    </Column>
-                </Paper>
-                <Paper style={styles.expressionValueOptionsWrap}>
-                    <Tabs style={styles.expressionContentWrap}>
-                        <Tab style={styles.tabs} label={i18n.t("Data elements")}>
-                            <ExpressionSelector listStyle={styles.list} onSelect={dataElementOperandSelected} />
-                        </Tab>
-                        <Tab style={styles.tabs} label={i18n.t("Programs")}>
-                            <ExpressionSelector onSelect={programOperandSelected} />
-                        </Tab>
-                        <Tab style={styles.tabs} label={i18n.t("Org Unit Counts")}>
-                            <ExpressionSelector listStyle={styles.list} onSelect={appendToFormula} />
-                        </Tab>
-                        <Tab style={styles.tabs} label={i18n.t("Constants")}>
-                            <ExpressionSelector listStyle={styles.list} onSelect={appendToFormula} />
-                        </Tab>
-                        <Tab style={styles.tabs} label={i18n.t("Reporting rates")}>
-                            <ExpressionSelector listStyle={styles.list} onSelect={appendToFormula} />
-                        </Tab>
-                    </Tabs>
-                    <div style={styles.divider}>
-                        <Divider />
-                    </div>
-                </Paper>
-            </Row>
-            <Column>
-                <Paper style={styles.expressionDescription}>{state.expressionStatus?.description}</Paper>
-                <div
-                    style={
-                        state.expressionStatus?.isValid
-                            ? styles.expressionMessage.valid
-                            : styles.expressionMessage.invalid
-                    }
-                >
-                    {state.expressionStatus?.message}
-                </div>
-            </Column>
-        </Column>
+        <GridContainer>
+            <GridItem column={1} expand={true}>
+                <label>{i18n.t("Generator description (*)")}</label>
+                <FormField name="name" component={InputFieldFF} placeholder={i18n.t("Description")} />
+            </GridItem>
+
+            <GridItem column={1}>
+                <FormulaEditor
+                    type="predictor-generator"
+                    variables={variables}
+                    value={formula}
+                    onChange={formulaChange}
+                />
+
+                <ExpressionFunctions onFunctionClick={appendToFormula} expressionType={expressionType} />
+            </GridItem>
+
+            <GridItem column={2}>
+                <TabRow options={tabs} onClick={() => {}} loading={false} />
+                <ExpressionSelector onSelect={dataElementOperandSelected} />
+            </GridItem>
+
+            {expressionValidation && (
+                <GridItem column={1} expand={true}>
+                    {expressionValidation}
+                </GridItem>
+            )}
+        </GridContainer>
     );
 };
 
-const Column = styled.div`
-    flex-direction: "column";
+const tabs = [
+    { value: "dataElements", label: i18n.t("Data Elements") },
+    { value: "programs", label: i18n.t("Programs") },
+    { value: "orgUnitCounts", label: i18n.t("Org Unit Counts") },
+    { value: "constants", label: i18n.t("Constants") },
+    { value: "reportingRates", label: i18n.t("Reporting rates") },
+];
+
+const GridContainer = styled.div`
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: minmax(100px, 1fr) 1fr;
 `;
 
-const Row = styled.div`
-    flex-direction: "row";
+const GridItem = styled.div<{ column: number; expand?: boolean }>`
+    grid-column: ${props => props.column} ${props => (props.expand ? "/ span 2" : "")};
+    grid-row: auto;
+    padding: 20px;
+
+    border: 1px solid rgb(160, 173, 186);
+    border-radius: 3px;
+    box-shadow: rgb(48 54 60 / 10%) 0px 1px 2px 0px inset;
 `;
+
+const FormulaEditor = styled(ExpressionEditor)`
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 16px;
+    user-select: text;
+    color: rgb(33, 41, 52);
+    background-color: white;
+    padding: 12px 11px 10px;
+    outline: 0px;
+    border: 1px solid rgb(160, 173, 186);
+    border-radius: 3px;
+    box-shadow: rgb(48 54 60 / 10%) 0px 1px 2px 0px inset;
+    text-overflow: ellipsis;
+`;
+
+function trimTrailing(x: string) {
+    return x.replace(/\s+$/gm, "");
+}

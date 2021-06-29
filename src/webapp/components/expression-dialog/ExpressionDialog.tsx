@@ -1,17 +1,21 @@
-import { useEffect, useState } from "react";
+import _ from "lodash";
 import { useAppContext } from "../../contexts/app-context";
 import { ExpressionManager } from "./ExpressionManager";
 
 export const ExpressionDialog: React.FC = () => {
     const { api } = useAppContext();
-    const [value, setValue] = useState<string>("");
 
-    useEffect(() => {
-        const encodedFormula = encodeURIComponent(value);
-        const { response, cancel } = api.get<any>(`expressions/description?expression=${encodedFormula}`);
-        response.then(({ data }) => console.log(value, data));
-        return cancel;
-    }, [api, value]);
+    return (
+        <ExpressionManager
+            validateExpression={async formula => {
+                const encodedFormula = encodeURIComponent(formula);
+                const { message, description } = await api
+                    .get<any>(`expressions/description?expression=${encodedFormula}`)
+                    .getData();
 
-    return <ExpressionManager expressionChanged={setValue} expressionType="predictor" />;
+                return _.compact([message, description]).join(": ");
+            }}
+            expressionType="predictor"
+        />
+    );
 };
