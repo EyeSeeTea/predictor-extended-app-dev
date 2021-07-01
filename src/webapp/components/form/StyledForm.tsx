@@ -33,15 +33,4 @@ export const PrimaryButton = Button("#4f93ce", "#285f8f");
 
 export const StyledForm = styled.form`
     padding: 40px;
-
-    & > div {
-        line-height: 3em;
-        margin: 5px;
-        
-    & > .buttons {
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: center;
-        margin-top: 15px;
-    }
 `;

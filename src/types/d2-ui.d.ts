@@ -46,9 +46,9 @@ declare module "@dhis2/ui" {
         validationText?: string;
         value?: string;
         warning?: any;
-        onBlur?: (...args: any[]) => any;
-        onChange?: (...args: any[]) => any;
-        onFocus?: (...args: any[]) => any;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
     export function InputField(props: InputFieldProps): React.ReactElement;
     export function InputFieldFF(
@@ -61,8 +61,6 @@ declare module "@dhis2/ui" {
             showValidStatus?: boolean;
             valid?: boolean;
             validationText?: string;
-            onBlur?: (...args: any[]) => any;
-            onFocus?: (...args: any[]) => any;
         }
     ): React.ReactElement;
     export function Button(props: {
@@ -82,9 +80,9 @@ declare module "@dhis2/ui" {
         toggled?: boolean;
         type?: "submit" | "reset" | "button";
         value?: string;
-        onBlur?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
         onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
-        onFocus?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     }): React.ReactElement;
     export function Transfer(props: {
         options: {
@@ -162,19 +160,19 @@ declare module "@dhis2/ui" {
         tabIndex: string;
         valid: boolean;
         warning: boolean;
-        onBlur: (...args: any[]) => any;
-        onChange: (...args: any[]) => any;
-        onFocus: (...args: any[]) => any;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
     export function MultiSelect(props: MultiSelectProps): React.ReactElement;
     export function MultiSelectFieldFF(
         props: MultiSelectProps & {
             input?: {
                 name: string;
-                onChange: (...args: any[]) => any;
                 value?: any;
-                onBlur?: (...args: any[]) => any;
-                onFocus?: (...args: any[]) => any;
+                onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+                onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
+                onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
             };
             meta?: {
                 error?: string;
@@ -193,8 +191,8 @@ declare module "@dhis2/ui" {
             showValidStatus?: boolean;
             valid?: boolean;
             validationText?: string;
-            onBlur?: (...args: any[]) => any;
-            onFocus?: (...args: any[]) => any;
+            onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+            onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
         }
     ): React.ReactElement;
     export type SingleSelectProps = {
@@ -220,9 +218,9 @@ declare module "@dhis2/ui" {
         tabIndex?: string;
         valid?: boolean;
         warning?: boolean;
-        onBlur?: (...args: any[]) => any;
-        onChange?: (...args: any[]) => any;
-        onFocus?: (...args: any[]) => any;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
     export function SingleSelectFieldFF(
         props: SingleSelectProps & {
@@ -238,8 +236,6 @@ declare module "@dhis2/ui" {
             showValidStatus?: boolean;
             valid?: boolean;
             validationText?: string;
-            onBlur?: (...args: any[]) => any;
-            onFocus?: (...args: any[]) => any;
         }
     ): React.ReactElement;
     export function SingleSelect(props: SingleSelectProps): React.ReactElement;
@@ -264,4 +260,52 @@ declare module "@dhis2/ui" {
         scrollable?: boolean;
     };
     export function TabBar(props: TabBarProps): React.ReactElement;
+    export function Menu(props: {
+        children: React.ReactNode;
+        className?: string;
+        dataTest?: string;
+        dense?: boolean;
+    }): React.ReactElement;
+    export function MenuItem(props: {
+        active?: boolean;
+        chevron?: boolean;
+        className?: string;
+        dataTest?: string;
+        dense?: boolean;
+        destructive?: boolean;
+        disabled?: boolean;
+        href?: string;
+        icon?: React.ReactNode;
+        label?: React.ReactNode;
+        showSubMenu?: boolean;
+        target?: string;
+        toggleSubMenu?: (...args: any[]) => any;
+        value?: string;
+        onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
+    }): React.ReactElement;
+    export function Pagination(props: {
+        page: number;
+        pageCount: number;
+        pageSize: number;
+        total: number;
+        className?: string;
+        dataTest?: string;
+        hidePageSelect?: boolean;
+        hidePageSizeSelect?: boolean;
+        nextPageText?: string | ((...args: any[]) => any);
+        pageSelectText?: string | ((...args: any[]) => any);
+        pageSizeSelectText?: string | ((...args: any[]) => any);
+        pageSizes?: string[];
+        pageSummaryText?: string | ((...args: any[]) => any);
+        previousPageText?: string | ((...args: any[]) => any);
+        onPageChange: (page: number) => void;
+        onPageSizeChange: (pageSize: number) => void;
+    }): React.ReactElement;
+    export function ButtonStrip(props: {
+        children: React.ReactNode;
+        className?: string;
+        dataTest?: string;
+        end?: boolean;
+        middle?: boolean;
+    }): React.ReactElement;
 }

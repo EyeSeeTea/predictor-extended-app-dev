@@ -28,7 +28,7 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
     return (
         <Editor
             className={className}
-            height="15vh"
+            height="22vh"
             defaultLanguage="dhis"
             onChange={onChange}
             value={value}

@@ -10,6 +10,7 @@ import {
 import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
@@ -28,9 +29,11 @@ export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const loading = useLoading();
     const snackbar = useSnackbar();
+    const history = useHistory();
 
     const fileRef = useRef<DropzoneRef>(null);
 
+    const [rows, setRows] = useState<Predictor[]>([]);
     const [state, setState] = useQueryState<ListPredictorsFilters>({});
     const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
     const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
@@ -54,6 +57,14 @@ export const PredictorListPage: React.FC = () => {
             loading.reset();
         },
         [compositionRoot, loading]
+    );
+
+    const editPredictor = useCallback(
+        async (ids: string[]) => {
+            if (ids[0] === undefined) return;
+            history.push(`/edit/${ids[0]}`, { predictor: rows.find(({ id }) => id === ids[0]) });
+        },
+        [history, rows]
     );
 
     const deletePredictor = useCallback(
@@ -130,7 +141,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "edit",
                     text: i18n.t("Edit"),
                     multiple: false,
-                    onClick: placeholderAction,
+                    onClick: editPredictor,
                     icon: <Edit />,
                 },
                 {
@@ -180,7 +191,7 @@ export const PredictorListPage: React.FC = () => {
             },
             searchBoxLabel: i18n.t("Search by name"),
         };
-    }, [runPredictors, exportPredictors, deletePredictor, openImportDialog, placeholderAction]);
+    }, [runPredictors, exportPredictors, editPredictor, deletePredictor, openImportDialog, placeholderAction]);
 
     const refreshRows = useCallback(
         (
@@ -260,6 +271,10 @@ export const PredictorListPage: React.FC = () => {
             setDataElementsOptions(options);
         });
     }, [compositionRoot]);
+
+    useEffect(() => {
+        setRows(tableProps.rows);
+    }, [tableProps]);
 
     return (
         <Wrapper>

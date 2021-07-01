@@ -4,13 +4,14 @@ import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
 import { DeletePredictorsUseCase } from "./domain/usecases/DeletePredictorsUseCase";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
-import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
 import { GetDataElementsUseCase } from "./domain/usecases/GetDataElementsUseCase";
-import { ListPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
+import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpressionSuggestionsUseCase";
+import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
+import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
 import { ImportPredictorsUseCase } from "./domain/usecases/ImportPredictorsUseCase";
+import { ListPredictorsUseCase } from "./domain/usecases/ListPredictorsUseCase";
 import { ReadPredictorsExcelUseCase } from "./domain/usecases/ReadPredictorsExcelUseCase";
 import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
-import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpressionSuggestionsUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
@@ -20,6 +21,7 @@ export function getCompositionRoot(baseUrl: string) {
 
     return {
         usecases: getExecute({
+            get: new GetPredictorsUseCase(predictorRepository),
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             getDataElements: new GetDataElementsUseCase(predictorRepository),
