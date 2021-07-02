@@ -1,6 +1,5 @@
 import {
     DatePicker,
-    DropdownItem,
     MultipleDropdown,
     TablePagination,
     TableSorting,
@@ -8,7 +7,7 @@ import {
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
 import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
@@ -22,6 +21,7 @@ import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import { Pager, TableConfig, useObjectsTable } from "../../components/objects-list/objects-list-hooks";
 import { ObjectsList } from "../../components/objects-list/ObjectsList";
 import { useAppContext } from "../../contexts/app-context";
+import { useFuture } from "../../hooks/useFuture";
 import { useQueryState } from "../../hooks/useQueryState";
 import { useReload } from "../../hooks/useReload";
 
@@ -33,17 +33,26 @@ export const PredictorListPage: React.FC = () => {
 
     const fileRef = useRef<DropzoneRef>(null);
 
-    const [rows, setRows] = useState<Predictor[]>([]);
     const [state, setState] = useQueryState<ListPredictorsFilters>({});
-    const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
-    const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
     const [response, setResponse] = useState<MetadataResponse>();
     const [reloadKey, reload] = useReload();
+
+    const { data: predictorGroupOptions = [] } = useFuture(() => {
+        return compositionRoot.usecases
+            .getGroups()
+            .map(groups => groups.map(({ id, name }) => ({ value: id, text: name })));
+    });
+
+    const { data: dataElementsOptions = [] } = useFuture(() => {
+        return compositionRoot.usecases
+            .getDataElements()
+            .map(dataElements => dataElements.map(({ id, name }) => ({ value: id, text: name })));
+    });
 
     const runPredictors = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
-            const results = await compositionRoot.usecases.run(ids);
+            const results = await compositionRoot.usecases.run(ids).toPromise();
             snackbar.info(results.map((response: any) => response?.message).join("\n"));
             loading.reset();
         },
@@ -62,9 +71,9 @@ export const PredictorListPage: React.FC = () => {
     const editPredictor = useCallback(
         async (ids: string[]) => {
             if (ids[0] === undefined) return;
-            history.push(`/edit/${ids[0]}`, { predictor: rows.find(({ id }) => id === ids[0]) });
+            history.push(`/edit/${ids[0]}`);
         },
-        [history, rows]
+        [history]
     );
 
     const deletePredictor = useCallback(
@@ -200,7 +209,7 @@ export const PredictorListPage: React.FC = () => {
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
             console.debug("Reloading", reloadKey);
-            return compositionRoot.usecases.list({ ...state, search }, paging, sorting);
+            return compositionRoot.usecases.list({ ...state, search }, paging, sorting).toPromise();
         },
         [compositionRoot, state, reloadKey]
     );
@@ -222,7 +231,7 @@ export const PredictorListPage: React.FC = () => {
             }
 
             //@ts-ignore TODO FIXME: Add validation
-            const response = await compositionRoot.usecases.import(predictors);
+            const response = await compositionRoot.usecases.import(predictors).toPromise();
             setResponse(response);
 
             loading.reset();
@@ -259,22 +268,6 @@ export const PredictorListPage: React.FC = () => {
             }),
         [onChangeFilter]
     );
-
-    useEffect(() => {
-        compositionRoot.usecases.getGroups().then(groups => {
-            const options = groups.map(({ id, name }) => ({ value: id, text: name }));
-            setPredictorGroupOptions(options);
-        });
-
-        compositionRoot.usecases.getDataElements().then(dataElements => {
-            const options = dataElements.map(({ id, name }) => ({ value: id, text: name }));
-            setDataElementsOptions(options);
-        });
-    }, [compositionRoot]);
-
-    useEffect(() => {
-        setRows(tableProps.rows);
-    }, [tableProps]);
 
     return (
         <Wrapper>

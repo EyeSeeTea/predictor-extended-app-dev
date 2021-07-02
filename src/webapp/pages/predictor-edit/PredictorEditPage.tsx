@@ -32,10 +32,13 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
             return;
         }
 
-        compositionRoot.usecases.get(_.compact([id])).then(([predictor]) => {
-            if (!predictor) snackbar.error(i18n.t("Unable to load predictor {{id}}", { id }));
-            else setPredictor(predictor);
-        });
+        compositionRoot.usecases
+            .get(_.compact([id]))
+            .toPromise()
+            .then(([predictor]) => {
+                if (!predictor) snackbar.error(i18n.t("Unable to load predictor {{id}}", { id }));
+                else setPredictor(predictor);
+            });
     }, [compositionRoot, id, predictor, setPredictor, snackbar]);
 
     return (

@@ -5,6 +5,7 @@ import { NamedRef } from "../../../domain/entities/DHIS2";
 import i18n from "../../../locales";
 import { Pager } from "../../../types/d2-api";
 import { useAppContext } from "../../contexts/app-context";
+import { useFuture } from "../../hooks/useFuture";
 import { ExpressionEditor } from "../expression-editor/ExpressionEditor";
 import { Variable } from "../expression-editor/types";
 import { FormField } from "../form/FormField";
@@ -23,11 +24,12 @@ interface ExpressionDialogProps {
 export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionType, validateExpression }) => {
     const { compositionRoot } = useAppContext();
     const [formula, setFormula] = useState<string>("");
-    const [variables, setVariables] = useState<Variable[]>([]);
     const [expressionValidation, setValidation] = useState<string>();
     const { api } = useAppContext();
     const [state, setState] = useState<{ pager: Pager; objects: NamedRef[] }>();
     const extraFunctionsForType = expressionType ? functionsForExpressionType[expressionType] : [];
+
+    const { data: variables = [] } = useFuture<Variable[]>(compositionRoot.usecases.getExpressionSuggestions);
 
     useEffect(() => {
         api.models.dataElements
@@ -35,10 +37,6 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
             .getData()
             .then(items => setState(items));
     }, [api]);
-
-    useEffect(() => {
-        compositionRoot.usecases.getExpressionSuggestions().then(setVariables);
-    }, [compositionRoot]);
 
     const formulaChange = (formula = "") => {
         setFormula(formula);

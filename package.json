@@ -31,6 +31,7 @@
         "date-fns": "2.22.1",
         "file-saver": "2.0.5",
         "final-form": "4.20.2",
+        "fluture": "14.0.0",
         "font-awesome": "4.7.0",
         "lodash": "4.17.21",
         "monaco-editor": "0.25.2",

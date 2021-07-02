@@ -1,9 +1,11 @@
 import _ from "lodash";
+import { Future, FutureData } from "../domain/entities/Future";
 import { Metadata, MetadataPackage, MetadataType } from "../domain/entities/Metadata";
 import { MetadataRepository } from "../domain/repositories/MetadataRepository";
 import { D2Api } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { getD2APiFromUrl, getFieldsAsString, getFilterAsString } from "./utils/d2-api";
+import { toFuture } from "./utils/futures";
 
 export class MetadataD2ApiRepository implements MetadataRepository {
     private api: D2Api;
@@ -12,15 +14,13 @@ export class MetadataD2ApiRepository implements MetadataRepository {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
-    public async list(types: MetadataType[]): Promise<MetadataPackage> {
-        const fields = { id: true, name: true, code: true } as const;
+    public list(types: MetadataType[]): FutureData<MetadataPackage> {
         const params = _.zipObject(
             types,
-            types.map(() => ({ fields }))
+            types.map(() => ({ fields: { id: true, name: true, code: true } }))
         );
 
-        const result = await this.api.metadata.get(params).getData();
-        return result as MetadataPackage;
+        return toFuture(this.api.metadata.get(params));
     }
 
     @cache()
@@ -47,39 +47,41 @@ export class MetadataD2ApiRepository implements MetadataRepository {
         return similar[0];
     }
 
-    public async lookup(queries: string[]): Promise<MetadataPackage> {
-        const metadataByCode = await this.api
-            .get<MetadataPackage>("/metadata", {
+    public lookup(queries: string[]): FutureData<MetadataPackage> {
+        const metadataByCode = toFuture(
+            this.api.get<MetadataPackage>("/metadata", {
                 fields: getFieldsAsString({ id: true, name: true }),
                 filter: getFilterAsString({ code: { in: queries } }),
                 paging: false,
             })
-            .getData();
+        );
 
-        const metadataByName = await this.api
-            .get<MetadataPackage>("/metadata", {
+        const metadataByName = toFuture(
+            this.api.get<MetadataPackage>("/metadata", {
                 fields: getFieldsAsString({ id: true, name: true }),
                 filter: getFilterAsString({ name: { in: queries } }),
                 paging: false,
             })
-            .getData();
+        );
 
-        const candidates = [metadataByCode, metadataByName];
+        return Future.joinObj({ metadataByCode, metadataByName }).map(({ metadataByCode, metadataByName }) => {
+            const candidates = [metadataByCode, metadataByName];
 
-        const listItems = (key: MetadataType) =>
-            _(candidates)
-                .flatMap(item => item[key])
+            const listItems = (key: MetadataType) =>
+                _(candidates)
+                    .flatMap(item => item[key])
+                    .compact()
+                    .uniqBy(item => item.id)
+                    .value();
+
+            return _(candidates)
+                .flatMap(item => _.keys(item))
+                .filter(key => key !== "system")
                 .compact()
-                .uniqBy(item => item.id)
-                .value();
-
-        return _(candidates)
-            .flatMap(item => _.keys(item))
-            .filter(key => key !== "system")
-            .compact()
-            .uniq()
-            .map((key: MetadataType) => [key, listItems(key)])
-            .fromPairs()
-            .value() as MetadataPackage;
+                .uniq()
+                .map((key: MetadataType) => [key, listItems(key)])
+                .fromPairs()
+                .value() as MetadataPackage;
+        });
     }
 }

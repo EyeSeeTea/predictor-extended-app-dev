@@ -94,7 +94,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             .flatMap(formula => getTemplates(formula))
             .value();
 
-        const metadata = await this.metadataRepository.lookup(templates);
+        const metadata = await this.metadataRepository.lookup(templates).toPromise();
 
         const dictionary = _(metadata)
             .values()

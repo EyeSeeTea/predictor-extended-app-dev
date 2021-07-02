@@ -15,7 +15,7 @@ export class ExportPredictorsUseCase implements UseCase {
 
     public async execute(ids: string[]) {
         const emptyFile = await this.excelRepository.createFile();
-        const predictors = await this.predictorRepository.get(ids);
+        const predictors = await this.predictorRepository.get(ids).toPromise();
 
         const cells: ExcelCell[] = _.flatten([
             predictorColumns.map((column: string, index: number) => ({
