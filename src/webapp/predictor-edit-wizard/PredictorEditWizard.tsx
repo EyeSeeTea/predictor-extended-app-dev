@@ -127,6 +127,11 @@ const StyledWizard = styled(Wizard)`
         margin: inherit;
         padding: 0;
     }
+
+    label {
+        display: block;
+        margin-bottom: 15px;
+    }
 `;
 
 const ButtonsRow = styled(ButtonStrip)`

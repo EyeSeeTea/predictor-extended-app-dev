@@ -41,13 +41,13 @@ export const PredictorListPage: React.FC = () => {
         return compositionRoot.usecases
             .getGroups()
             .map(groups => groups.map(({ id, name }) => ({ value: id, text: name })));
-    });
+    }, []);
 
     const { data: dataElementsOptions = [] } = useFuture(() => {
         return compositionRoot.usecases
             .getDataElements()
             .map(dataElements => dataElements.map(({ id, name }) => ({ value: id, text: name })));
-    });
+    }, []);
 
     const runPredictors = useCallback(
         async (ids: string[]) => {

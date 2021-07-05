@@ -1,50 +1,51 @@
-import _ from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { Future, FutureData } from "../../domain/entities/Future";
 
 type Callback = () => void;
-type FutureCalculation<Obj> = () => FutureData<Obj>;
-type ResultType<Obj> = {
+type ResultType<Params extends any[], Obj> = {
     data?: Obj;
     error?: string;
     loading: boolean;
     cancel: Callback;
-    refetch: Callback;
+    refetch: (...params: Params) => Callback;
 };
 
-export function useFuture<Obj>(inputFuture: FutureCalculation<Obj>): ResultType<Obj> {
-    const [future] = useState(() => {
-        return _.isFunction(inputFuture) ? inputFuture() : inputFuture;
-    });
-
+export function useFuture<Obj, Params extends any[]>(
+    future: (...params: Params) => FutureData<Obj>,
+    params: Params
+): ResultType<Params, Obj> {
+    const [initialParams] = useState(params);
     const [data, setData] = useState<Obj>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>();
     const [cancel, setCancel] = useState<Callback>(Future.noCancel);
 
-    const refetch = useCallback(() => {
-        setData(undefined);
-        setLoading(true);
-        setError(undefined);
-        setCancel(Future.noCancel);
+    const refetch = useCallback(
+        (...params: Params) => {
+            setData(undefined);
+            setLoading(true);
+            setError(undefined);
+            setCancel(Future.noCancel);
 
-        const cancel = future.run(
-            data => {
-                setData(data);
-                setLoading(false);
-            },
-            error => {
-                setError(error);
-            }
-        );
+            const cancel = future(...params).run(
+                data => {
+                    setData(data);
+                    setLoading(false);
+                },
+                error => {
+                    setError(error);
+                }
+            );
 
-        setCancel(() => cancel);
-        return cancel;
-    }, [future]);
+            setCancel(() => cancel);
+            return cancel;
+        },
+        [future]
+    );
 
     useEffect(() => {
-        return refetch();
-    }, [refetch]);
+        return refetch(...initialParams);
+    }, [refetch, initialParams]);
 
     return { data, loading, cancel, error, refetch };
 }

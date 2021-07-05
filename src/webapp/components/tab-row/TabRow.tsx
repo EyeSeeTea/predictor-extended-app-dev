@@ -1,6 +1,7 @@
 import { Tab, TabBar } from "@dhis2/ui";
 import { LinearProgress } from "@material-ui/core";
 import React, { ReactElement } from "react";
+import styled from "styled-components";
 
 export interface TabRowProps<T extends string> {
     options: TabRowOption<T>[];
@@ -31,18 +32,25 @@ export function TabRow<T extends string>({
         <React.Fragment>
             <TabBar fixed={fixed} scrollable={scrollable}>
                 {options.map(item => (
-                    <Tab
+                    <StyledTab
                         key={`tab-${item.value}`}
-                        onClick={() => onClick(item.value)}
+                        onClick={(_val, event) => {
+                            event.preventDefault();
+                            onClick(item.value);
+                        }}
                         selected={selected === item.value}
                         disabled={disabled.includes(item.value)}
                         icon={item.icon}
                     >
                         {item.label}
-                    </Tab>
+                    </StyledTab>
                 ))}
             </TabBar>
             {loading && <LinearProgress />}
         </React.Fragment>
     );
 }
+
+const StyledTab = styled(Tab)`
+    outline: none;
+`;

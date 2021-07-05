@@ -16,14 +16,18 @@ export interface PredictorRepository {
 
     getGroups(): FutureData<NamedRef[]>;
 
-    getDataElements(): FutureData<NamedRef[]>;
+    getOutputDataElements(): FutureData<NamedRef[]>;
 
     run(ids: string[], startDate: Date, endDate: Date): FutureData<any>;
 
     save(predictors: Predictor[]): FutureData<MetadataResponse>;
 
     delete(ids: string[]): FutureData<void>;
+
+    validateExpression(type: ExpressionType, expression: string): FutureData<string>;
 }
+
+export type ExpressionType = "predictor-formula" | "predictor-skip-test";
 
 export interface ListPredictorsFilters {
     search?: string;

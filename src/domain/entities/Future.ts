@@ -87,8 +87,8 @@ type JoinObj<Futures extends Record<string, Future<any, any>>> = Future<
     { [K in keyof Futures]: ExtractFutureData<Futures[K]> }
 >;
 
-type ExtractFutureData<F> = F extends Future<any, infer D> ? D : never;
-type ExtractFutureError<F> = F extends Future<infer E, any> ? E : never;
+export type ExtractFutureData<F> = F extends Future<any, infer D> ? D : never;
+export type ExtractFutureError<F> = F extends Future<infer E, any> ? E : never;
 
 type Fn<T> = (value: T) => void;
 

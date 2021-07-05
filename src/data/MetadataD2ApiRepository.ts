@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Future, FutureData } from "../domain/entities/Future";
 import { Metadata, MetadataPackage, MetadataType } from "../domain/entities/Metadata";
 import { MetadataRepository } from "../domain/repositories/MetadataRepository";
-import { D2Api } from "../types/d2-api";
+import { D2Api, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { getD2APiFromUrl, getFieldsAsString, getFilterAsString } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
@@ -14,7 +14,21 @@ export class MetadataD2ApiRepository implements MetadataRepository {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
-    public list(types: MetadataType[]): FutureData<MetadataPackage> {
+    public list(
+        type: MetadataType,
+        options: { pageSize?: number; page?: number }
+    ): FutureData<{ pager: Pager; objects: Metadata[] }> {
+        return toFuture(
+            //@ts-ignore
+            this.api.models[type].get({
+                fields: { id: true, name: true, code: true },
+                pageSize: options.pageSize ?? 25,
+                page: options.page ?? 1,
+            })
+        );
+    }
+
+    public listAll(types: MetadataType[]): FutureData<MetadataPackage> {
         const params = _.zipObject(
             types,
             types.map(() => ({ fields: { id: true, name: true, code: true } }))

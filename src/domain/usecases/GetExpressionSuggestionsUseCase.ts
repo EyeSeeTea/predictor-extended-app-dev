@@ -7,6 +7,6 @@ export class GetExpressionSuggestionsUseCase implements UseCase {
     constructor(private metadataRepository: MetadataRepository) {}
 
     public execute(): FutureData<Metadata[]> {
-        return this.metadataRepository.list(["dataElements"]).map(({ dataElements }) => dataElements ?? []);
+        return this.metadataRepository.listAll(["dataElements"]).map(({ dataElements }) => dataElements ?? []);
     }
 }

@@ -2,7 +2,7 @@ import { InputFieldFF, SingleSelectFieldFF, Transfer } from "@dhis2/ui";
 import React from "react";
 import styled from "styled-components";
 import i18n from "../../../locales";
-import { FormField } from "../../components/form/FormField";
+import { FormField } from "../../components/form/fields/FormField";
 
 export const GeneralInfoStep: React.FC = () => {
     return (
@@ -24,7 +24,7 @@ export const GeneralInfoStep: React.FC = () => {
 
             <Row>
                 <label>{i18n.t("Period type (*)")}</label>
-                <FormField name="periodType" component={SingleSelectFieldFF} clearable={true} options={periodTypes} />
+                <FormField name="periodType" component={SingleSelectFieldFF} options={periodTypes} />
             </Row>
 
             <Row>
@@ -42,6 +42,27 @@ export const GeneralInfoStep: React.FC = () => {
                         },
                         {
                             label: "Org Unit Level 2",
+                            value: "OU_LEVEL_2",
+                        },
+                    ]}
+                />
+            </Row>
+
+            <Row>
+                <label>{i18n.t("Predictor groups")}</label>
+                <Transfer
+                    filterable
+                    filterablePicked
+                    onChange={() => {}}
+                    selectedWidth="100%"
+                    optionsWidth="100%"
+                    options={[
+                        {
+                            label: "Predictor Group 1",
+                            value: "OU_LEVEL_1",
+                        },
+                        {
+                            label: "Predictor Group 2",
                             value: "OU_LEVEL_2",
                         },
                     ]}

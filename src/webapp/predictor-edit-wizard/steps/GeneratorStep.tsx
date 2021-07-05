@@ -1,25 +1,36 @@
+import { InputFieldFF } from "@dhis2/ui";
 import _ from "lodash";
+import React, { useCallback } from "react";
+import styled from "styled-components";
 import i18n from "../../../locales";
 import { ExpressionDialog } from "../../components/expression-dialog/ExpressionDialog";
+import { FormField } from "../../components/form/fields/FormField";
 import { useAppContext } from "../../contexts/app-context";
 
 export const GeneratorStep: React.FC = () => {
-    const { api } = useAppContext();
+    const { compositionRoot } = useAppContext();
+
+    const validateExpression = useCallback(
+        async (formula: string) =>
+            compositionRoot.usecases.validateExpression("predictor-formula", formula).toPromise(),
+        [compositionRoot]
+    );
 
     return (
-        <div>
-            <label>{i18n.t("Generator (*)")}</label>
-            <ExpressionDialog
-                validateExpression={async formula => {
-                    const encodedFormula = encodeURIComponent(formula);
-                    const { message, description } = await api
-                        .get<any>(`expressions/description?expression=${encodedFormula}`)
-                        .getData();
+        <React.Fragment>
+            <Row>
+                <label>{i18n.t("Generator description (*)")}</label>
+                <FormField name="name" component={InputFieldFF} placeholder={i18n.t("Generator description")} />
+            </Row>
 
-                    return _.compact([message, description]).join(": ");
-                }}
-                expressionType="predictor"
-            />
-        </div>
+            <Row>
+                <label>{i18n.t("Generator (*)")}</label>
+                <ExpressionDialog validateExpression={validateExpression} expressionType="predictor" />
+            </Row>
+        </React.Fragment>
     );
 };
+
+const Row = styled.div`
+    margin: 20px 0;
+`;

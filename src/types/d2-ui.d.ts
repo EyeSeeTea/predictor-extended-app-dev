@@ -1,5 +1,31 @@
 declare module "@dhis2/ui" {
-    export function HeaderBar(props: { className?: string; appName: string }): React.ReactElement;
+    export interface FieldState<FieldValue> {
+        active?: boolean;
+        blur: () => void;
+        change: (value: FieldValue | undefined) => void;
+        data?: AnyObject;
+        dirty?: boolean;
+        dirtySinceLastSubmit?: boolean;
+        error?: any;
+        focus: () => void;
+        initial?: FieldValue;
+        invalid?: boolean;
+        length?: number;
+        modified?: boolean;
+        modifiedSinceLastSubmit?: boolean;
+        name: string;
+        pristine?: boolean;
+        submitError?: any;
+        submitFailed?: boolean;
+        submitSucceeded?: boolean;
+        submitting?: boolean;
+        touched?: boolean;
+        valid?: boolean;
+        validating?: boolean;
+        value?: FieldValue;
+        visited?: boolean;
+    }
+
     export type InputFieldProps = {
         className?: string;
         dataTest?: string;
@@ -50,20 +76,19 @@ declare module "@dhis2/ui" {
         onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
         onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
-    export function InputField(props: InputFieldProps): React.ReactElement;
-    export function InputFieldFF(
-        props: InputFieldProps & {
-            input: any;
-            meta: any;
-            error?: boolean;
-            loading?: boolean;
-            showLoadingStatus?: boolean;
-            showValidStatus?: boolean;
-            valid?: boolean;
-            validationText?: string;
-        }
-    ): React.ReactElement;
-    export function Button(props: {
+
+    export type InputFieldFFProps = InputFieldProps & {
+        input: any;
+        meta: any;
+        error?: boolean;
+        loading?: boolean;
+        showLoadingStatus?: boolean;
+        showValidStatus?: boolean;
+        valid?: boolean;
+        validationText?: string;
+    };
+
+    export type ButtonProps = {
         children?: ReactNode;
         className?: string;
         dataTest?: string;
@@ -83,8 +108,9 @@ declare module "@dhis2/ui" {
         onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
         onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
         onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-    }): React.ReactElement;
-    export function Transfer(props: {
+    };
+
+    export type TransferProps = {
         options: {
             label: string;
             value: string;
@@ -131,7 +157,8 @@ declare module "@dhis2/ui" {
         onEndReachedPicked?: (...args: any[]) => any;
         onFilterChange?: (...args: any[]) => any;
         onFilterChangePicked?: (...args: any[]) => any;
-    }): React.ReactElement;
+    };
+
     export type MultiSelectProps = {
         children: React.ReactNode;
         className: string;
@@ -164,37 +191,36 @@ declare module "@dhis2/ui" {
         onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
         onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
-    export function MultiSelect(props: MultiSelectProps): React.ReactElement;
-    export function MultiSelectFieldFF(
-        props: MultiSelectProps & {
-            input?: {
-                name: string;
-                value?: any;
-                onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-                onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
-                onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-            };
-            meta?: {
-                error?: string;
-                invalid?: boolean;
-                touched?: boolean;
-                valid?: boolean;
-                validating?: boolean;
-            };
-            error?: boolean;
-            loading?: boolean;
-            options?: {
-                label?: string;
-                value?: string;
-            }[];
-            showLoadingStatus?: boolean;
-            showValidStatus?: boolean;
-            valid?: boolean;
-            validationText?: string;
+
+    export type MultiSelectFieldFFProps = MultiSelectProps & {
+        input?: {
+            name: string;
+            value?: any;
             onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+            onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
             onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        }
-    ): React.ReactElement;
+        };
+        meta?: {
+            error?: string;
+            invalid?: boolean;
+            touched?: boolean;
+            valid?: boolean;
+            validating?: boolean;
+        };
+        error?: boolean;
+        loading?: boolean;
+        options?: {
+            label?: string;
+            value?: string;
+        }[];
+        showLoadingStatus?: boolean;
+        showValidStatus?: boolean;
+        valid?: boolean;
+        validationText?: string;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+    };
+
     export type SingleSelectProps = {
         className?: string;
         clearText?: string;
@@ -222,26 +248,22 @@ declare module "@dhis2/ui" {
         onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
         onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
-    export function SingleSelectFieldFF(
-        props: SingleSelectProps & {
-            input: any;
-            meta: any;
-            options: {
-                label?: string;
-                value?: string;
-            }[];
-            error?: boolean;
-            loading?: boolean;
-            showLoadingStatus?: boolean;
-            showValidStatus?: boolean;
-            valid?: boolean;
-            validationText?: string;
-        }
-    ): React.ReactElement;
-    export function SingleSelect(props: SingleSelectProps): React.ReactElement;
-    export function composeValidators(...validators: any[]): any;
-    export function integer(): any;
-    export function createMinNumber(min: number): any;
+
+    export type SingleSelectFieldFFProps = SingleSelectProps & {
+        input: any;
+        meta: any;
+        options: {
+            label?: string;
+            value?: string;
+        }[];
+        error?: boolean;
+        loading?: boolean;
+        showLoadingStatus?: boolean;
+        showValidStatus?: boolean;
+        valid?: boolean;
+        validationText?: string;
+    };
+
     export type TabProps = {
         children: React.ReactNode;
         className?: string;
@@ -249,9 +271,9 @@ declare module "@dhis2/ui" {
         disabled?: boolean;
         icon?: JSX.Element;
         selected?: boolean;
-        onClick?: (...args: any[]) => any;
+        onClick?: (value: {}, event: MouseEvent) => void;
     };
-    export function Tab(props: TabProps): React.ReactElement;
+
     export type TabBarProps = {
         children: React.ReactNode;
         className?: string;
@@ -259,14 +281,15 @@ declare module "@dhis2/ui" {
         fixed?: boolean;
         scrollable?: boolean;
     };
-    export function TabBar(props: TabBarProps): React.ReactElement;
-    export function Menu(props: {
+
+    export type MenuProps = {
         children: React.ReactNode;
         className?: string;
         dataTest?: string;
         dense?: boolean;
-    }): React.ReactElement;
-    export function MenuItem(props: {
+    };
+
+    export type MenuItemProps = {
         active?: boolean;
         chevron?: boolean;
         className?: string;
@@ -282,8 +305,9 @@ declare module "@dhis2/ui" {
         toggleSubMenu?: (...args: any[]) => any;
         value?: string;
         onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
-    }): React.ReactElement;
-    export function Pagination(props: {
+    };
+
+    export type PaginationProps = {
         page: number;
         pageCount: number;
         pageSize: number;
@@ -300,12 +324,43 @@ declare module "@dhis2/ui" {
         previousPageText?: string | ((...args: any[]) => any);
         onPageChange: (page: number) => void;
         onPageSizeChange: (pageSize: number) => void;
-    }): React.ReactElement;
-    export function ButtonStrip(props: {
+    };
+
+    export type ButtonStripProps = {
         children: React.ReactNode;
         className?: string;
         dataTest?: string;
         end?: boolean;
         middle?: boolean;
-    }): React.ReactElement;
+    };
+
+    export type NoticeBoxProps = {
+        children?: React.ReactNode;
+        className?: string;
+        dataTest?: string;
+        error?: boolean;
+        title?: string;
+        warning?: boolean;
+    };
+
+    export function HeaderBar(props: { className?: string; appName: string }): React.ReactElement;
+    export function InputField(props: InputFieldProps): React.ReactElement;
+    export function InputFieldFF(props: InputFieldFFProps): React.ReactElement;
+    export function Button(props: ButtonProps): React.ReactElement;
+    export function Transfer(props: TransferProps): React.ReactElement;
+    export function MultiSelect(props: MultiSelectProps): React.ReactElement;
+    export function MultiSelectFieldFF(props: MultiSelectFieldFFProps): React.ReactElement;
+    export function SingleSelectFieldFF(props: SingleSelectFieldFFProps): React.ReactElement;
+    export function SingleSelect(props: SingleSelectProps): React.ReactElement;
+    export function Tab(props: TabProps): React.ReactElement;
+    export function TabBar(props: TabBarProps): React.ReactElement;
+    export function Menu(props: MenuProps): React.ReactElement;
+    export function MenuItem(props: MenuItemProps): React.ReactElement;
+    export function Pagination(props: PaginationProps): React.ReactElement;
+    export function ButtonStrip(props: ButtonStripProps): React.ReactElement;
+    export function NoticeBox(props: NoticeBoxProps): React.ReactElement;
+
+    export function composeValidators(...validators: any[]): any;
+    export function integer(): any;
+    export function createMinNumber(min: number): any;
 }

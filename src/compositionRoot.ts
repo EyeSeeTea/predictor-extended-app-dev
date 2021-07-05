@@ -4,14 +4,16 @@ import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
 import { DeletePredictorsUseCase } from "./domain/usecases/DeletePredictorsUseCase";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
-import { GetDataElementsUseCase } from "./domain/usecases/GetDataElementsUseCase";
 import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpressionSuggestionsUseCase";
+import { GetOutputDataElementsUseCase } from "./domain/usecases/GetOutputDataElementsUseCase";
 import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
 import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
 import { ImportPredictorsUseCase } from "./domain/usecases/ImportPredictorsUseCase";
+import { ListMetadataUseCase } from "./domain/usecases/ListMetadataUseCase";
 import { ListPredictorsUseCase } from "./domain/usecases/ListPredictorsUseCase";
 import { ReadPredictorsExcelUseCase } from "./domain/usecases/ReadPredictorsExcelUseCase";
 import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
+import { ValidateExpressionUseCase } from "./domain/usecases/ValidateExpressionUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
@@ -24,13 +26,15 @@ export function getCompositionRoot(baseUrl: string) {
             get: new GetPredictorsUseCase(predictorRepository),
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
-            getDataElements: new GetDataElementsUseCase(predictorRepository),
+            getDataElements: new GetOutputDataElementsUseCase(predictorRepository),
             getExpressionSuggestions: new GetExpressionSuggestionsUseCase(metadataRepository),
             run: new RunPredictorsUseCase(predictorRepository),
             readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
             import: new ImportPredictorsUseCase(predictorRepository),
             export: new ExportPredictorsUseCase(predictorRepository, excelRepository, fileRepository),
             delete: new DeletePredictorsUseCase(predictorRepository),
+            listMetadata: new ListMetadataUseCase(metadataRepository),
+            validateExpression: new ValidateExpressionUseCase(predictorRepository),
         }),
     };
 }

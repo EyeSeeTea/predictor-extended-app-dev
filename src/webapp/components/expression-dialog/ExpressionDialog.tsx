@@ -1,14 +1,11 @@
-import { Button, InputFieldFF, Menu, MenuItem, Pagination } from "@dhis2/ui";
-import { useEffect, useState } from "react";
+import { Button, Menu, MenuItem, Pagination } from "@dhis2/ui";
+import { useState } from "react";
 import styled from "styled-components";
-import { NamedRef } from "../../../domain/entities/DHIS2";
 import i18n from "../../../locales";
-import { Pager } from "../../../types/d2-api";
+import { D2ModelSchemas } from "../../../types/d2-api";
 import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { ExpressionEditor } from "../expression-editor/ExpressionEditor";
-import { Variable } from "../expression-editor/types";
-import { FormField } from "../form/FormField";
 import { TabRow } from "../tab-row/TabRow";
 
 const functionsForExpressionType: any = {
@@ -25,18 +22,15 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
     const { compositionRoot } = useAppContext();
     const [formula, setFormula] = useState<string>("");
     const [expressionValidation, setValidation] = useState<string>();
-    const { api } = useAppContext();
-    const [state, setState] = useState<{ pager: Pager; objects: NamedRef[] }>();
+    const [variableListType, setVariableListType] = useState<keyof D2ModelSchemas>("dataElements");
+
     const extraFunctionsForType = expressionType ? functionsForExpressionType[expressionType] : [];
 
-    const { data: variables = [] } = useFuture<Variable[]>(compositionRoot.usecases.getExpressionSuggestions);
+    const { data: variables = [] } = useFuture(compositionRoot.usecases.getExpressionSuggestions, []);
 
-    useEffect(() => {
-        api.models.dataElements
-            .get({ fields: { id: true, name: true }, pageSize: 50 })
-            .getData()
-            .then(items => setState(items));
-    }, [api]);
+    const { data: variableList, refetch: updateVariableList } = useFuture(compositionRoot.usecases.listMetadata, [
+        variableListType,
+    ]);
 
     const formulaChange = (formula = "") => {
         setFormula(formula);
@@ -49,11 +43,6 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
 
     return (
         <GridContainer>
-            <GridItem column={1} expand={true}>
-                <label>{i18n.t("Generator description (*)")}</label>
-                <FormField name="name" component={InputFieldFF} placeholder={i18n.t("Description")} />
-            </GridItem>
-
             <GridItem column={1}>
                 <FormulaEditor
                     type="predictor-generator"
@@ -80,19 +69,34 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
             </GridItem>
 
             <GridItem column={2}>
-                <TabRow options={tabs} onClick={() => {}} loading={!state} scrollable={true} />
+                <TabRow<keyof D2ModelSchemas>
+                    options={tabs}
+                    selected={variableListType}
+                    onClick={value => {
+                        setVariableListType(value);
+                        updateVariableList(value, {
+                            page: variableList?.pager.page,
+                            pageSize: variableList?.pager.pageSize,
+                        });
+                    }}
+                    scrollable={true}
+                />
                 <StyledPagination
-                    page={state?.pager.page ?? 0}
-                    pageCount={state?.pager.pageCount ?? 0}
-                    pageSize={state?.pager.pageSize ?? 0}
-                    total={state?.pager.total ?? 0}
+                    page={variableList?.pager.page ?? 0}
+                    pageCount={variableList?.pager.pageCount ?? 0}
+                    pageSize={variableList?.pager.pageSize ?? 0}
+                    total={variableList?.pager.total ?? 0}
                     hidePageSelect={true}
                     hidePageSizeSelect={true}
-                    onPageChange={() => {}}
-                    onPageSizeChange={() => {}}
+                    onPageChange={page => {
+                        updateVariableList("dataElements", { page, pageSize: variableList?.pager.pageSize });
+                    }}
+                    onPageSizeChange={pageSize => {
+                        updateVariableList("dataElements", { page: variableList?.pager.page, pageSize });
+                    }}
                 />
                 <StyledMenu dense={true}>
-                    {state?.objects.map(item => (
+                    {variableList?.objects.map(item => (
                         <MenuItem key={`item-${item.id}`} label={item.name} />
                     ))}
                 </StyledMenu>
@@ -107,10 +111,10 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
     );
 };
 
-const tabs = [
+const tabs: Array<{ value: keyof D2ModelSchemas; label: string }> = [
     { value: "dataElements", label: i18n.t("Data Elements") },
     { value: "programs", label: i18n.t("Programs") },
-    { value: "orgUnitCounts", label: i18n.t("Org Unit Counts") },
+    //{ value: "orgUnitCounts", label: i18n.t("Org Unit Counts") },
     { value: "constants", label: i18n.t("Constants") },
     { value: "reportingRates", label: i18n.t("Reporting rates") },
 ];
@@ -123,6 +127,7 @@ const GridContainer = styled.div`
     display: grid;
     grid-gap: 20px;
     grid-auto-columns: 50%;
+    margin-right: 25px;
 `;
 
 const GridItem = styled.div<{ column: number; expand?: boolean }>`
