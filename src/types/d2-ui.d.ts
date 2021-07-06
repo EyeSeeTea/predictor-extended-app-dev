@@ -116,7 +116,7 @@ declare module "@dhis2/ui" {
             value: string;
             disabled?: boolean;
         }[];
-        onChange: (...args: any[]) => any;
+        onChange: (params: { selected: string[] }) => void;
         addAllText?: string;
         addIndividualText?: string;
         className?: string;

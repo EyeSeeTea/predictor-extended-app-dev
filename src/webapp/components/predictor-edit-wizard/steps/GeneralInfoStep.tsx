@@ -1,20 +1,17 @@
-import { hasValue, InputFieldFF, SingleSelectFieldFF, Transfer } from "@dhis2/ui";
+import { hasValue, InputFieldFF, SingleSelectFieldFF } from "@dhis2/ui";
 import React from "react";
 import styled from "styled-components";
 import i18n from "../../../../locales";
 import { FormField } from "../../../components/form/fields/FormField";
+import { TransferFF } from "../../form/fields/TransferFF";
+import { hasItems } from "../../form/validators/hasItems";
 
 export const GeneralInfoStep: React.FC = () => {
     return (
         <React.Fragment>
             <Row>
                 <label>{i18n.t("Name (*)")}</label>
-                <FormField
-                    name="name"
-                    component={InputFieldFF}
-                    placeholder={i18n.t("Name")}
-                    validate={hasValue}
-                />
+                <FormField name="name" component={InputFieldFF} placeholder={i18n.t("Name")} validate={hasValue} />
             </Row>
 
             <Row>
@@ -34,12 +31,14 @@ export const GeneralInfoStep: React.FC = () => {
 
             <Row>
                 <label>{i18n.t("Organisation unit levels (*)")}</label>
-                <Transfer
+                <FormField
+                    name="organisationUnitLevels"
+                    component={TransferFF}
                     filterable
                     filterablePicked
-                    onChange={() => {}}
                     selectedWidth="100%"
                     optionsWidth="100%"
+                    validate={hasItems}
                     options={[
                         {
                             label: "Org Unit Level 1",
@@ -55,10 +54,11 @@ export const GeneralInfoStep: React.FC = () => {
 
             <Row>
                 <label>{i18n.t("Predictor groups")}</label>
-                <Transfer
+                <FormField
+                    name="predictorGroups"
+                    component={TransferFF}
                     filterable
                     filterablePicked
-                    onChange={() => {}}
                     selectedWidth="100%"
                     optionsWidth="100%"
                     options={[
