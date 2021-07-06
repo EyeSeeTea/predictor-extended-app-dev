@@ -11,10 +11,12 @@ type ResultType<Params extends any[], Obj> = {
 };
 
 export function useFuture<Obj, Params extends any[]>(
-    future: (...params: Params) => FutureData<Obj>,
-    params: Params
+    inputFuture: (...params: Params) => FutureData<Obj>,
+    inputParams: Params
 ): ResultType<Params, Obj> {
-    const [initialParams] = useState(params);
+    const [future] = useState(() => inputFuture);
+    const [params] = useState(inputParams);
+
     const [data, setData] = useState<Obj>();
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>();
@@ -44,8 +46,8 @@ export function useFuture<Obj, Params extends any[]>(
     );
 
     useEffect(() => {
-        return refetch(...initialParams);
-    }, [refetch, initialParams]);
+        return refetch(...params);
+    }, [refetch, params]);
 
     return { data, loading, cancel, error, refetch };
 }
