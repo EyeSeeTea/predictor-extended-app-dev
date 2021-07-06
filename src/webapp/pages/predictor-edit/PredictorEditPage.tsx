@@ -1,6 +1,6 @@
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
@@ -9,6 +9,7 @@ import { generateUid } from "../../../utils/uid";
 import PageHeader from "../../components/page-header/PageHeader";
 import { PredictorEditWizard } from "../../components/predictor-edit-wizard/PredictorEditWizard";
 import { useAppContext } from "../../contexts/app-context";
+import { useGoBack } from "../../hooks/useGoBack";
 
 export interface PredictorEditPageProps {
     type: "new" | "edit";
@@ -19,11 +20,22 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
     const { compositionRoot } = useAppContext();
     const location = useLocation<{ predictor?: Predictor }>();
     const snackbar = useSnackbar();
+    const goBack = useGoBack();
 
     const [predictor, setPredictor] = useState<Partial<Predictor> | undefined>(location.state?.predictor);
 
     const isValidEdit = id !== undefined || location.state?.predictor !== undefined;
     const title = type === "edit" && isValidEdit ? i18n.t("Edit predictor") : i18n.t("New predictor");
+
+    const savePredictor = useCallback(
+        (predictor: Predictor) => {
+            compositionRoot.usecases.save([predictor]).run(
+                () => goBack(true),
+                error => snackbar.error(i18n.t("Unable to save predictor: {{error}}", { error }))
+            );
+        },
+        [compositionRoot, goBack, snackbar]
+    );
 
     useEffect(() => {
         if (predictor !== undefined) return;
@@ -43,9 +55,11 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
 
     return (
         <Wrapper>
-            <PageHeader onBackClick={() => {}} title={title} />
+            <PageHeader onBackClick={goBack} title={title} />
 
-            {predictor !== undefined ? <PredictorEditWizard predictor={predictor} /> : null}
+            {predictor !== undefined ? (
+                <PredictorEditWizard predictor={predictor} onCancel={goBack} onSave={savePredictor} />
+            ) : null}
         </Wrapper>
     );
 };

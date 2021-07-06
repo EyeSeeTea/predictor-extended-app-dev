@@ -1,10 +1,11 @@
 import { FieldState, NoticeBox, Transfer, TransferProps } from "@dhis2/ui";
 import React from "react";
 import styled from "styled-components";
+import { Ref } from "../../../../domain/entities/DHIS2";
 
 export type TransferFFProps = {
     input: any;
-    meta: FieldState<string[]>;
+    meta: FieldState<Ref[]>;
     error?: boolean;
     loading?: boolean;
     showLoadingStatus?: boolean;
@@ -22,8 +23,8 @@ export const TransferFF = ({ input, meta, validationText, loading, showLoadingSt
             <Transfer
                 {...rest}
                 loading={isLoading}
-                onChange={({ selected }) => input.onChange(selected)}
-                selected={input.value}
+                onChange={({ selected }) => input.onChange(selected.map(id => ({ id })))}
+                selected={input.value.map(({ id }: Ref) => id)}
             />
 
             {!!message && <WarningBox warning={true} title={message} />}

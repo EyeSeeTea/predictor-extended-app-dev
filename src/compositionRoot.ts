@@ -8,7 +8,7 @@ import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpression
 import { GetOutputDataElementsUseCase } from "./domain/usecases/GetOutputDataElementsUseCase";
 import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
 import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
-import { ImportPredictorsUseCase } from "./domain/usecases/ImportPredictorsUseCase";
+import { SavePredictorsUseCase } from "./domain/usecases/SavePredictorsUseCase";
 import { ListMetadataUseCase } from "./domain/usecases/ListMetadataUseCase";
 import { ListPredictorsUseCase } from "./domain/usecases/ListPredictorsUseCase";
 import { ReadPredictorsExcelUseCase } from "./domain/usecases/ReadPredictorsExcelUseCase";
@@ -30,7 +30,7 @@ export function getCompositionRoot(baseUrl: string) {
             getExpressionSuggestions: new GetExpressionSuggestionsUseCase(metadataRepository),
             run: new RunPredictorsUseCase(predictorRepository),
             readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
-            import: new ImportPredictorsUseCase(predictorRepository),
+            save: new SavePredictorsUseCase(predictorRepository),
             export: new ExportPredictorsUseCase(predictorRepository, excelRepository, fileRepository),
             delete: new DeletePredictorsUseCase(predictorRepository),
             listMetadata: new ListMetadataUseCase(metadataRepository),

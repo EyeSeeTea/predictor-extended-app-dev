@@ -7,16 +7,11 @@ import React, { useCallback } from "react";
 import { Form } from "react-final-form";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
-import { StyledForm } from "../../components/form/StyledForm";
 import { useQueryState } from "../../hooks/useQueryState";
 import { GeneralInfoStep } from "./steps/GeneralInfoStep";
 import { GeneratorStep } from "./steps/GeneratorStep";
 import { SampleStep } from "./steps/SampleStep";
 import { SharingStep } from "./steps/SharingStep";
-
-const onSubmit = async (values: any) => {
-    window.alert(JSON.stringify(values, undefined, 2));
-};
 
 const steps = [
     {
@@ -51,13 +46,15 @@ const steps = [
 
 export interface PredictorEditWizardProps {
     predictor: Partial<Predictor>;
+    onCancel: () => void;
+    onSave: (predictor: Predictor) => void;
 }
 
 interface WizardState {
     step: string;
 }
 
-export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor }) => {
+export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel }) => {
     const [state, setState] = useQueryState<WizardState>({ step: steps[0]?.key ?? "" });
 
     const onNext = useCallback(() => {
@@ -83,13 +80,13 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
 
     return (
         <React.Fragment>
-            <Paper square={true}>
-                <Form
-                    autocomplete="off"
-                    onSubmit={onSubmit}
-                    initialValues={predictor}
-                    render={({ handleSubmit }) => (
-                        <StyledForm onSubmit={handleSubmit}>
+            <Form
+                autocomplete="off"
+                onSubmit={onSave}
+                initialValues={predictor}
+                render={({ handleSubmit }) => (
+                    <Wrapper onSubmit={handleSubmit}>
+                        <Paper square={true}>
                             <StyledWizard
                                 stepKey={state.step}
                                 steps={steps}
@@ -98,28 +95,32 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
                                 NavigationComponent={() => null}
                                 onStepChange={setCurrentStep}
                             />
-                        </StyledForm>
-                    )}
-                />
-            </Paper>
+                        </Paper>
 
-            <ButtonsRow middle>
-                <Button onClick={onPrev} icon={<ArrowBack />} />
+                        <ButtonsRow middle>
+                            <Button onClick={onPrev} icon={<ArrowBack />} />
 
-                <Button type="submit" primary>
-                    {i18n.t("Save")}
-                </Button>
+                            <Button type="submit" primary>
+                                {i18n.t("Save")}
+                            </Button>
 
-                <Button type="reset">{i18n.t("Cancel")}</Button>
+                            <Button type="reset" onClick={onCancel}>
+                                {i18n.t("Cancel")}
+                            </Button>
 
-                <Button onClick={onNext} icon={<ArrowForward />} />
-            </ButtonsRow>
+                            <Button onClick={onNext} icon={<ArrowForward />} />
+                        </ButtonsRow>
+                    </Wrapper>
+                )}
+            />
         </React.Fragment>
     );
 };
 
 const StyledWizard = styled(Wizard)`
     height: 100%;
+    padding: 40px;
+    width: inherit;
 
     .MuiPaper-root {
         box-shadow: none;
@@ -130,7 +131,8 @@ const StyledWizard = styled(Wizard)`
 
     label {
         display: block;
-        margin-bottom: 15px;
+        margin-top: 24px;
+        margin-bottom: 14px;
     }
 `;
 
@@ -140,4 +142,8 @@ const ButtonsRow = styled(ButtonStrip)`
     button:focus::after {
         border-color: transparent !important;
     }
+`;
+
+const Wrapper = styled.form`
+    margin: 20px;
 `;

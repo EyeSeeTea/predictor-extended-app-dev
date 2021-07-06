@@ -17,7 +17,7 @@ export function useQueryState<Obj extends object>(initialState: Obj): ResultType
                 const actualState = _.isFunction(update) ? update(prevState) : update;
                 const query = qs.stringify(compactQuery(actualState), { encode: false });
 
-                history.push(`${history.location.pathname}?${query}`);
+                history.replace(`${history.location.pathname}?${query}`);
                 return actualState;
             });
         },

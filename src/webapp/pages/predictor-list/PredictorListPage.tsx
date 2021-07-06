@@ -231,7 +231,7 @@ export const PredictorListPage: React.FC = () => {
             }
 
             //@ts-ignore TODO FIXME: Add validation
-            const response = await compositionRoot.usecases.import(predictors).toPromise();
+            const response = await compositionRoot.usecases.save(predictors).toPromise();
             setResponse(response);
 
             loading.reset();

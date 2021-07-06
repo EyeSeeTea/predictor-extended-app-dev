@@ -4,7 +4,7 @@ import { MetadataResponse } from "../entities/Metadata";
 import { Predictor } from "../entities/Predictor";
 import { PredictorRepository } from "../repositories/PredictorRepository";
 
-export class ImportPredictorsUseCase implements UseCase {
+export class SavePredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}
 
     public execute(predictors: Predictor[]): FutureData<MetadataResponse> {
