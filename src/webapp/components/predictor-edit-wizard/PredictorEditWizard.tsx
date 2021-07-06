@@ -119,9 +119,13 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
 
 const StyledWizard = styled(Wizard)`
     height: 100%;
-    padding: 40px;
+    padding: 45px;
     width: inherit;
 
+    && > .MuiStepper-root {
+        margin-bottom: 40px;
+    }
+    
     .MuiPaper-root {
         box-shadow: none;
         background-color: inherit;
@@ -131,8 +135,7 @@ const StyledWizard = styled(Wizard)`
 
     label {
         display: block;
-        margin-top: 24px;
-        margin-bottom: 14px;
+        margin-bottom: 15px;
     }
 `;
 
@@ -145,5 +148,5 @@ const ButtonsRow = styled(ButtonStrip)`
 `;
 
 const Wrapper = styled.form`
-    margin: 20px;
+    margin: 10px;
 `;
