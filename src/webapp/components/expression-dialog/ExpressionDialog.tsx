@@ -177,8 +177,8 @@ const StyledButton = styled(Button)`
     margin: 5px;
     padding: 0 5px;
 
-    &&:focus::after {
-        border-color: transparent;
+    :focus::after {
+        border-color: transparent !important;
     }
 `;
 

@@ -1,4 +1,7 @@
+import { useConfig } from "@dhis2/app-runtime";
+import { Button } from "@dhis2/ui";
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
+import { OpenInNew } from "@material-ui/icons";
 import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -17,6 +20,7 @@ export interface PredictorEditPageProps {
 }
 
 export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }) => {
+    const { baseUrl } = useConfig();
     const { compositionRoot } = useAppContext();
     const location = useLocation<{ predictor?: Predictor }>();
     const snackbar = useSnackbar();
@@ -37,6 +41,12 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
         [compositionRoot, goBack, snackbar]
     );
 
+    const openMaintenance = useCallback(() => {
+        window
+            ?.open(`${baseUrl}/dhis-web-maintenance/index.html#/edit/otherSection/predictor/${id}`, "_blank")
+            ?.focus();
+    }, [baseUrl, id]);
+
     useEffect(() => {
         if (predictor !== undefined) return;
         else if (id === undefined) {
@@ -55,7 +65,13 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
 
     return (
         <Wrapper>
-            <PageHeader onBackClick={goBack} title={title} />
+            <PageHeader onBackClick={goBack} title={title}>
+                {isValidEdit && (
+                    <MaintenanceButton icon={<OpenInNew />} onClick={openMaintenance}>
+                        {i18n.t("View in maintenance")}
+                    </MaintenanceButton>
+                )}
+            </PageHeader>
 
             {predictor !== undefined ? (
                 <PredictorEditWizard predictor={predictor} onCancel={goBack} onSave={savePredictor} />
@@ -66,4 +82,13 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
 
 const Wrapper = styled.div`
     margin: 20px 30px;
+`;
+
+const MaintenanceButton = styled(Button)`
+    float: right;
+    margin-top: 2px;
+
+    :focus::after {
+        border-color: transparent !important;
+    }
 `;
