@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-05T08:43:15.723Z\n"
-"PO-Revision-Date: 2021-07-05T08:43:15.723Z\n"
+"POT-Creation-Date: 2021-07-06T08:21:47.080Z\n"
+"PO-Revision-Date: 2021-07-06T08:21:47.080Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -86,6 +86,63 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
+msgid "General info"
+msgstr ""
+
+msgid "Generator"
+msgstr ""
+
+msgid "Samples"
+msgstr ""
+
+msgid "Access"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Name (*)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Period type (*)"
+msgstr ""
+
+msgid "Organisation unit levels (*)"
+msgstr ""
+
+msgid "Predictor groups"
+msgstr ""
+
+msgid "Generator description (*)"
+msgstr ""
+
+msgid "Generator description"
+msgstr ""
+
+msgid "Generator (*)"
+msgstr ""
+
+msgid "Sequential sample count"
+msgstr ""
+
+msgid "Annual sample count"
+msgstr ""
+
+msgid "Sequential skip count"
+msgstr ""
+
 msgid "Edit predictor"
 msgstr ""
 
@@ -104,22 +161,13 @@ msgstr ""
 msgid "Deleting predictors"
 msgstr ""
 
-msgid "Name"
-msgstr ""
-
 msgid "Output data element"
 msgstr ""
 
 msgid "Output category option"
 msgstr ""
 
-msgid "Description"
-msgstr ""
-
 msgid "Formula"
-msgstr ""
-
-msgid "Predictor groups"
 msgstr ""
 
 msgid "Period type"
@@ -129,9 +177,6 @@ msgid "Sample skip test"
 msgstr ""
 
 msgid "Last Updated"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "Last updated"
@@ -171,49 +216,4 @@ msgid "Reading files"
 msgstr ""
 
 msgid "Last updated date"
-msgstr ""
-
-msgid "General info"
-msgstr ""
-
-msgid "Generator"
-msgstr ""
-
-msgid "Samples"
-msgstr ""
-
-msgid "Access"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "Cancel"
-msgstr ""
-
-msgid "Name (*)"
-msgstr ""
-
-msgid "Period type (*)"
-msgstr ""
-
-msgid "Organisation unit levels (*)"
-msgstr ""
-
-msgid "Generator description (*)"
-msgstr ""
-
-msgid "Generator description"
-msgstr ""
-
-msgid "Generator (*)"
-msgstr ""
-
-msgid "Sequential sample count"
-msgstr ""
-
-msgid "Annual sample count"
-msgstr ""
-
-msgid "Sequential skip count"
 msgstr ""

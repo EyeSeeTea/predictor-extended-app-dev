@@ -2,8 +2,8 @@ import { composeValidators, createMinNumber, integer } from "@dhis2/ui";
 import i18n from "@eyeseetea/d2-ui-components/locales";
 import React from "react";
 import styled from "styled-components";
-import { FormField } from "../../components/form/fields/FormField";
-import { NumberInputFF } from "../../components/form/fields/NumberInputFF";
+import { FormField } from "../../../components/form/fields/FormField";
+import { NumberInputFF } from "../../../components/form/fields/NumberInputFF";
 
 export const SampleStep: React.FC = () => {
     return (

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2021-07-05T08:43:15.723Z\n"
+"POT-Creation-Date: 2021-07-06T08:21:47.080Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -86,6 +86,63 @@ msgstr "Volver"
 msgid "Help"
 msgstr "Ayuda"
 
+msgid "General info"
+msgstr ""
+
+msgid "Generator"
+msgstr ""
+
+msgid "Samples"
+msgstr ""
+
+msgid "Access"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Name (*)"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Period type (*)"
+msgstr ""
+
+msgid "Organisation unit levels (*)"
+msgstr ""
+
+msgid "Predictor groups"
+msgstr ""
+
+msgid "Generator description (*)"
+msgstr ""
+
+msgid "Generator description"
+msgstr ""
+
+msgid "Generator (*)"
+msgstr ""
+
+msgid "Sequential sample count"
+msgstr ""
+
+msgid "Annual sample count"
+msgstr ""
+
+msgid "Sequential skip count"
+msgstr ""
+
 msgid "Edit predictor"
 msgstr ""
 
@@ -104,22 +161,13 @@ msgstr ""
 msgid "Deleting predictors"
 msgstr ""
 
-msgid "Name"
-msgstr ""
-
 msgid "Output data element"
 msgstr ""
 
 msgid "Output category option"
 msgstr ""
 
-msgid "Description"
-msgstr ""
-
 msgid "Formula"
-msgstr ""
-
-msgid "Predictor groups"
 msgstr ""
 
 msgid "Period type"
@@ -129,9 +177,6 @@ msgid "Sample skip test"
 msgstr ""
 
 msgid "Last Updated"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "Last updated"
@@ -172,60 +217,3 @@ msgstr ""
 
 msgid "Last updated date"
 msgstr ""
-
-msgid "General info"
-msgstr ""
-
-msgid "Generator"
-msgstr ""
-
-msgid "Samples"
-msgstr ""
-
-msgid "Access"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "Cancel"
-msgstr ""
-
-msgid "Name (*)"
-msgstr ""
-
-msgid "Period type (*)"
-msgstr ""
-
-msgid "Organisation unit levels (*)"
-msgstr ""
-
-msgid "Generator description (*)"
-msgstr ""
-
-msgid "Generator description"
-msgstr ""
-
-msgid "Generator (*)"
-msgstr ""
-
-msgid "Sequential sample count"
-msgstr ""
-
-msgid "Annual sample count"
-msgstr ""
-
-msgid "Sequential skip count"
-msgstr ""
-
-#~ msgid "Add"
-#~ msgstr "Añadir"
-
-#~ msgid "List"
-#~ msgstr "Listar"
-
-#~ msgid "Click to show feedback"
-#~ msgstr "Toca para ver feedback"
-
-#~ msgid "configuration"
-#~ msgstr "Configuración"

@@ -7,8 +7,8 @@ import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
 import { generateUid } from "../../../utils/uid";
 import PageHeader from "../../components/page-header/PageHeader";
+import { PredictorEditWizard } from "../../components/predictor-edit-wizard/PredictorEditWizard";
 import { useAppContext } from "../../contexts/app-context";
-import { PredictorEditWizard } from "../../predictor-edit-wizard/PredictorEditWizard";
 
 export interface PredictorEditPageProps {
     type: "new" | "edit";

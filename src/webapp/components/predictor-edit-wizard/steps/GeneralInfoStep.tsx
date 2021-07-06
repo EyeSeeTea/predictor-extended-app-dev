@@ -1,8 +1,8 @@
 import { InputFieldFF, SingleSelectFieldFF, Transfer } from "@dhis2/ui";
 import React from "react";
 import styled from "styled-components";
-import i18n from "../../../locales";
-import { FormField } from "../../components/form/fields/FormField";
+import i18n from "../../../../locales";
+import { FormField } from "../../../components/form/fields/FormField";
 
 export const GeneralInfoStep: React.FC = () => {
     return (
