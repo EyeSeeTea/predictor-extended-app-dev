@@ -1,4 +1,4 @@
-import { InputFieldFF, SingleSelectFieldFF, Transfer } from "@dhis2/ui";
+import { hasValue, InputFieldFF, SingleSelectFieldFF, Transfer } from "@dhis2/ui";
 import React from "react";
 import styled from "styled-components";
 import i18n from "../../../../locales";
@@ -9,7 +9,12 @@ export const GeneralInfoStep: React.FC = () => {
         <React.Fragment>
             <Row>
                 <label>{i18n.t("Name (*)")}</label>
-                <FormField name="name" component={InputFieldFF} placeholder={i18n.t("Name")} />
+                <FormField
+                    name="name"
+                    component={InputFieldFF}
+                    placeholder={i18n.t("Name")}
+                    validate={hasValue}
+                />
             </Row>
 
             <Row>

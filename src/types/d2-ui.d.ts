@@ -360,7 +360,16 @@ declare module "@dhis2/ui" {
     export function ButtonStrip(props: ButtonStripProps): React.ReactElement;
     export function NoticeBox(props: NoticeBoxProps): React.ReactElement;
 
-    export function composeValidators(...validators: any[]): any;
-    export function integer(): any;
-    export function createMinNumber(min: number): any;
+    export function composeValidators(
+        ...validators: ((value: unknown) => string | undefined)[]
+    ): (value: unknown) => string | undefined;
+    export function integer(value: unknown): string | undefined;
+    export function boolean(value: unknown): string | undefined;
+    export function alphaNumeric(value: unknown): string | undefined;
+    export function email(value: unknown): string | undefined;
+    export function number(value: unknown): string | undefined;
+    export function string(value: unknown): string | undefined;
+    export function url(value: unknown): string | undefined;
+    export function hasValue(value: unknown): string | undefined;
+    export function createMinNumber(min: number): (value: unknown) => string | undefined;
 }
