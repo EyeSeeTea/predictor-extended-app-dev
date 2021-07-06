@@ -3,7 +3,12 @@ import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Future, FutureData } from "../domain/entities/Future";
 import { Predictor } from "../domain/entities/Predictor";
-import { ExpressionType, ListPredictorsFilters, PredictorRepository } from "../domain/repositories/PredictorRepository";
+import {
+    ExpressionType,
+    ExpressionValidation,
+    ListPredictorsFilters,
+    PredictorRepository,
+} from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse } from "../types/d2-api";
 import { formatDate } from "../utils/dates";
 import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
@@ -17,10 +22,12 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
-    public validateExpression(type: ExpressionType, expression: string): FutureData<string> {
-        return toFuture(this.api.expressions.validate(type, expression)).map(({ message, description }) => {
-            return _.compact([message, description]).join(": ");
-        });
+    public validateExpression(type: ExpressionType, expression: string): FutureData<ExpressionValidation> {
+        return toFuture(this.api.expressions.validate(type, expression)).map(({ message, description, status }) => ({
+            message,
+            description,
+            status,
+        }));
     }
 
     public get(ids: string[]): FutureData<Predictor[]> {

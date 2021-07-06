@@ -31,7 +31,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
         (predictor: Predictor) => {
             compositionRoot.usecases.save([predictor]).run(
                 () => goBack(true),
-                error => snackbar.error(i18n.t("Unable to save predictor: {{error}}", { error }))
+                error => snackbar.error(i18n.t("Unable to save predictor: {{error}}", { error, nsSeparator: false }))
             );
         },
         [compositionRoot, goBack, snackbar]

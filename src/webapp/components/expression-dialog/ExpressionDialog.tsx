@@ -1,5 +1,5 @@
 import { Button, Menu, MenuItem, Pagination } from "@dhis2/ui";
-import { useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import i18n from "../../../locales";
 import { D2ModelSchemas } from "../../../types/d2-api";
@@ -14,14 +14,12 @@ const functionsForExpressionType: any = {
 
 interface ExpressionDialogProps {
     expressionChanged?: (value: string) => void;
-    validateExpression?: (value: string) => Promise<string | undefined>;
     expressionType: "indicator" | "programIndicator" | "validationRule" | "predictor";
 }
 
-export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionType, validateExpression }) => {
+export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionType, expressionChanged }) => {
     const { compositionRoot } = useAppContext();
     const [formula, setFormula] = useState<string>("");
-    const [expressionValidation, setValidation] = useState<string>();
     const [variableListType, setVariableListType] = useState<keyof D2ModelSchemas>("dataElements");
 
     const extraFunctionsForType = expressionType ? functionsForExpressionType[expressionType] : [];
@@ -34,7 +32,7 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
 
     const formulaChange = (formula = "") => {
         setFormula(formula);
-        if (validateExpression) validateExpression(formula).then(message => setValidation(message));
+        if (expressionChanged) expressionChanged(formula);
     };
 
     const appendToFormula = (partToAppend: string) => {
@@ -101,12 +99,6 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
                     ))}
                 </StyledMenu>
             </GridItem>
-
-            {expressionValidation && (
-                <GridItem column={1} expand={true}>
-                    {expressionValidation}
-                </GridItem>
-            )}
         </GridContainer>
     );
 };

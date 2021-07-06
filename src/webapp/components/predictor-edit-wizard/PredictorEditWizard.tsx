@@ -125,7 +125,7 @@ const StyledWizard = styled(Wizard)`
     && > .MuiStepper-root {
         margin-bottom: 40px;
     }
-    
+
     .MuiPaper-root {
         box-shadow: none;
         background-color: inherit;

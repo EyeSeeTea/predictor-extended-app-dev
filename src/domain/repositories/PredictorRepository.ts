@@ -24,10 +24,16 @@ export interface PredictorRepository {
 
     delete(ids: string[]): FutureData<void>;
 
-    validateExpression(type: ExpressionType, expression: string): FutureData<string>;
+    validateExpression(type: ExpressionType, expression: string): FutureData<ExpressionValidation>;
 }
 
 export type ExpressionType = "predictor-formula" | "predictor-skip-test";
+
+export interface ExpressionValidation {
+    message: string;
+    description: string;
+    status: "OK" | "ERROR";
+}
 
 export interface ListPredictorsFilters {
     search?: string;
