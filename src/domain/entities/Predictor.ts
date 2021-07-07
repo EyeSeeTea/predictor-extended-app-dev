@@ -53,6 +53,28 @@ export interface Predictor {
     userGroupAccesses: SharingSetting[];
 }
 
+export const defaultPredictor: Predictor = {
+    id: "",
+    name: "",
+    output: { id: "", name: "" },
+    periodType: "Daily",
+    organisationUnitLevels: [],
+    generator: { expression: "",
+        description: "",
+        slidingWindow: false,
+        missingValueStrategy: "NEVER_SKIP" },
+    sequentialSampleCount: 0,
+    annualSampleCount: 0,
+    predictorGroups: [],
+    lastUpdated: "",
+    lastUpdatedBy: { id: "", name: "" },
+    created: "",
+    user: { id: "", name: "" },
+    publicAccess: "",
+    userAccesses: [],
+    userGroupAccesses: []
+};
+
 export const predictorColumns: Array<keyof Predictor> = [
     "id",
     "code",
