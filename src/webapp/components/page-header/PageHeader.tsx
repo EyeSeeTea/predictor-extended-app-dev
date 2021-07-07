@@ -5,7 +5,7 @@ import { DialogButton } from "@eyeseetea/d2-ui-components";
 import React from "react";
 import i18n from "../../../locales";
 
-const PageHeader: React.FC<PageHeaderProps> = ({ variant = "h5", title, onBackClick, helpText, children }) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ variant = "h5", title, onBackClick, helpText, children }) => {
     return (
         <div>
             {!!onBackClick && (
@@ -59,5 +59,3 @@ const renderHelpButton = (helpText: string) => (
         contents={helpText}
     />
 );
-
-export default PageHeader;
