@@ -96,18 +96,59 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         );
     }
 
-    public save(predictors: Predictor[]): FutureData<MetadataResponse> {
-        // TODO FIXME: Predictor groups need to be updated with predictors to be included
-        return toFuture(this.api.metadata.post({ predictors }));
+    public save(predictors: Predictor[]): FutureData<MetadataResponse[]> {
+        const savePredictor$ = toFuture(this.api.metadata.post({ predictors }));
+        const existingPredictors$ = this.get(predictors.map(({ id }) => id));
+
+        return Future.join2(savePredictor$, existingPredictors$).flatMap(([savePayload, existingPredictors]) =>
+            this.getGroupsToSave(predictors, existingPredictors).flatMap(groupsToSave => {
+                const groupPayload$ = toFuture(this.api.metadata.post({ predictorGroups: groupsToSave }));
+                return groupPayload$.map(groupPayload => [savePayload, groupPayload]);
+            })
+        );
     }
 
     public delete(ids: string[]): FutureData<any> {
-        return Future.futureMap(ids, id =>
-            toFuture(
-                this.api.models.predictors.delete({
-                    id: id,
+        return Future.futureMap(ids, id => toFuture(this.api.models.predictors.delete({ id: id })));
+    }
+
+    private getGroupsToSave(update: Predictor[], original: Predictor[]) {
+        const predictorIds = update.map(({ id }) => id);
+        const groupDictionary = _(update)
+            .flatMap(({ id, predictorGroups }) => predictorGroups.map(group => ({ id, group })))
+            .groupBy(({ group }) => group.id)
+            .mapValues(items => items.map(({ id }) => id))
+            .value();
+
+        const existingGroupRefs = _.flatMap(original, ({ predictorGroups }) => predictorGroups);
+        const newGroupRefs = _.flatMap(update, ({ predictorGroups }) => predictorGroups);
+        const allGroupRefs = _.concat(existingGroupRefs, newGroupRefs);
+
+        const groupInfo$ = toFuture(
+            this.api.metadata.get({
+                predictorGroups: {
+                    fields: { $owner: true },
+                    filter: { id: { in: _.uniq(allGroupRefs.map(oug => oug.id)) } }, // Review 414
+                },
+            })
+        );
+
+        return groupInfo$.map(({ predictorGroups }) =>
+            predictorGroups
+                .map(group => {
+                    const cleanList = group.predictors.filter(({ id }) => !predictorIds.includes(id));
+                    const newItems = groupDictionary[group.id] ?? [];
+                    const predictors = [...cleanList, ...newItems.map(id => ({ id }))];
+
+                    return { ...group, predictors };
                 })
-            )
+                .filter(group => {
+                    const newIds = group.predictors.map(({ id }) => id);
+                    const oldIds =
+                        predictorGroups.find(({ id }) => id === group.id)?.predictors.map(({ id }) => id) ?? [];
+
+                    return !_.isEqual(_.sortBy(oldIds), _.sortBy(newIds));
+                })
         );
     }
 }
