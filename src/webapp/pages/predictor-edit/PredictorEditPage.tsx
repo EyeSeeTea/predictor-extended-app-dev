@@ -68,7 +68,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
             <PageHeader onBackClick={goBack} title={title}>
                 {isValidEdit && (
                     <MaintenanceButton icon={<OpenInNew />} onClick={openMaintenance}>
-                        {i18n.t("View in maintenance")}
+                        {i18n.t("Open in maintenance")}
                     </MaintenanceButton>
                 )}
             </PageHeader>
