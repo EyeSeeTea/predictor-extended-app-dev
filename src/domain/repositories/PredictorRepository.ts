@@ -20,7 +20,7 @@ export interface PredictorRepository {
 
     run(ids: string[], startDate: Date, endDate: Date): FutureData<any>;
 
-    save(predictors: Predictor[]): FutureData<MetadataResponse>;
+    save(predictors: Predictor[]): FutureData<MetadataResponse[]>;
 
     delete(ids: string[]): FutureData<void>;
 

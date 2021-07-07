@@ -1,9 +1,9 @@
 declare module "@dhis2/ui" {
-    export interface FieldState<FieldValue> {
+    interface FieldState<FieldValue> {
         active?: boolean;
         blur: () => void;
         change: (value: FieldValue | undefined) => void;
-        data?: AnyObject;
+        data?: any;
         dirty?: boolean;
         dirtySinceLastSubmit?: boolean;
         error?: any;
@@ -25,6 +25,22 @@ declare module "@dhis2/ui" {
         value?: FieldValue;
         visited?: boolean;
     }
+
+    type FinalFormInput = {
+        name: string;
+        value?: any;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onChange?: (data: any, event: ChangeEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
+    };
+
+    type FinalFormMeta = {
+        error?: string;
+        invalid?: boolean;
+        touched?: boolean;
+        valid?: boolean;
+        validating?: boolean;
+    };
 
     export type InputFieldProps = {
         className?: string;
@@ -72,14 +88,14 @@ declare module "@dhis2/ui" {
         validationText?: string;
         value?: string;
         warning?: any;
-        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
-        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onChange?: (data: any, event: ChangeEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
     };
 
     export type InputFieldFFProps = InputFieldProps & {
-        input: any;
-        meta: any;
+        input: FinalFormInput;
+        meta: FinalFormMeta;
         error?: boolean;
         loading?: boolean;
         showLoadingStatus?: boolean;
@@ -105,9 +121,9 @@ declare module "@dhis2/ui" {
         toggled?: boolean;
         type?: "submit" | "reset" | "button";
         value?: string;
-        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
-        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onClick?: (data: any, event: MouseEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
     };
 
     export type TransferProps = {
@@ -187,26 +203,14 @@ declare module "@dhis2/ui" {
         tabIndex: string;
         valid: boolean;
         warning: boolean;
-        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
-        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onChange?: (data: any, event: ChangeEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
     };
 
     export type MultiSelectFieldFFProps = MultiSelectProps & {
-        input?: {
-            name: string;
-            value?: any;
-            onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-            onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
-            onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        };
-        meta?: {
-            error?: string;
-            invalid?: boolean;
-            touched?: boolean;
-            valid?: boolean;
-            validating?: boolean;
-        };
+        input: FinalFormInput;
+        meta: FinalFormMeta;
         error?: boolean;
         loading?: boolean;
         options?: {
@@ -217,8 +221,8 @@ declare module "@dhis2/ui" {
         showValidStatus?: boolean;
         valid?: boolean;
         validationText?: string;
-        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
     };
 
     export type SingleSelectProps = {
@@ -244,14 +248,14 @@ declare module "@dhis2/ui" {
         tabIndex?: string;
         valid?: boolean;
         warning?: boolean;
-        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
-        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onChange?: (data: any, event: ChangeEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
     };
 
     export type SingleSelectFieldFFProps = SingleSelectProps & {
-        input: any;
-        meta: any;
+        input: FinalFormInput;
+        meta: FinalFormMeta;
         options: {
             label?: string;
             value?: string;
@@ -304,7 +308,7 @@ declare module "@dhis2/ui" {
         target?: string;
         toggleSubMenu?: (...args: any[]) => any;
         value?: string;
-        onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
+        onClick?: (data: any, event: MouseEvent) => void;
     };
 
     export type PaginationProps = {
@@ -343,6 +347,65 @@ declare module "@dhis2/ui" {
         warning?: boolean;
     };
 
+    export type CheckboxFieldProps = {
+        checked?: boolean;
+        className?: string;
+        dataTest?: string;
+        dense?: boolean;
+        disabled?: boolean;
+        error?: boolean;
+        indeterminate?: boolean;
+        initialFocus?: boolean;
+        label?: React.ReactNode;
+        name?: string;
+        tabIndex?: string;
+        valid?: boolean;
+        value?: string;
+        warning?: boolean;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onChange?: (data: any, event: ChangeEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
+    };
+
+    export type CheckboxFieldFFProps = {
+        input: FinalFormInput;
+        meta: FinalFormMeta;
+        error?: boolean;
+        showValidStatus?: boolean;
+        valid?: boolean;
+        validationText?: string;
+        onBlur?: (data: any, event: FocusEvent) => void;
+        onFocus?: (data: any, event: FocusEvent) => void;
+    };
+
+    type SwitchFieldProps = {
+        ariaLabel?: string;
+        checked?: boolean;
+        className?: string;
+        dataTest?: string;
+        dense?: boolean;
+        disabled?: boolean;
+        error?: boolean;
+        initialFocus?: boolean;
+        label?: React.ReactNode;
+        name?: string;
+        role?: string;
+        tabIndex?: string;
+        valid?: boolean;
+        value?: string;
+        warning?: boolean;
+        onBlur?: (data: { name: string; value: string; checked: boolean }, event: FocusEvent) => void;
+        onChange?: (data: { name: string; value: string; checked: boolean }, event: ChangeEvent) => void;
+        onFocus?: (data: { name: string; value: string; checked: boolean }, event: FocusEvent) => void;
+    };
+
+    export type SwitchFieldFFProps = SwitchFieldProps & {
+        input: FinalFormInput;
+        meta: FinalFormMeta;
+        showValidStatus?: boolean;
+        validationText?: string;
+    };
+
     export function HeaderBar(props: { className?: string; appName: string }): React.ReactElement;
     export function InputField(props: InputFieldProps): React.ReactElement;
     export function InputFieldFF(props: InputFieldFFProps): React.ReactElement;
@@ -359,6 +422,10 @@ declare module "@dhis2/ui" {
     export function Pagination(props: PaginationProps): React.ReactElement;
     export function ButtonStrip(props: ButtonStripProps): React.ReactElement;
     export function NoticeBox(props: NoticeBoxProps): React.ReactElement;
+    export function CheckboxField(props: CheckboxFieldProps): React.ReactElement;
+    export function CheckboxFieldFF(props: CheckboxFieldFFProps): React.ReactElement;
+    export function SwitchField(props: SwitchFieldProps): React.ReactElement;
+    export function SwitchFieldFF(props: SwitchFieldFFProps): React.ReactElement;
 
     export function composeValidators(
         ...validators: ((value: unknown) => string | undefined)[]
