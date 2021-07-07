@@ -34,7 +34,7 @@ export const PredictorListPage: React.FC = () => {
     const fileRef = useRef<DropzoneRef>(null);
 
     const [state, setState] = useQueryState<ListPredictorsFilters>({});
-    const [response, setResponse] = useState<MetadataResponse>();
+    const [response, setResponse] = useState<MetadataResponse[]>();
     const [reloadKey, reload] = useReload();
 
     const { data: predictorGroupOptions = [] } = useFuture(() => {
@@ -306,7 +306,7 @@ export const PredictorListPage: React.FC = () => {
                 </ObjectsList>
             </Dropzone>
 
-            {response && <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />}
+            {response && <ImportSummary results={response} onClose={() => setResponse(undefined)} />}
         </Wrapper>
     );
 };
