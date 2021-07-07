@@ -9,9 +9,9 @@ export interface PredictorRepository {
     get(ids: string[]): FutureData<Predictor[]>;
 
     list(
-        filters: ListPredictorsFilters,
-        paging: { page: number; pageSize: number },
-        sorting: TableSorting<Predictor>
+        filters?: ListPredictorsFilters,
+        paging?: { page: number; pageSize: number },
+        sorting?: TableSorting<Predictor>
     ): FutureData<{ pager: Pager; objects: Predictor[] }>;
 
     getGroups(): FutureData<NamedRef[]>;
