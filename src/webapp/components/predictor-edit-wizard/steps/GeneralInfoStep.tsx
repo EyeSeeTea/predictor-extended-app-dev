@@ -5,8 +5,15 @@ import i18n from "../../../../locales";
 import { FormField } from "../../../components/form/fields/FormField";
 import { TransferFF } from "../../form/fields/TransferFF";
 import { hasItems } from "../../form/validators/hasItems";
+import { useFuture } from "../../../hooks/useFuture";
+import { useAppContext } from "../../../contexts/app-context";
 
 export const GeneralInfoStep: React.FC = () => {
+    const { compositionRoot } = useAppContext();
+    const orgUnitLevels = useFuture(compositionRoot.usecases.listMetadata, [
+        "organisationUnitLevels",
+    ]).data?.objects.map(object => ({value: object.id, label: object.name})) || [];
+
     return (
         <React.Fragment>
             <Row>
@@ -39,16 +46,7 @@ export const GeneralInfoStep: React.FC = () => {
                     selectedWidth="100%"
                     optionsWidth="100%"
                     validate={hasItems}
-                    options={[
-                        {
-                            label: "Org Unit Level 1",
-                            value: "OU_LEVEL_1",
-                        },
-                        {
-                            label: "Org Unit Level 2",
-                            value: "OU_LEVEL_2",
-                        },
-                    ]}
+                    options={orgUnitLevels}
                 />
             </Row>
 

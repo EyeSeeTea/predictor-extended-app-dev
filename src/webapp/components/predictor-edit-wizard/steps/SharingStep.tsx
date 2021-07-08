@@ -6,21 +6,20 @@ import i18n from "@eyeseetea/d2-ui-components/locales";
 import { useAppContext } from "../../../contexts/app-context";
 import { PredictorEditWizardProps } from "../PredictorEditWizard";
 
-export const SharingStep: React.FC<PredictorEditWizardProps> = ({
-    predictor,
-    onChange,
-}: PredictorEditWizardProps) => {
+export const SharingStep: React.FC<PredictorEditWizardProps> = ({ predictor, onChange }: PredictorEditWizardProps) => {
     const { compositionRoot } = useAppContext();
 
-    const search = useCallback(async (query: string) => 
-    {
-        const searchResult = await compositionRoot.usecases.searchUsers(query)
-        const resultToReturn = {
-            users: searchResult,
-            userGroups: []
-        }
-        return resultToReturn;
-    }, [compositionRoot]);
+    const search = useCallback(
+        async (query: string) => {
+            const searchResult = await compositionRoot.usecases.searchUsers(query);
+            const resultToReturn = {
+                users: searchResult,
+                userGroups: [],
+            };
+            return resultToReturn;
+        },
+        [compositionRoot]
+    );
 
     const setModuleSharing = useCallback(
         ({ publicAccess, userAccesses, userGroupAccesses }: ShareUpdate) => {

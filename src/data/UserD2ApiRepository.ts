@@ -19,7 +19,7 @@ export class UserD2ApiRepository implements UserRepository {
                 //@ts-ignore D2-api index bug
                 .get({
                     fields: { id: true, displayName: true },
-                    query
+                    query,
                 })
         ).map(({ objects }) => {
             return objects;

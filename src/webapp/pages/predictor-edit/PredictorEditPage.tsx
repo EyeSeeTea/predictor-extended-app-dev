@@ -44,7 +44,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
     );
 
     const onChange = useCallback((update: Parameters<typeof setPredictor>[0]) => {
-        setPredictor((prev) => ({...prev, ...update}));
+        setPredictor(prev => ({ ...prev, ...update }));
     }, []);
 
     const openMaintenance = useCallback(() => {
@@ -80,7 +80,12 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
             </PageHeader>
 
             {predictor !== undefined ? (
-                <PredictorEditWizard predictor={predictor} onCancel={goBack} onChange={onChange} onSave={savePredictor} />
+                <PredictorEditWizard
+                    predictor={predictor}
+                    onCancel={goBack}
+                    onChange={onChange}
+                    onSave={savePredictor}
+                />
             ) : null}
         </Wrapper>
     );
