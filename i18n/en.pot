@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-07T10:26:26.842Z\n"
-"PO-Revision-Date: 2021-07-07T10:26:26.842Z\n"
+"POT-Creation-Date: 2021-07-08T07:42:09.105Z\n"
+"PO-Revision-Date: 2021-07-08T07:42:09.105Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-msgid "Imported"
+msgid "Created"
 msgstr ""
 
 msgid "Updated"
@@ -59,10 +59,16 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
-msgid "Synchronization Results"
+msgid "Import Results"
 msgstr ""
 
 msgid "Ok"
+msgstr ""
+
+msgid "Predictors"
+msgstr ""
+
+msgid "Import"
 msgstr ""
 
 msgid "Status"
@@ -161,6 +167,9 @@ msgstr ""
 msgid "Sequential skip count"
 msgstr ""
 
+msgid "Note: The sharing settings are only applied to the current predictor"
+msgstr ""
+
 msgid "Edit predictor"
 msgstr ""
 
@@ -207,9 +216,6 @@ msgid "Last updated"
 msgstr ""
 
 msgid "Last updated by"
-msgstr ""
-
-msgid "Created"
 msgstr ""
 
 msgid "Created by"

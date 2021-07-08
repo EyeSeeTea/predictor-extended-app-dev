@@ -1,57 +1,52 @@
-import React, { useState, useCallback } from "react"; // { useCallback }
+import React, { useCallback } from "react";
 import styled from "styled-components";
 import { ShareUpdate, Sharing } from "@eyeseetea/d2-ui-components";
-import { defaultPredictor, Predictor } from "../../../../domain/entities/Predictor";
 
 import i18n from "@eyeseetea/d2-ui-components/locales";
-import { useParams } from "react-router-dom";
 import { useAppContext } from "../../../contexts/app-context";
-import { useFuture } from "../../../hooks/useFuture";
+import { PredictorEditWizardProps } from "../PredictorEditWizard";
 
-export const SharingStep: React.FC = () => {
-    const params: { type: string, id: string } = useParams();
-
-    console.log(params?.id);
+export const SharingStep: React.FC<PredictorEditWizardProps> = ({
+    predictor,
+    onChange,
+}: PredictorEditWizardProps) => {
     const { compositionRoot } = useAppContext();
-    const { data: predictorOptions = [] } = useFuture(() => {
-        return compositionRoot.usecases
-            .get([params.id]);
-    }, []);
-    console.log(predictorOptions);
-    const [statePredictor, updateStatePredictor] = useState<Predictor>(predictorOptions[0] ?? defaultPredictor);
 
+    const search = useCallback(async (query: string) => 
+    {
+        const searchResult = await compositionRoot.usecases.searchUsers(query)
+        const resultToReturn = {
+            users: searchResult,
+            userGroups: []
+        }
+        return resultToReturn;
+    }, [compositionRoot]);
 
-    const search = useCallback((query: string) => compositionRoot.usecases.searchUsers(query), [compositionRoot]);
-    const onChange = useCallback((update: Parameters<typeof updateStatePredictor>[0]) => {
-        updateStatePredictor(update);
-    }, []);
-
-   const setModuleSharing = useCallback(
+    const setModuleSharing = useCallback(
         ({ publicAccess, userAccesses, userGroupAccesses }: ShareUpdate) => {
             onChange(predictor => {
                 return {
                     ...predictor,
                     publicAccess: publicAccess ?? predictor.publicAccess,
                     userAccesses: userAccesses ? userAccesses : predictor.userAccesses,
-                    userGroupAccesses: userGroupAccesses
-                        ? userGroupAccesses
-                        : predictor.userGroupAccesses,
+                    userGroupAccesses: userGroupAccesses ? userGroupAccesses : predictor.userGroupAccesses,
                 };
             });
             return Promise.resolve();
         },
-        [onChange]);
+        [onChange]
+    );
     return (
         <React.Fragment>
             <Sharing
                 meta={{
                     meta: { allowPublicAccess: true, allowExternalAccess: false },
                     object: {
-                        id: statePredictor.id,
-                        displayName: statePredictor.name,
-                        publicAccess: statePredictor.publicAccess,
-                        userAccesses: statePredictor.userAccesses,
-                        userGroupAccesses: statePredictor.userGroupAccesses,
+                        id: predictor.id || "",
+                        displayName: predictor.name,
+                        publicAccess: predictor.publicAccess,
+                        userAccesses: predictor.userAccesses,
+                        userGroupAccesses: predictor.userGroupAccesses,
                     },
                 }}
                 showOptions={{
@@ -78,4 +73,3 @@ const Footer = styled.div`
     font-size: 1.1.em;
     text-align: left;
 `;
-

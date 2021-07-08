@@ -6,6 +6,7 @@ import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
+// defaultPredictor,
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
 import { generateUid } from "../../../utils/uid";
@@ -22,11 +23,12 @@ export interface PredictorEditPageProps {
 export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }) => {
     const { baseUrl } = useConfig();
     const { compositionRoot } = useAppContext();
-    const location = useLocation<{ predictor?: Predictor }>();
+    const location = useLocation<{ predictor: Predictor }>();
+
     const snackbar = useSnackbar();
     const goBack = useGoBack();
 
-    const [predictor, setPredictor] = useState<Partial<Predictor> | undefined>(location.state?.predictor);
+    const [predictor, setPredictor] = useState<Partial<Predictor>>(location.state?.predictor);
 
     const isValidEdit = id !== undefined || location.state?.predictor !== undefined;
     const title = type === "edit" && isValidEdit ? i18n.t("Edit predictor") : i18n.t("New predictor");
@@ -40,6 +42,10 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
         },
         [compositionRoot, goBack, snackbar]
     );
+
+    const onChange = useCallback((update: Parameters<typeof setPredictor>[0]) => {
+        setPredictor((prev) => ({...prev, ...update}));
+    }, []);
 
     const openMaintenance = useCallback(() => {
         window
@@ -74,7 +80,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
             </PageHeader>
 
             {predictor !== undefined ? (
-                <PredictorEditWizard predictor={predictor} onCancel={goBack} onSave={savePredictor} />
+                <PredictorEditWizard predictor={predictor} onCancel={goBack} onChange={onChange} onSave={savePredictor} />
             ) : null}
         </Wrapper>
     );

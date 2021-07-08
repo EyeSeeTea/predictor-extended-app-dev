@@ -17,7 +17,6 @@ import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
 import { ValidateExpressionUseCase } from "./domain/usecases/ValidateExpressionUseCase";
 import { SearchUsersUseCase } from "./domain/usecases/SearchUsersUseCase";
 
-
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
     const metadataRepository = new MetadataD2ApiRepository(baseUrl);
@@ -39,7 +38,7 @@ export function getCompositionRoot(baseUrl: string) {
             delete: new DeletePredictorsUseCase(predictorRepository),
             listMetadata: new ListMetadataUseCase(metadataRepository),
             validateExpression: new ValidateExpressionUseCase(predictorRepository),
-            searchUsers: new SearchUsersUseCase(userRepository)
+            searchUsers: new SearchUsersUseCase(userRepository),
         }),
     };
 }

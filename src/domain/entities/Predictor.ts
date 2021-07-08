@@ -59,10 +59,7 @@ export const defaultPredictor: Predictor = {
     output: { id: "", name: "" },
     periodType: "Daily",
     organisationUnitLevels: [],
-    generator: { expression: "",
-        description: "",
-        slidingWindow: false,
-        missingValueStrategy: "NEVER_SKIP" },
+    generator: { expression: "", description: "", slidingWindow: false, missingValueStrategy: "NEVER_SKIP" },
     sequentialSampleCount: 0,
     annualSampleCount: 0,
     predictorGroups: [],
@@ -72,7 +69,7 @@ export const defaultPredictor: Predictor = {
     user: { id: "", name: "" },
     publicAccess: "",
     userAccesses: [],
-    userGroupAccesses: []
+    userGroupAccesses: [],
 };
 
 export const predictorColumns: Array<keyof Predictor> = [

@@ -48,15 +48,19 @@ export interface PredictorEditWizardProps {
     predictor: Partial<Predictor>;
     onCancel: () => void;
     onSave: (predictor: Predictor) => void;
+    onChange: (update: Partial<Predictor> | ((prev: Partial<Predictor>) => Partial<Predictor>)) => void;
 }
 
 interface WizardState {
     step: string;
 }
 
-export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel }) => {
+export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel, onChange }) => {
     const [state, setState] = useQueryState<WizardState>({ step: steps[0]?.key ?? "" });
-
+    if(steps[3]) {
+        steps[3].props = {predictor, onChange }
+    }
+    
     const onNext = useCallback(() => {
         setState(state => {
             const index = steps.findIndex(step => step.key === state.step);
