@@ -32,14 +32,14 @@ export const PredictorImportPage: React.FC = () => {
                     autocomplete="off"
                     onSubmit={console.log}
                     initialValues={{ predictors }}
-                    render={({ handleSubmit }) => (
+                    render={({ handleSubmit, values }) => (
                         <Wrapper2 onSubmit={handleSubmit}>
                             <AutoSizer>
                                 {({ height, width }) => (
                                     <Grid
                                         height={height}
                                         width={width}
-                                        rowCount={predictors.length + 1}
+                                        rowCount={values.predictors.length + 1}
                                         columnCount={predictorFormFields.length + 1}
                                         rowHeight={index => (index === 0 ? 30 : 70)}
                                         columnWidth={index => (index === 0 ? 50 : 250)}
@@ -76,7 +76,9 @@ const RowItem: React.FC<RowItemProps> = ({ columnIndex, rowIndex }) => {
     const field = predictorFormFields[columnIndex - 1];
 
     const removeRow = useCallback(() => {
-        form.change("predictors", form.getState().values.predictors.splice(row - 1, 1));
+        const original = form.getState().values.predictors;
+        const predictors = [...original.slice(0, row), ...original.slice(row + 1)];
+        form.change("predictors", predictors);
     }, [form, row]);
 
     if (deleteRow) {
