@@ -42,7 +42,7 @@ export const PredictorImportPage: React.FC = () => {
                                         rowCount={predictors.length + 1}
                                         columnCount={predictorFormFields.length + 1}
                                         rowHeight={index => (index === 0 ? 30 : 70)}
-                                        columnWidth={index => (index === 0 ? 50 : 200)}
+                                        columnWidth={index => (index === 0 ? 50 : 250)}
                                     >
                                         {Row}
                                     </Grid>

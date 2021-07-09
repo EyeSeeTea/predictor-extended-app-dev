@@ -441,4 +441,5 @@ declare module "@dhis2/ui" {
     export function url(value: unknown): string | undefined;
     export function hasValue(value: unknown): string | undefined;
     export function createMinNumber(min: number): (value: unknown) => string | undefined;
+    export function createPattern(pattern: RegExp, message?: string): (value: unknown) => string | undefined;
 }

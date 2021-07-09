@@ -2,19 +2,16 @@ import { InputField } from "@dhis2/ui";
 import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import i18n from "@eyeseetea/d2-ui-components/locales";
 import _ from "lodash";
-import React, { ComponentProps, JSXElementConstructor, useState } from "react";
+import React, { ComponentProps, JSXElementConstructor, useMemo, useState } from "react";
 import { FieldRenderProps } from "react-final-form";
-import { FormField } from "../../form/fields/FormField";
 
 export function PreviewInputFF<T extends JSXElementConstructor<any>>({
-    input,
     placeholder,
-    previewComponent,
+    previewComponent: PreviewComponent,
     previewComponentProps,
     ...props
-}: Pick<FieldRenderProps<string>, "input"> & PreviewInputFFProps<T>) {
+}: Pick<FieldRenderProps<string>, "input" | "meta"> & PreviewInputFFProps<T>) {
     const [open, setOpen] = useState(false);
-    const value = buildValue(input.value);
 
     return (
         <React.Fragment>
@@ -26,15 +23,30 @@ export function PreviewInputFF<T extends JSXElementConstructor<any>>({
                 onCancel={() => setOpen(false)}
                 cancelText={i18n.t("Close")}
             >
-                <FormField name={input.name} component={previewComponent} {...previewComponentProps} />
+                <PreviewComponent {...props} {...previewComponentProps} />
             </ConfirmationDialog>
 
             <div onClick={() => setOpen(true)}>
-                <InputField {...props} name={input.name} value={value} />
+                <Foo {...props} />
             </div>
         </React.Fragment>
     );
 }
+
+const Foo = ({ meta, input, ...props }: any) => {
+    const value = useMemo(() => buildValue(input.value), [input.value]);
+
+    return (
+        <InputField
+            {...props}
+            name={input.name}
+            value={value}
+            onChange={() => {}}
+            error={!!meta.error}
+            validationText={meta.error ?? meta.submitError}
+        />
+    );
+};
 
 export interface PreviewInputFFProps<T extends JSXElementConstructor<any>> {
     placeholder: string;

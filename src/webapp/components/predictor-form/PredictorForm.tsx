@@ -1,7 +1,17 @@
-import { hasValue, InputFieldFF, SingleSelectFieldFF } from "@dhis2/ui";
+import {
+    composeValidators,
+    createMinNumber,
+    createPattern,
+    hasValue,
+    InputFieldFF,
+    integer,
+    SingleSelectFieldFF,
+} from "@dhis2/ui";
 import _ from "lodash";
 import i18n from "../../../locales";
+import { fullUidRegex } from "../../../utils/uid";
 import { FormField } from "../form/fields/FormField";
+import { NumberInputFF } from "../form/fields/NumberInputFF";
 import { hasItems } from "../form/validators/hasItems";
 import { OrgUnitLevelsFF } from "./components/OrgUnitLevelsFF";
 import { PredictorGroupsFF } from "./components/PredictorGroupsFF";
@@ -14,12 +24,35 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
     const required = predictorRequiredFields.includes(field);
 
     switch (field) {
+        case "id":
+            return (
+                <FormField
+                    {...props}
+                    component={InputFieldFF}
+                    validate={createPattern(fullUidRegex, i18n.t("Please provide a valid identifier"))}
+                />
+            );
         case "periodType":
             return <FormField {...props} component={SingleSelectFieldFF} options={periodTypes} />;
         case "organisationUnitLevels":
             return <FormField {...props} component={OrgUnitLevelsFF} validate={hasItems} />;
         case "predictorGroups":
             return <FormField {...props} component={PredictorGroupsFF} />;
+        case "generator.missingValueStrategy":
+            return <FormField {...props} component={SingleSelectFieldFF} options={missingValueStrategy} />;
+        case "sequentialSampleCount":
+        case "annualSampleCount":
+        case "sequentialSkipCount":
+            return (
+                <FormField
+                    {...props}
+                    component={NumberInputFF}
+                    validate={composeValidators(integer, createMinNumber(0))}
+                    defaultValue="0"
+                    min="0"
+                />
+            );
+
         default:
             return <FormField {...props} component={InputFieldFF} validate={required ? hasValue : undefined} />;
     }
@@ -35,7 +68,8 @@ export const RenderPredictorImportField: React.FC<{ row: number; field: Predicto
                     {...props}
                     component={PreviewInputFF}
                     previewComponent={OrgUnitLevelsFF}
-                    previewComponentProps={{ validate: hasItems }}
+                    previewComponentProps={{}}
+                    validate={hasItems}
                 />
             );
         case "predictorGroups":
@@ -74,7 +108,12 @@ export const predictorFormFields = [
     "sampleSkipTest.expression",
 ] as const;
 
-const predictorRequiredFields: PredictorFormField[] = ["name"];
+const predictorRequiredFields: PredictorFormField[] = [
+    "name",
+    "generator.description",
+    "generator.expression",
+    "organisationUnitLevels",
+];
 
 const getPredictorFieldBaseName = (field: PredictorFormField) => {
     switch (field) {
@@ -140,4 +179,10 @@ const periodTypes = [
     { value: "FinancialJuly", label: "Financial year starting July" },
     { value: "FinancialOct", label: "Financial year starting October" },
     { value: "FinancialNov", label: "Financial year starting November" },
+];
+
+const missingValueStrategy = [
+    { value: "SKIP_IF_ANY_VALUE_MISSING", label: i18n.t("Skip if any value is missing") },
+    { value: "SKIP_IF_ALL_VALUES_MISSING", label: i18n.t("Skip if all values are missing") },
+    { value: "NEVER_SKIP", label: i18n.t("Never skip") },
 ];

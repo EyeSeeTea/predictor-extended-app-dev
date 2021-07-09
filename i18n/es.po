@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2021-07-08T07:42:09.105Z\n"
+"POT-Creation-Date: 2021-07-09T09:51:05.994Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -101,34 +101,10 @@ msgstr ""
 msgid "Samples"
 msgstr ""
 
-msgid "Access"
-msgstr ""
-
 msgid "Save"
 msgstr ""
 
 msgid "Cancel"
-msgstr ""
-
-msgid "Name (*)"
-msgstr ""
-
-msgid "Name"
-msgstr ""
-
-msgid "Code"
-msgstr ""
-
-msgid "Description"
-msgstr ""
-
-msgid "Period type (*)"
-msgstr ""
-
-msgid "Organisation unit levels (*)"
-msgstr ""
-
-msgid "Predictor groups"
 msgstr ""
 
 msgid "Unable to validate expression"
@@ -158,6 +134,15 @@ msgstr ""
 msgid "Sample skip test"
 msgstr ""
 
+msgid "Sample skip test description (*)"
+msgstr ""
+
+msgid "Sample skip test description"
+msgstr ""
+
+msgid "Sample skip test (*)"
+msgstr ""
+
 msgid "Sequential sample count"
 msgstr ""
 
@@ -167,7 +152,43 @@ msgstr ""
 msgid "Sequential skip count"
 msgstr ""
 
-msgid "Note: The sharing settings are only applied to the current predictor"
+msgid "Please provide a valid identifier"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Output data element"
+msgstr ""
+
+msgid "Output category combo"
+msgstr ""
+
+msgid "Period type"
+msgstr ""
+
+msgid "Organisation unit levels"
+msgstr ""
+
+msgid "Predictor groups"
+msgstr ""
+
+msgid "Missing value strategy"
+msgstr ""
+
+msgid "Generator formula"
+msgstr ""
+
+msgid "Sample skip test formula"
+msgstr ""
+
+msgid "Close"
 msgstr ""
 
 msgid "Edit predictor"
@@ -188,6 +209,9 @@ msgstr ""
 msgid "Import predictors"
 msgstr ""
 
+msgid "Delete"
+msgstr ""
+
 msgid "Running predictors"
 msgstr ""
 
@@ -197,16 +221,10 @@ msgstr ""
 msgid "Deleting predictors"
 msgstr ""
 
-msgid "Output data element"
-msgstr ""
-
 msgid "Output category option"
 msgstr ""
 
 msgid "Formula"
-msgstr ""
-
-msgid "Period type"
 msgstr ""
 
 msgid "Last Updated"
@@ -225,9 +243,6 @@ msgid "Details"
 msgstr ""
 
 msgid "Edit"
-msgstr ""
-
-msgid "Delete"
 msgstr ""
 
 msgid "Run"
