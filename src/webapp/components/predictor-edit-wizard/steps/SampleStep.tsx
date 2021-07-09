@@ -43,16 +43,16 @@ export const SampleStep: React.FC = () => {
             {showSkipTest && (
                 <React.Fragment>
                     <Row>
-                        <label>{i18n.t("Generator description (*)")}</label>
+                        <label>{i18n.t("Sample skip test description (*)")}</label>
                         <FormField
                             name="sampleSkipTest.description"
                             component={InputFieldFF}
-                            placeholder={i18n.t("Generator description")}
+                            placeholder={i18n.t("Sample skip test description")}
                         />
                     </Row>
 
                     <Row>
-                        <label>{i18n.t("Generator (*)")}</label>
+                        <label>{i18n.t("Sample skip test (*)")}</label>
                         <ExpressionDialog expressionChanged={validateExpression} expressionType="predictor" />
                     </Row>
 
@@ -108,7 +108,7 @@ const Row = styled.div`
 
 const Checkbox = styled(CheckboxField)`
     label {
-        display: flex;
+        display: flex !important;
     }
 
     input:focus + .icon {
