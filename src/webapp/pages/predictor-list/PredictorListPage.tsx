@@ -68,8 +68,10 @@ export const PredictorListPage: React.FC = () => {
         [compositionRoot, loading]
     );
 
+    const newPredictor = useCallback(() => history.push(`/new`), [history]);
+
     const editPredictor = useCallback(
-        async (ids: string[]) => {
+        (ids: string[]) => {
             if (ids[0] === undefined) return;
             history.push(`/edit/${ids[0]}`);
         },
@@ -199,8 +201,17 @@ export const PredictorListPage: React.FC = () => {
                 pageSizeInitialValue: 25,
             },
             searchBoxLabel: i18n.t("Search by name"),
+            onActionButtonClick: newPredictor,
         };
-    }, [runPredictors, exportPredictors, editPredictor, deletePredictor, openImportDialog, placeholderAction]);
+    }, [
+        runPredictors,
+        exportPredictors,
+        newPredictor,
+        editPredictor,
+        deletePredictor,
+        openImportDialog,
+        placeholderAction,
+    ]);
 
     const refreshRows = useCallback(
         (

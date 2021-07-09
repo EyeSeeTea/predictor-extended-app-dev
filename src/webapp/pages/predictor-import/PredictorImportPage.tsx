@@ -30,7 +30,7 @@ export const PredictorImportPage: React.FC = () => {
             <Container>
                 <Form
                     autocomplete="off"
-                    onSubmit={console.log}
+                    onSubmit={() => {}}
                     initialValues={{ predictors }}
                     render={({ handleSubmit, values }) => (
                         <Wrapper2 onSubmit={handleSubmit}>

@@ -8,7 +8,7 @@ export const Router = () => {
         <HashRouter>
             <Switch>
                 <Route
-                    path="/:type(new|edit)/:id"
+                    path="/:type(new|edit)/:id?"
                     render={({ match }) => <PredictorEditPage type={match.params.type} id={match.params.id} />}
                 />
 
