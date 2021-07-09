@@ -1,7 +1,10 @@
 import { InputField, InputFieldProps } from "@dhis2/ui";
 import { FieldRenderProps } from "react-final-form";
 
-export const NumberInputFF: React.FC<FieldRenderProps<string> & InputFieldProps> = ({ input, ...props }) => {
+export const NumberInputFF: React.FC<Pick<FieldRenderProps<string>, "input"> & InputFieldProps> = ({
+    input,
+    ...props
+}) => {
     return (
         <InputField
             {...props}

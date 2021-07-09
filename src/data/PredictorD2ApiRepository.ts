@@ -168,7 +168,7 @@ const predictorFields = {
         missingValueStrategy: true,
         slidingWindow: true,
     },
-    organisationUnitLevels: true,
+    organisationUnitLevels: { id: true, name: true },
     predictorGroups: { id: true, name: true },
     sampleSkipTest: {
         expression: true,

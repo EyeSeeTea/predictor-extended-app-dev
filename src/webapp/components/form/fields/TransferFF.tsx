@@ -1,11 +1,11 @@
 import { FieldState, NoticeBox, Transfer, TransferProps } from "@dhis2/ui";
 import React from "react";
 import styled from "styled-components";
-import { Ref } from "../../../../domain/entities/DHIS2";
+import { NamedRef } from "../../../../domain/entities/DHIS2";
 
 export type TransferFFProps = {
     input: any;
-    meta: FieldState<Ref[]>;
+    meta: FieldState<NamedRef[]>;
     error?: boolean;
     loading?: boolean;
     showLoadingStatus?: boolean;
@@ -14,7 +14,15 @@ export type TransferFFProps = {
     validationText?: string;
 } & Omit<TransferProps, "loading" | "onChange" | "selected">;
 
-export const TransferFF = ({ input, meta, validationText, loading, showLoadingStatus, ...rest }: TransferFFProps) => {
+export const TransferFF = ({
+    input,
+    meta,
+    validationText,
+    loading,
+    showLoadingStatus,
+    options,
+    ...rest
+}: TransferFFProps) => {
     const isLoading = loading || (showLoadingStatus && meta.validating);
     const message = validationText ?? meta.error ?? meta.submitError;
 
@@ -22,9 +30,14 @@ export const TransferFF = ({ input, meta, validationText, loading, showLoadingSt
         <React.Fragment>
             <Transfer
                 {...rest}
+                options={options}
                 loading={isLoading}
-                onChange={({ selected }) => input.onChange(selected.map(id => ({ id })))}
-                selected={input.value.map(({ id }: Ref) => id)}
+                onChange={({ selected }) =>
+                    input.onChange(
+                        selected.map(id => ({ id, name: options.find(item => item.value === id)?.label ?? "" }))
+                    )
+                }
+                selected={input.value.map(({ id }: NamedRef) => id)}
             />
 
             {!!message && <WarningBox warning={true} title={message} />}

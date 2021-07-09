@@ -75,7 +75,7 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
             <Form
                 autocomplete="off"
                 onSubmit={onSave}
-                initialValues={predictor}
+                initialValues={{ predictors: [predictor] }}
                 render={({ handleSubmit }) => (
                     <Wrapper onSubmit={handleSubmit}>
                         <Paper square={true}>
