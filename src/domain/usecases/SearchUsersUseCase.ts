@@ -1,11 +1,12 @@
 import { UseCase } from "../../compositionRoot";
-import { UserRepository } from "../repositories/UserRepository";
-import { UserSearchItem } from "../entities/SearchUser";
+import { FutureData } from "../entities/Future";
+import { UserSearch } from "../entities/Instance";
+import { InstanceRepository } from "../repositories/InstanceRepository";
 
 export class SearchUsersUseCase implements UseCase {
-    constructor(private userRepository: UserRepository) {}
+    constructor(private userRepository: InstanceRepository) {}
 
-    public execute(query: string): Promise<UserSearchItem[]> {
-        return this.userRepository.searchUsers(query).toPromise();
+    public execute(query: string): FutureData<UserSearch> {
+        return this.userRepository.searchUsers(query);
     }
 }

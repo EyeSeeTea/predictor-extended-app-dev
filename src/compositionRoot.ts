@@ -1,7 +1,7 @@
 import { ExcelXlsxPopulateRepository } from "./data/ExcelXlsxPopulateRepository";
 import { FileBrowserRepository } from "./data/FileBrowserRepository";
 import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
-import { UserD2ApiRepository } from "./data/UserD2ApiRepository";
+import { InstanceD2ApiRepository } from "./data/InstanceD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
 import { DeletePredictorsUseCase } from "./domain/usecases/DeletePredictorsUseCase";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
@@ -20,7 +20,7 @@ import { SearchUsersUseCase } from "./domain/usecases/SearchUsersUseCase";
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
     const metadataRepository = new MetadataD2ApiRepository(baseUrl);
-    const userRepository = new UserD2ApiRepository(baseUrl);
+    const instanceRepository = new InstanceD2ApiRepository(baseUrl);
     const excelRepository = new ExcelXlsxPopulateRepository();
     const fileRepository = new FileBrowserRepository();
 
@@ -38,7 +38,7 @@ export function getCompositionRoot(baseUrl: string) {
             delete: new DeletePredictorsUseCase(predictorRepository),
             listMetadata: new ListMetadataUseCase(metadataRepository),
             validateExpression: new ValidateExpressionUseCase(predictorRepository),
-            searchUsers: new SearchUsersUseCase(userRepository),
+            searchUsers: new SearchUsersUseCase(instanceRepository),
         }),
     };
 }

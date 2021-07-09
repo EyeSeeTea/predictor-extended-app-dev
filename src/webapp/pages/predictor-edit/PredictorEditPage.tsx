@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 // defaultPredictor,
-import { Predictor } from "../../../domain/entities/Predictor";
+import { defaultPredictor, Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
 import { generateUid } from "../../../utils/uid";
 import { PageHeader } from "../../components/page-header/PageHeader";
@@ -28,7 +28,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
     const snackbar = useSnackbar();
     const goBack = useGoBack();
 
-    const [predictor, setPredictor] = useState<Partial<Predictor>>(location.state?.predictor);
+    const [predictor, setPredictor] = useState<Predictor>(location.state?.predictor);
 
     const isValidEdit = id !== undefined || location.state?.predictor !== undefined;
     const title = type === "edit" && isValidEdit ? i18n.t("Edit predictor") : i18n.t("New predictor");
@@ -43,10 +43,6 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
         [compositionRoot, goBack, snackbar]
     );
 
-    const onChange = useCallback((update: Parameters<typeof setPredictor>[0]) => {
-        setPredictor(prev => ({ ...prev, ...update }));
-    }, []);
-
     const openMaintenance = useCallback(() => {
         window
             ?.open(`${baseUrl}/dhis-web-maintenance/index.html#/edit/otherSection/predictor/${id}`, "_blank")
@@ -56,7 +52,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
     useEffect(() => {
         if (predictor !== undefined) return;
         else if (id === undefined) {
-            setPredictor({ id: generateUid() });
+            setPredictor({ ...defaultPredictor, id: generateUid() });
             return;
         }
 
@@ -80,12 +76,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
             </PageHeader>
 
             {predictor !== undefined ? (
-                <PredictorEditWizard
-                    predictor={predictor}
-                    onCancel={goBack}
-                    onChange={onChange}
-                    onSave={savePredictor}
-                />
+                <PredictorEditWizard predictor={predictor} onCancel={goBack} onSave={savePredictor} />
             ) : null}
         </Wrapper>
     );

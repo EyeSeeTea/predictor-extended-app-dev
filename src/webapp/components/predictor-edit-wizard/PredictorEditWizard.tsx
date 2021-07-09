@@ -11,7 +11,6 @@ import { useQueryState } from "../../hooks/useQueryState";
 import { GeneralInfoStep } from "./steps/GeneralInfoStep";
 import { GeneratorStep } from "./steps/GeneratorStep";
 import { SampleStep } from "./steps/SampleStep";
-import { SharingStep } from "./steps/SharingStep";
 
 const steps = [
     {
@@ -35,31 +34,20 @@ const steps = [
         component: SampleStep,
         props: {},
     },
-    {
-        key: `sharing`,
-        module,
-        label: i18n.t("Access"),
-        component: SharingStep,
-        props: {},
-    },
 ];
 
 export interface PredictorEditWizardProps {
-    predictor: Partial<Predictor>;
+    predictor: Predictor;
     onCancel: () => void;
     onSave: (predictor: Predictor) => void;
-    onChange: (update: Partial<Predictor> | ((prev: Partial<Predictor>) => Partial<Predictor>)) => void;
 }
 
 interface WizardState {
     step: string;
 }
 
-export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel, onChange }) => {
+export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel }) => {
     const [state, setState] = useQueryState<WizardState>({ step: steps[0]?.key ?? "" });
-    if (steps[3]) {
-        steps[3].props = { predictor, onChange };
-    }
 
     const onNext = useCallback(() => {
         setState(state => {

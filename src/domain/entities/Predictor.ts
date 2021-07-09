@@ -1,4 +1,4 @@
-import { NamedRef, SharingSetting } from "./DHIS2";
+import { NamedRef } from "./DHIS2";
 
 export type PeriodType =
     | "Daily"
@@ -48,9 +48,6 @@ export interface Predictor {
     lastUpdatedBy: NamedRef;
     created: string; // TODO: Convert to date
     user: NamedRef;
-    publicAccess: string;
-    userAccesses: SharingSetting[];
-    userGroupAccesses: SharingSetting[];
 }
 
 export const defaultPredictor: Predictor = {
@@ -67,9 +64,6 @@ export const defaultPredictor: Predictor = {
     lastUpdatedBy: { id: "", name: "" },
     created: "",
     user: { id: "", name: "" },
-    publicAccess: "",
-    userAccesses: [],
-    userGroupAccesses: [],
 };
 
 export const predictorColumns: Array<keyof Predictor> = [

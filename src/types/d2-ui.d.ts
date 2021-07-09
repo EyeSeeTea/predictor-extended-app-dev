@@ -126,12 +126,14 @@ declare module "@dhis2/ui" {
         onFocus?: (data: any, event: FocusEvent) => void;
     };
 
+    export type TransferOption = {
+        label: string;
+        value: string;
+        disabled?: boolean;
+    };
+
     export type TransferProps = {
-        options: {
-            label: string;
-            value: string;
-            disabled?: boolean;
-        }[];
+        options: TransferOption[];
         onChange: (params: { selected: string[] }) => void;
         addAllText?: string;
         addIndividualText?: string;

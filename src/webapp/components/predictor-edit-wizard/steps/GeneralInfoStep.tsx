@@ -1,18 +1,24 @@
-import { hasValue, InputFieldFF, SingleSelectFieldFF } from "@dhis2/ui";
+import { hasValue, InputFieldFF, SingleSelectFieldFF, TransferOption } from "@dhis2/ui";
 import React from "react";
 import styled from "styled-components";
+import { NamedRef } from "../../../../domain/entities/DHIS2";
 import i18n from "../../../../locales";
 import { FormField } from "../../../components/form/fields/FormField";
+import { useAppContext } from "../../../contexts/app-context";
+import { useFuture } from "../../../hooks/useFuture";
 import { TransferFF } from "../../form/fields/TransferFF";
 import { hasItems } from "../../form/validators/hasItems";
-import { useFuture } from "../../../hooks/useFuture";
-import { useAppContext } from "../../../contexts/app-context";
 
 export const GeneralInfoStep: React.FC = () => {
     const { compositionRoot } = useAppContext();
-    const orgUnitLevels = useFuture(compositionRoot.usecases.listMetadata, [
-        "organisationUnitLevels",
-    ]).data?.objects.map(object => ({value: object.id, label: object.name})) || [];
+
+    const { data: orgUnitLevels = [] } = useFuture(
+        () =>
+            compositionRoot.usecases
+                .listMetadata("organisationUnitLevels")
+                .map(({ objects }) => buildTransferOptions(objects)),
+        []
+    );
 
     return (
         <React.Fragment>
@@ -99,3 +105,7 @@ const periodTypes = [
     { value: "FinancialOct", label: "Financial year starting October" },
     { value: "FinancialNov", label: "Financial year starting November" },
 ];
+
+const buildTransferOptions = (options: NamedRef[]): TransferOption[] => {
+    return options.map(({ id, name }) => ({ value: id, label: name }));
+};

@@ -39,3 +39,4 @@ cypress/fixtures/
 
 # IntelliJ
 .idea/*
+.vscode/*

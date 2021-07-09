@@ -1,6 +1,6 @@
 import { Formula, PeriodType, Predictor } from "../../domain/entities/Predictor";
 import { Codec, Schema } from "../utils/codec";
-import { NamedRefModel, SharingSettingModel } from "./DHIS2Model";
+import { NamedRefModel } from "./DHIS2Model";
 
 export const FormulaModel: Codec<Formula> = Schema.object({
     expression: Schema.string,
@@ -53,7 +53,4 @@ export const PredictorModel: Codec<Predictor> = Schema.object({
     lastUpdatedBy: NamedRefModel,
     created: Schema.string,
     user: NamedRefModel,
-    publicAccess: Schema.optionalSafe(Schema.string, "--------"),
-    userAccesses: Schema.optionalSafe(Schema.array(SharingSettingModel), []),
-    userGroupAccesses: Schema.optionalSafe(Schema.array(SharingSettingModel), []),
 });
