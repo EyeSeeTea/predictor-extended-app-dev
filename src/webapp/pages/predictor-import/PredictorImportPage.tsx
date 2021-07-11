@@ -18,6 +18,9 @@ import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { useGoBack } from "../../hooks/useGoBack";
 
+const rowHeight = (index: number) => (index === 0 ? 30 : 70);
+const columnWidth = (index: number) => (index === 0 ? 50 : 250);
+
 export const PredictorImportPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const goBack = useGoBack();
@@ -28,7 +31,7 @@ export const PredictorImportPage: React.FC = () => {
         <Wrapper>
             <PageHeader onBackClick={goBack} title={i18n.t("Import predictors")} />
             <Container>
-                <Form
+                <Form<{ predictors: Predictor[] }>
                     autocomplete="off"
                     onSubmit={() => {}}
                     initialValues={{ predictors }}
@@ -41,8 +44,10 @@ export const PredictorImportPage: React.FC = () => {
                                         width={width}
                                         rowCount={values.predictors.length + 1}
                                         columnCount={predictorFormFields.length + 1}
-                                        rowHeight={index => (index === 0 ? 30 : 70)}
-                                        columnWidth={index => (index === 0 ? 50 : 250)}
+                                        estimatedColumnWidth={250}
+                                        estimatedRowHeight={70}
+                                        rowHeight={rowHeight}
+                                        columnWidth={columnWidth}
                                     >
                                         {Row}
                                     </Grid>
