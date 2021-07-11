@@ -28,21 +28,30 @@ const useValidations = (
 ): { validation?: (...args: any[]) => any; props?: object } => {
     const { compositionRoot } = useAppContext();
 
-    const [expressionValidation, setExpressionValidation] = React.useState<Record<string, ExpressionValidation>>({});
+    const [expressionValidation, setExpressionValidation] = React.useState<
+        Record<string, ExpressionValidation | undefined>
+    >({});
 
     const validateExpression = (formula: string, _allValues: object, meta?: FieldState<string>) => {
-        if (!meta || !formula || !formula.trim()) return undefined;
-        const type = field === "generator.expression" ? "predictor-formula" : "predictor-skip-test";
+        if (!meta) return;
+        else if (!formula || !formula.trim()) {
+            setExpressionValidation(validations => ({ ...validations, [meta.name]: undefined }));
+            return;
+        }
 
-        return new Promise(resolve => {
-            compositionRoot.usecases.validateExpression(type, formula).run(
-                validation => {
-                    setExpressionValidation(validations => ({ ...validations, [meta.name]: validation }));
-                    resolve(validation.status === "ERROR" ? validation.message : undefined);
-                },
-                error => resolve(error)
-            );
-        });
+        const type = field === "generator.expression" ? "predictor-formula" : "predictor-skip-test";
+        compositionRoot.usecases.validateExpression(type, formula).run(
+            validation => setExpressionValidation(validations => ({ ...validations, [meta.name]: validation })),
+            error =>
+                setExpressionValidation(validations => ({
+                    ...validations,
+                    [meta.name]: {
+                        message: i18n.t("Unable to validate"),
+                        status: "ERROR",
+                        description: error,
+                    },
+                }))
+        );
     };
 
     switch (field) {
@@ -56,7 +65,16 @@ const useValidations = (
             return { validation: composeValidators(integer, createMinNumber(0)) };
         case "generator.expression":
         case "sampleSkipTest.expression":
-            return { validation: validateExpression, props: { expressionValidation: expressionValidation[name] } };
+            return {
+                validation: validateExpression,
+                props: {
+                    expressionValidation: expressionValidation[name],
+                    warning:
+                        expressionValidation[name]?.status === "ERROR"
+                            ? expressionValidation[name]?.message
+                            : undefined,
+                },
+            };
         default: {
             const required = predictorRequiredFields.includes(field);
             return { validation: required ? hasValue : undefined };

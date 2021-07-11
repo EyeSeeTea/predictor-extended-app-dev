@@ -5,7 +5,7 @@ import _ from "lodash";
 import React, { useState } from "react";
 import { Field, FieldRenderProps } from "react-final-form";
 
-export function PreviewInputFF({ placeholder, children, name, validate }: PreviewInputFFProps) {
+export function PreviewInputFF({ warning, placeholder, children, name, validate }: PreviewInputFFProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -28,8 +28,8 @@ export function PreviewInputFF({ placeholder, children, name, validate }: Previe
                             name={input.name}
                             value={buildValue(input.value)}
                             onChange={() => {}}
-                            error={!!meta.error}
-                            validationText={meta.error ?? meta.submitError}
+                            error={!!warning || !!meta.error}
+                            validationText={warning ?? meta.error ?? meta.submitError}
                         />
                     )}
                 </Field>
@@ -40,6 +40,7 @@ export function PreviewInputFF({ placeholder, children, name, validate }: Previe
 
 export interface PreviewInputFFProps extends Pick<FieldRenderProps<string>, "name" | "validate"> {
     placeholder: string;
+    warning?: string;
     children: React.ReactNode;
 }
 
