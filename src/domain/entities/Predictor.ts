@@ -50,6 +50,8 @@ export interface Predictor {
     user: NamedRef;
 }
 
+export type PredictorSave = Omit<Predictor, "lastUpdated" | "lastUpdatedBy" | "created" | "user" | "predictorGroups">;
+
 export const defaultPredictor: Predictor = {
     id: "",
     name: "",

@@ -11,6 +11,7 @@ import {
 } from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { formatDate } from "../utils/dates";
+import { PredictorSaveModel } from "./models/PredictorModel";
 import { getD2APiFromUrl } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
@@ -95,12 +96,19 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         );
     }
 
-    public save(predictors: Predictor[]): FutureData<MetadataResponse[]> {
+    public save(inputPredictors: Predictor[]): FutureData<MetadataResponse[]> {
+        const validations = inputPredictors.map(predictor => PredictorSaveModel.decode(predictor));
+        const predictors = _.compact(validations.map(either => either.toMaybe().extract()));
+        const errors = _.compact(validations.map(either => either.leftOrDefault("")));
+        if (errors.length > 0) {
+            return Future.error(errors.join("\n"));
+        }
+
         const savePredictor$ = toFuture(this.api.metadata.post({ predictors }));
         const existingPredictors$ = this.get(predictors.map(({ id }) => id));
 
         return Future.join2(savePredictor$, existingPredictors$).flatMap(([savePayload, existingPredictors]) =>
-            this.getGroupsToSave(predictors, existingPredictors).flatMap(groupsToSave => {
+            this.getGroupsToSave(inputPredictors, existingPredictors).flatMap(groupsToSave => {
                 const groupPayload$ = toFuture(this.api.metadata.post({ predictorGroups: groupsToSave }));
                 return groupPayload$.map(groupPayload => [savePayload, groupPayload]);
             })

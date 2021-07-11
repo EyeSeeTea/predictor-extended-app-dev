@@ -1,16 +1,19 @@
-import { Formula, PeriodType, Predictor } from "../../domain/entities/Predictor";
+import { Formula, PeriodType, Predictor, PredictorSave } from "../../domain/entities/Predictor";
 import { Codec, Schema } from "../utils/codec";
 import { NamedRefModel } from "./DHIS2Model";
 
 export const FormulaModel: Codec<Formula> = Schema.object({
     expression: Schema.string,
-    description: Schema.string,
+    description: Schema.optionalSafe(Schema.string, "Description"),
     slidingWindow: Schema.optionalSafe(Schema.boolean, false),
-    missingValueStrategy: Schema.oneOf([
-        Schema.exact("NEVER_SKIP"),
-        Schema.exact("SKIP_IF_ANY_VALUE_MISSING"),
-        Schema.exact("SKIP_IF_ALL_VALUES_MISSING"),
-    ]),
+    missingValueStrategy: Schema.optionalSafe(
+        Schema.oneOf([
+            Schema.exact("NEVER_SKIP"),
+            Schema.exact("SKIP_IF_ANY_VALUE_MISSING"),
+            Schema.exact("SKIP_IF_ALL_VALUES_MISSING"),
+        ]),
+        "SKIP_IF_ALL_VALUES_MISSING"
+    ),
 });
 
 export const PeriodTypeModel: Codec<PeriodType> = Schema.oneOf([
@@ -53,4 +56,20 @@ export const PredictorModel: Codec<Predictor> = Schema.object({
     lastUpdatedBy: NamedRefModel,
     created: Schema.string,
     user: NamedRefModel,
+});
+
+export const PredictorSaveModel: Codec<PredictorSave> = Schema.object({
+    id: Schema.string,
+    code: Schema.optional(Schema.string),
+    name: Schema.string,
+    description: Schema.optional(Schema.string),
+    output: NamedRefModel,
+    outputCombo: Schema.optional(NamedRefModel),
+    periodType: PeriodTypeModel,
+    organisationUnitLevels: Schema.optionalSafe(Schema.array(NamedRefModel), []),
+    generator: FormulaModel,
+    sampleSkipTest: Schema.optional(FormulaModel),
+    sequentialSampleCount: Schema.number,
+    annualSampleCount: Schema.number,
+    sequentialSkipCount: Schema.optional(Schema.number),
 });

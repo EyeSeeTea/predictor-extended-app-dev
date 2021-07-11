@@ -85,11 +85,18 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
         [setState]
     );
 
+    const onSubmit = useCallback(
+        ({ predictors }: { predictors: Predictor[] }) => {
+            if (predictors[0]) onSave(predictors[0]);
+        },
+        [onSave]
+    );
+
     return (
         <React.Fragment>
-            <Form
+            <Form<{ predictors: Predictor[] }>
                 autocomplete="off"
-                onSubmit={onSave}
+                onSubmit={onSubmit}
                 initialValues={{ predictors: [predictor] }}
                 render={({ handleSubmit }) => (
                     <Wrapper onSubmit={handleSubmit}>
