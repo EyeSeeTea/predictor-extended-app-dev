@@ -8,31 +8,37 @@ import { Form } from "react-final-form";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
 import { useQueryState } from "../../hooks/useQueryState";
-import { GeneralInfoStep } from "./steps/GeneralInfoStep";
-import { GeneratorStep } from "./steps/GeneratorStep";
-import { SampleStep } from "./steps/SampleStep";
+import { PredictorEditWizardStep } from "./PredictorEditWizardStep";
 
 const steps = [
     {
         key: `general-info`,
         module,
         label: i18n.t("General info"),
-        component: GeneralInfoStep,
-        props: {},
+        component: PredictorEditWizardStep,
+        props: { fields: ["name", "code", "description", "periodType", "organisationUnitLevels", "predictorGroups"] },
     },
     {
         key: `generator`,
         module,
         label: i18n.t("Generator"),
-        component: GeneratorStep,
-        props: {},
+        component: PredictorEditWizardStep,
+        props: { fields: ["generator.description", "generator.expression", "generator.missingValueStrategy"] },
     },
     {
         key: `sample`,
         module,
         label: i18n.t("Samples"),
-        component: SampleStep,
-        props: {},
+        component: PredictorEditWizardStep,
+        props: {
+            fields: [
+                "sampleSkipTest.description",
+                "sampleSkipTest.expression",
+                "sequentialSampleCount",
+                "annualSampleCount",
+                "sequentialSkipCount",
+            ],
+        },
     },
 ];
 

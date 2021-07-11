@@ -1,15 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import {
-    getPredictorFieldName,
-    PredictorFormField,
-    RenderPredictorWizardField,
-} from "../../predictor-form/PredictorForm";
+import { getPredictorFieldName, PredictorFormField, RenderPredictorWizardField } from "../predictor-form/PredictorForm";
 
-export const GeneralInfoStep: React.FC = () => {
+export const PredictorEditWizardStep: React.FC<PredictorEditWizardStepProps> = ({ fields }) => {
     return (
         <React.Fragment>
-            {generalInfoFields.map(field => (
+            {fields.map(field => (
                 <Row key={`wizard-row-${field}`}>
                     <label>{getPredictorFieldName(field)}</label>
                     <RenderPredictorWizardField row={0} field={field} />
@@ -23,11 +19,6 @@ const Row = styled.div`
     margin: 20px 0;
 `;
 
-const generalInfoFields: PredictorFormField[] = [
-    "name",
-    "code",
-    "description",
-    "periodType",
-    "organisationUnitLevels",
-    "predictorGroups",
-];
+export interface PredictorEditWizardStepProps {
+    fields: PredictorFormField[];
+}
