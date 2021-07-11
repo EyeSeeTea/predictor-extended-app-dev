@@ -12,14 +12,15 @@ const functionsForExpressionType: any = {
     indicator: [".periodOffset("],
 };
 
-interface ExpressionDialogProps {
-    expressionChanged?: (value: string) => void;
+export interface ExpressionBoxProps {
+    formula: string;
+    onChange: (value: string) => void;
     expressionType: "indicator" | "programIndicator" | "validationRule" | "predictor";
 }
 
-export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionType, expressionChanged }) => {
+export const ExpressionBox: React.FC<ExpressionBoxProps> = ({ expressionType, formula, onChange }) => {
     const { compositionRoot } = useAppContext();
-    const [formula, setFormula] = useState<string>("");
+
     const [variableListType, setVariableListType] = useState<keyof D2ModelSchemas>("dataElements");
 
     const extraFunctionsForType = expressionType ? functionsForExpressionType[expressionType] : [];
@@ -31,8 +32,7 @@ export const ExpressionDialog: React.FC<ExpressionDialogProps> = ({ expressionTy
     ]);
 
     const formulaChange = (formula = "") => {
-        setFormula(formula);
-        if (expressionChanged) expressionChanged(formula);
+        onChange(formula);
     };
 
     const appendToFormula = (partToAppend: string) => {
