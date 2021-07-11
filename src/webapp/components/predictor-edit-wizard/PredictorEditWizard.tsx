@@ -32,12 +32,21 @@ const steps = [
         component: PredictorEditWizardStep,
         props: {
             fields: [
-                "sampleSkipTest.description",
-                "sampleSkipTest.expression",
                 "sequentialSampleCount",
                 "annualSampleCount",
                 "sequentialSkipCount",
+                "sampleSkipTest.description",
+                "sampleSkipTest.expression",
             ],
+        },
+    },
+    {
+        key: `scheduling`,
+        module,
+        label: i18n.t("Scheduling"),
+        component: PredictorEditWizardStep,
+        props: {
+            fields: [],
         },
     },
 ];
