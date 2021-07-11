@@ -7,7 +7,7 @@ import {
     ExpressionType,
     ExpressionValidation,
     ListPredictorsFilters,
-    PredictorRepository
+    PredictorRepository,
 } from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";

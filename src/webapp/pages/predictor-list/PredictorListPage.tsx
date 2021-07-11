@@ -10,7 +10,7 @@ import {
     useObjectsTable,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
-import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
+import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext } from "@material-ui/icons";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import { useHistory } from "react-router-dom";
@@ -94,10 +94,6 @@ export const PredictorListPage: React.FC = () => {
         fileRef.current?.openDialog();
     }, [fileRef]);
 
-    const placeholderAction = useCallback(() => {
-        snackbar.info("Not implemented yet");
-    }, [snackbar]);
-
     const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
             columns: [
@@ -178,13 +174,6 @@ export const PredictorListPage: React.FC = () => {
                     onClick: exportPredictors,
                     icon: <ArrowDownward />,
                 },
-                {
-                    name: "validate",
-                    text: i18n.t("Validate"),
-                    multiple: true,
-                    onClick: placeholderAction,
-                    icon: <Sync />,
-                },
             ],
             globalActions: [
                 {
@@ -205,15 +194,7 @@ export const PredictorListPage: React.FC = () => {
             searchBoxLabel: i18n.t("Search by name"),
             onActionButtonClick: newPredictor,
         };
-    }, [
-        runPredictors,
-        exportPredictors,
-        newPredictor,
-        editPredictor,
-        deletePredictor,
-        openImportDialog,
-        placeholderAction,
-    ]);
+    }, [runPredictors, exportPredictors, newPredictor, editPredictor, deletePredictor, openImportDialog]);
 
     const refreshRows = useCallback(
         (
