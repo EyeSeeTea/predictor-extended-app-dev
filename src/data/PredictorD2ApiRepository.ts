@@ -7,9 +7,10 @@ import {
     ExpressionType,
     ExpressionValidation,
     ListPredictorsFilters,
-    PredictorRepository,
+    PredictorRepository
 } from "../domain/repositories/PredictorRepository";
 import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
+import { cache } from "../utils/cache";
 import { formatDate } from "../utils/dates";
 import { PredictorSaveModel } from "./models/PredictorModel";
 import { getD2APiFromUrl } from "./utils/d2-api";
@@ -22,6 +23,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
+    @cache()
     public validateExpression(type: ExpressionType, expression: string): FutureData<ExpressionValidation> {
         return toFuture(this.api.expressions.validate(type, expression)).map(({ message, description, status }) => ({
             message,
