@@ -28,7 +28,8 @@ export function PreviewInputFF({ warning, placeholder, children, name, validate 
                             name={input.name}
                             value={buildValue(input.value)}
                             onChange={() => {}}
-                            error={!!warning || !!meta.error}
+                            error={!!meta.error}
+                            warning={!!warning}
                             validationText={warning ?? meta.error ?? meta.submitError}
                         />
                     )}
