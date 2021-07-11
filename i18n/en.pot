@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-11T10:15:45.506Z\n"
-"PO-Revision-Date: 2021-07-11T10:15:45.506Z\n"
+"POT-Creation-Date: 2021-07-11T10:37:13.577Z\n"
+"PO-Revision-Date: 2021-07-11T10:37:13.577Z\n"
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -162,6 +162,60 @@ msgid "Sample skip test description"
 msgstr ""
 
 msgid "Sample skip test formula"
+msgstr ""
+
+msgid "Daily"
+msgstr ""
+
+msgid "Weekly"
+msgstr ""
+
+msgid "Weekly starting Wednesday"
+msgstr ""
+
+msgid "Weekly starting Thursday"
+msgstr ""
+
+msgid "Weekly starting Saturday"
+msgstr ""
+
+msgid "Weekly starting Sunday"
+msgstr ""
+
+msgid "Biweekly"
+msgstr ""
+
+msgid "Monthly"
+msgstr ""
+
+msgid "Bi-monthly"
+msgstr ""
+
+msgid "Quarterly"
+msgstr ""
+
+msgid "Six-monthly"
+msgstr ""
+
+msgid "Six-monthly starting April"
+msgstr ""
+
+msgid "Six-monthly starting November"
+msgstr ""
+
+msgid "Yearly"
+msgstr ""
+
+msgid "Financial year starting April"
+msgstr ""
+
+msgid "Financial year starting July"
+msgstr ""
+
+msgid "Financial year starting October"
+msgstr ""
+
+msgid "Financial year starting November"
 msgstr ""
 
 msgid "Skip if any value is missing"

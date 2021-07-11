@@ -171,7 +171,7 @@ export const predictorFormFields = [
 
 const predictorRequiredFields: PredictorFormField[] = ["name", "generator.expression", "organisationUnitLevels"];
 
-const getPredictorFieldBaseName = (field: PredictorFormField) => {
+const getPredictorName = (field: PredictorFormField) => {
     switch (field) {
         case "id":
             return i18n.t("Identifier");
@@ -211,30 +211,30 @@ const getPredictorFieldBaseName = (field: PredictorFormField) => {
 };
 
 export const getPredictorFieldName = (field: PredictorFormField) => {
-    const name = getPredictorFieldBaseName(field);
+    const name = getPredictorName(field);
     const required = predictorRequiredFields.includes(field);
     return _.compact([name, required ? "(*)" : undefined]).join(" ");
 };
 
 const periodTypes = [
-    { value: "Daily", label: "Daily" },
-    { value: "Weekly", label: "Weekly" },
-    { value: "WeeklyWednesday", label: "Weekly starting Wednesday" },
-    { value: "WeeklyThursday", label: "Weekly starting Thursday" },
-    { value: "WeeklySaturday", label: "Weekly starting Saturday" },
-    { value: "WeeklySunday", label: "Weekly starting Sunday" },
-    { value: "BiWeekly", label: "Biweekly" },
-    { value: "Monthly", label: "Monthly" },
-    { value: "BiMonthly", label: "Bi-monthly" },
-    { value: "Quarterly", label: "Quarterly" },
-    { value: "SixMonthly", label: "Six-monthly" },
-    { value: "SixMonthlyApril", label: "Six-monthly starting April" },
-    { value: "SixMonthlyNov", label: "Six-monthly starting November" },
-    { value: "Yearly", label: "Yearly" },
-    { value: "FinancialApril", label: "Financial year starting April" },
-    { value: "FinancialJuly", label: "Financial year starting July" },
-    { value: "FinancialOct", label: "Financial year starting October" },
-    { value: "FinancialNov", label: "Financial year starting November" },
+    { value: "Daily", label: i18n.t("Daily") },
+    { value: "Weekly", label: i18n.t("Weekly") },
+    { value: "WeeklyWednesday", label: i18n.t("Weekly starting Wednesday") },
+    { value: "WeeklyThursday", label: i18n.t("Weekly starting Thursday") },
+    { value: "WeeklySaturday", label: i18n.t("Weekly starting Saturday") },
+    { value: "WeeklySunday", label: i18n.t("Weekly starting Sunday") },
+    { value: "BiWeekly", label: i18n.t("Biweekly") },
+    { value: "Monthly", label: i18n.t("Monthly") },
+    { value: "BiMonthly", label: i18n.t("Bi-monthly") },
+    { value: "Quarterly", label: i18n.t("Quarterly") },
+    { value: "SixMonthly", label: i18n.t("Six-monthly") },
+    { value: "SixMonthlyApril", label: i18n.t("Six-monthly starting April") },
+    { value: "SixMonthlyNov", label: i18n.t("Six-monthly starting November") },
+    { value: "Yearly", label: i18n.t("Yearly") },
+    { value: "FinancialApril", label: i18n.t("Financial year starting April") },
+    { value: "FinancialJuly", label: i18n.t("Financial year starting July") },
+    { value: "FinancialOct", label: i18n.t("Financial year starting October") },
+    { value: "FinancialNov", label: i18n.t("Financial year starting November") },
 ];
 
 const missingValueStrategy = [
