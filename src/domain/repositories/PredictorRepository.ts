@@ -1,5 +1,5 @@
 import { TableSorting } from "@eyeseetea/d2-ui-components";
-import { Pager } from "../../webapp/components/objects-list/objects-list-hooks";
+import { Pager } from "../../types/d2-api";
 import { NamedRef } from "../entities/DHIS2";
 import { FutureData } from "../entities/Future";
 import { MetadataResponse } from "../entities/Metadata";

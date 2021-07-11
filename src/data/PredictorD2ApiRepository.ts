@@ -9,9 +9,8 @@ import {
     ListPredictorsFilters,
     PredictorRepository,
 } from "../domain/repositories/PredictorRepository";
-import { D2Api, MetadataResponse } from "../types/d2-api";
+import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { formatDate } from "../utils/dates";
-import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
 import { getD2APiFromUrl } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 

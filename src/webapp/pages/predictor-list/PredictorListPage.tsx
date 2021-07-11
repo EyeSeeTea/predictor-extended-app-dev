@@ -1,9 +1,13 @@
 import {
     DatePicker,
     MultipleDropdown,
+    ObjectsList,
+    Pager,
+    TableConfig,
     TablePagination,
     TableSorting,
     useLoading,
+    useObjectsTable,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
 import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
@@ -18,8 +22,6 @@ import i18n from "../../../locales";
 import { formatDate } from "../../../utils/dates";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
-import { Pager, TableConfig, useObjectsTable } from "../../components/objects-list/objects-list-hooks";
-import { ObjectsList } from "../../components/objects-list/ObjectsList";
 import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { useQueryState } from "../../hooks/useQueryState";
