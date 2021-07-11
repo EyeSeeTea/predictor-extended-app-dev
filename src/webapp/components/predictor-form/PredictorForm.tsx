@@ -2,40 +2,91 @@ import {
     composeValidators,
     createMinNumber,
     createPattern,
+    FieldState,
     hasValue,
     InputFieldFF,
     integer,
     SingleSelectFieldFF,
 } from "@dhis2/ui";
 import _ from "lodash";
+import React from "react";
+import { ExpressionValidation } from "../../../domain/repositories/PredictorRepository";
 import i18n from "../../../locales";
 import { fullUidRegex } from "../../../utils/uid";
+import { useAppContext } from "../../contexts/app-context";
 import { FormField } from "../form/fields/FormField";
 import { NumberInputFF } from "../form/fields/NumberInputFF";
+import { PreviewInputFF } from "../form/fields/PreviewInputFF";
 import { hasItems } from "../form/validators/hasItems";
+import { ExpressionBoxFF } from "./components/ExpressionBoxFF";
 import { OrgUnitLevelsFF } from "./components/OrgUnitLevelsFF";
 import { PredictorGroupsFF } from "./components/PredictorGroupsFF";
-import { PreviewInputFF } from "./components/PreviewInputFF";
 
-// Form of type <{ predictors: Predictor[] }>
+const useValidations = (
+    field: PredictorFormField,
+    name: string
+): { validation?: (...args: any[]) => any; props?: object } => {
+    const { compositionRoot } = useAppContext();
 
-export const RenderPredictorWizardField: React.FC<{ row: number; field: PredictorFormField }> = ({ row, field }) => {
-    const props = { name: `predictors[${row}.${field}]`, placeholder: getPredictorFieldName(field) };
-    const required = predictorRequiredFields.includes(field);
+    const [expressionValidation, setExpressionValidation] = React.useState<Record<string, ExpressionValidation>>({});
+
+    const validateExpression = (formula: string, _allValues: object, meta?: FieldState<string>) => {
+        if (!meta || !formula || !formula.trim()) return undefined;
+        const type = field === "generator.expression" ? "predictor-formula" : "predictor-skip-test";
+
+        return new Promise(resolve => {
+            compositionRoot.usecases.validateExpression(type, formula).run(
+                validation => {
+                    setExpressionValidation(validations => ({ ...validations, [meta.name]: validation }));
+                    resolve(validation.status === "ERROR" ? validation.message : undefined);
+                },
+                error => resolve(error)
+            );
+        });
+    };
 
     switch (field) {
         case "id":
-            return (
-                <FormField
-                    {...props}
-                    component={InputFieldFF}
-                    validate={createPattern(fullUidRegex, i18n.t("Please provide a valid identifier"))}
-                />
-            );
+            return { validation: createPattern(fullUidRegex, i18n.t("Please provide a valid identifier")) };
+        case "organisationUnitLevels":
+            return { validation: hasItems };
+        case "sequentialSampleCount":
+        case "annualSampleCount":
+        case "sequentialSkipCount":
+            return { validation: composeValidators(integer, createMinNumber(0)) };
+        case "generator.expression":
+        case "sampleSkipTest.expression":
+            return { validation: validateExpression, props: { expressionValidation: expressionValidation[name] } };
+        default: {
+            const required = predictorRequiredFields.includes(field);
+            return { validation: required ? hasValue : undefined };
+        }
+    }
+};
+
+export const RenderPredictorWizardField: React.FC<{ row: number; field: PredictorFormField }> = ({ row, field }) => {
+    const name = `predictors[${row}.${field}]`;
+    const { validation, props: validationProps = {} } = useValidations(field, name);
+
+    const props = {
+        name,
+        placeholder: getPredictorFieldName(field),
+        validate: validation,
+        ...validationProps,
+    };
+
+    switch (field) {
+        case "id":
+        case "code":
+        case "description":
+        case "name":
+        case "generator.description":
+        case "sampleSkipTest.description":
+            return <FormField {...props} component={InputFieldFF} />;
         case "periodType":
             return <FormField {...props} component={SingleSelectFieldFF} options={periodTypes} />;
         case "organisationUnitLevels":
-            return <FormField {...props} component={OrgUnitLevelsFF} validate={hasItems} />;
+            return <FormField {...props} component={OrgUnitLevelsFF} />;
         case "predictorGroups":
             return <FormField {...props} component={PredictorGroupsFF} />;
         case "generator.missingValueStrategy":
@@ -43,43 +94,35 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
         case "sequentialSampleCount":
         case "annualSampleCount":
         case "sequentialSkipCount":
-            return (
-                <FormField
-                    {...props}
-                    component={NumberInputFF}
-                    validate={composeValidators(integer, createMinNumber(0))}
-                    defaultValue="0"
-                    min="0"
-                />
-            );
-
+            return <FormField {...props} component={NumberInputFF} defaultValue="0" min="0" />;
+        case "generator.expression":
+        case "sampleSkipTest.expression":
+            return <FormField {...props} component={ExpressionBoxFF} expressionType="predictor" />;
         default:
-            return <FormField {...props} component={InputFieldFF} validate={required ? hasValue : undefined} />;
+            return null;
     }
 };
 
 export const RenderPredictorImportField: React.FC<{ row: number; field: PredictorFormField }> = ({ row, field }) => {
-    const props = { name: `predictors[${row}.${field}]`, placeholder: getPredictorFieldName(field) };
+    const name = `predictors[${row}.${field}]`;
+    const { validation, props: validationProps = {} } = useValidations(field, name);
+
+    const props = {
+        name,
+        placeholder: getPredictorFieldName(field),
+        validate: validation,
+        ...validationProps,
+    };
 
     switch (field) {
         case "organisationUnitLevels":
-            return (
-                <FormField
-                    {...props}
-                    component={PreviewInputFF}
-                    previewComponent={OrgUnitLevelsFF}
-                    previewComponentProps={{}}
-                    validate={hasItems}
-                />
-            );
         case "predictorGroups":
+        case "generator.expression":
+        case "sampleSkipTest.expression":
             return (
-                <FormField
-                    {...props}
-                    component={PreviewInputFF}
-                    previewComponent={PredictorGroupsFF}
-                    previewComponentProps={{}}
-                />
+                <PreviewInputFF {...props}>
+                    <RenderPredictorWizardField row={row} field={field} />
+                </PreviewInputFF>
             );
         default:
             return <RenderPredictorWizardField row={row} field={field} />;
@@ -106,7 +149,7 @@ export const predictorFormFields = [
     "generator.missingValueStrategy",
     "sampleSkipTest.description",
     "sampleSkipTest.expression",
-] as const;
+];
 
 const predictorRequiredFields: PredictorFormField[] = [
     "name",

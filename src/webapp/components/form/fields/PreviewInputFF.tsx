@@ -2,12 +2,11 @@ import { InputField } from "@dhis2/ui";
 import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import i18n from "@eyeseetea/d2-ui-components/locales";
 import _ from "lodash";
-import React, { useMemo, useState } from "react";
-import { FieldRenderProps } from "react-final-form";
+import React, { useState } from "react";
+import { Field, FieldRenderProps } from "react-final-form";
 
-export function PreviewInputFF({ input, meta, placeholder, render }: PreviewInputFFProps) {
+export function PreviewInputFF({ placeholder, children, name, validate }: PreviewInputFFProps) {
     const [open, setOpen] = useState(false);
-    const value = useMemo(() => buildValue(input.value), [input.value]);
 
     return (
         <React.Fragment>
@@ -19,30 +18,36 @@ export function PreviewInputFF({ input, meta, placeholder, render }: PreviewInpu
                 onCancel={() => setOpen(false)}
                 cancelText={i18n.t("Close")}
             >
-                {render({ input, meta })}
+                {children}
             </ConfirmationDialog>
 
             <div onClick={() => setOpen(true)}>
-                <InputField
-                    name={input.name}
-                    value={value}
-                    onChange={() => {}}
-                    error={!!meta.error}
-                    validationText={meta.error ?? meta.submitError}
-                />
+                <Field name={name} validate={validate}>
+                    {({ input, meta }) => (
+                        <InputField
+                            name={input.name}
+                            value={buildValue(input.value)}
+                            onChange={() => {}}
+                            error={!!meta.error}
+                            validationText={meta.error ?? meta.submitError}
+                        />
+                    )}
+                </Field>
             </div>
         </React.Fragment>
     );
 }
 
-export interface PreviewInputFFProps extends Pick<FieldRenderProps<string>, "input" | "meta"> {
+export interface PreviewInputFFProps extends Pick<FieldRenderProps<string>, "name" | "validate"> {
     placeholder: string;
-    render: (props: Pick<FieldRenderProps<string>, "input" | "meta">) => React.ReactElement;
+    children: React.ReactNode;
 }
 
 const buildValue = (value: unknown): string => {
-    if (Array.isArray(value)) {
-        return value.length === 0 ? "-" : value.map(item => buildValue(item)).join(", ");
+    if (Array.isArray(value) && value.length === 0) {
+        return "-";
+    } else if (Array.isArray(value)) {
+        return value.map(item => buildValue(item)).join(", ");
     } else if (_.has(value, "name")) {
         return _.get(value, "name");
     } else if (value) {
