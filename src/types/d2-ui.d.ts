@@ -47,7 +47,7 @@ declare module "@dhis2/ui" {
         dataTest?: string;
         dense?: boolean;
         disabled?: boolean;
-        error?: any;
+        error?: boolean;
         helpText?: string;
         initialFocus?: boolean;
         inputWidth?: string;
@@ -84,13 +84,13 @@ declare module "@dhis2/ui" {
             | "time"
             | "url"
             | "week";
-        valid?: any;
+        valid?: boolean;
         validationText?: string;
         value?: string;
-        warning?: any;
-        onBlur?: (data: any, event: FocusEvent) => void;
-        onChange?: (data: any, event: ChangeEvent) => void;
-        onFocus?: (data: any, event: FocusEvent) => void;
+        warning?: boolean;
+        onBlur?: (data: { name?: string; value?: string }, event: FocusEvent) => void;
+        onChange?: (data: { name?: string; value?: string }, event: ChangeEvent) => void;
+        onFocus?: (data: { name?: string; value?: string }, event: FocusEvent) => void;
     };
 
     export type InputFieldFFProps = InputFieldProps & {
@@ -121,9 +121,9 @@ declare module "@dhis2/ui" {
         toggled?: boolean;
         type?: "submit" | "reset" | "button";
         value?: string;
-        onBlur?: (data: any, event: FocusEvent) => void;
-        onClick?: (data: any, event: MouseEvent) => void;
-        onFocus?: (data: any, event: FocusEvent) => void;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onClick?: (data: { value?: string; name?: string }, event: MouseEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
 
     export type TransferOption = {
@@ -205,9 +205,9 @@ declare module "@dhis2/ui" {
         tabIndex: string;
         valid: boolean;
         warning: boolean;
-        onBlur?: (data: any, event: FocusEvent) => void;
-        onChange?: (data: any, event: ChangeEvent) => void;
-        onFocus?: (data: any, event: FocusEvent) => void;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
 
     export type MultiSelectFieldFFProps = MultiSelectProps & {
@@ -223,8 +223,6 @@ declare module "@dhis2/ui" {
         showValidStatus?: boolean;
         valid?: boolean;
         validationText?: string;
-        onBlur?: (data: any, event: FocusEvent) => void;
-        onFocus?: (data: any, event: FocusEvent) => void;
     };
 
     export type SingleSelectProps = {
@@ -250,9 +248,9 @@ declare module "@dhis2/ui" {
         tabIndex?: string;
         valid?: boolean;
         warning?: boolean;
-        onBlur?: (data: any, event: FocusEvent) => void;
-        onChange?: (data: any, event: ChangeEvent) => void;
-        onFocus?: (data: any, event: FocusEvent) => void;
+        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
+        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
     };
 
     export type SingleSelectFieldFFProps = SingleSelectProps & {
@@ -310,7 +308,7 @@ declare module "@dhis2/ui" {
         target?: string;
         toggleSubMenu?: (...args: any[]) => any;
         value?: string;
-        onClick?: (data: any, event: MouseEvent) => void;
+        onClick?: (data: { value?: string }, event: MouseEvent) => void;
     };
 
     export type PaginationProps = {
@@ -364,20 +362,18 @@ declare module "@dhis2/ui" {
         valid?: boolean;
         value?: string;
         warning?: boolean;
-        onBlur?: (data: any, event: FocusEvent) => void;
-        onChange?: (data: any, event: ChangeEvent) => void;
-        onFocus?: (data: any, event: FocusEvent) => void;
+        onBlur?: (data: { value?: string; name?: string; checked: boolean }, event: FocusEvent) => void;
+        onChange?: (data: { value?: string; name?: string; checked: boolean }, event: ChangeEvent) => void;
+        onFocus?: (data: { value?: string; name?: string; checked: boolean }, event: FocusEvent) => void;
     };
 
-    export type CheckboxFieldFFProps = {
+    export type CheckboxFieldFFProps = CheckboxFieldProps & {
         input: FinalFormInput;
         meta: FinalFormMeta;
         error?: boolean;
         showValidStatus?: boolean;
         valid?: boolean;
         validationText?: string;
-        onBlur?: (data: any, event: FocusEvent) => void;
-        onFocus?: (data: any, event: FocusEvent) => void;
     };
 
     type SwitchFieldProps = {
@@ -396,9 +392,9 @@ declare module "@dhis2/ui" {
         valid?: boolean;
         value?: string;
         warning?: boolean;
-        onBlur?: (data: { name: string; value: string; checked: boolean }, event: FocusEvent) => void;
-        onChange?: (data: { name: string; value: string; checked: boolean }, event: ChangeEvent) => void;
-        onFocus?: (data: { name: string; value: string; checked: boolean }, event: FocusEvent) => void;
+        onBlur?: (data: { name?: string; value?: string; checked: boolean }, event: FocusEvent) => void;
+        onChange?: (data: { name?: string; value?: string; checked: boolean }, event: ChangeEvent) => void;
+        onFocus?: (data: { name?: string; value?: string; checked: boolean }, event: FocusEvent) => void;
     };
 
     export type SwitchFieldFFProps = SwitchFieldProps & {
