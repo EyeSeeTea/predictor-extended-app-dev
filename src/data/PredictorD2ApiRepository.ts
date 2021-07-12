@@ -39,9 +39,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 paging: false,
                 fields: predictorFields,
             })
-        ).map(({ objects }) => {
-            return objects;
-        });
+        ).map(({ objects }) => objects);
     }
 
     public list(
@@ -99,7 +97,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public save(inputPredictors: Predictor[]): FutureData<MetadataResponse[]> {
-        const validations = inputPredictors.map(predictor => PredictorSaveModel.decode(predictor));
+        const validations = inputPredictors.map(predictor => PredictorSaveModel.decode(cleanPredictor(predictor)));
         const predictors = _.compact(validations.map(either => either.toMaybe().extract()));
         const errors = _.compact(validations.map(either => either.leftOrDefault("")));
         if (errors.length > 0) {
@@ -195,3 +193,8 @@ const predictorFields = {
     userAccesses: { id: true, access: true, displayName: true },
     userGroupAccesses: { id: true, access: true, displayName: true },
 };
+
+function cleanPredictor(predictor: Partial<Predictor>): Partial<Predictor> {
+    const hasSampleSkipTest = _.has(predictor, "sampleSkipTest.expression");
+    return { ...predictor, sampleSkipTest: hasSampleSkipTest ? predictor.sampleSkipTest : undefined };
+}
