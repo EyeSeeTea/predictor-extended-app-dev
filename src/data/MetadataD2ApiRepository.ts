@@ -16,12 +16,13 @@ export class MetadataD2ApiRepository implements MetadataRepository {
 
     public list(
         type: MetadataType,
-        options: { pageSize?: number; page?: number }
+        options: { pageSize?: number; page?: number },
+        fieldOptions: {}
     ): FutureData<{ pager: Pager; objects: Metadata[] }> {
         return toFuture(
             //@ts-ignore
             this.api.models[type].get({
-                fields: { id: true, name: true, code: true },
+                fields: { ...fieldOptions, id: true, name: true, code: true },
                 pageSize: options.pageSize ?? 25,
                 page: options.page ?? 1,
             })

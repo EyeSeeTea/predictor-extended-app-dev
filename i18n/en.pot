@@ -5,8 +5,29 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-11T10:37:13.577Z\n"
-"PO-Revision-Date: 2021-07-11T10:37:13.577Z\n"
+"POT-Creation-Date: 2021-07-12T11:15:02.756Z\n"
+"PO-Revision-Date: 2021-07-12T11:15:02.756Z\n"
+
+msgid "Aggregation Type"
+msgstr ""
+
+msgid "Aggregation Levels"
+msgstr ""
+
+msgid "Domain Type"
+msgstr ""
+
+msgid "Value Type"
+msgstr ""
+
+msgid "Zero Is Significant"
+msgstr ""
+
+msgid "Category Combo"
+msgstr ""
+
+msgid "Code"
+msgstr ""
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -14,19 +35,31 @@ msgstr ""
 msgid "Reference {{template}} was not found on this instance"
 msgstr ""
 
-msgid "Data Elements"
+msgid "Data elements"
 msgstr ""
 
 msgid "Programs"
 msgstr ""
 
-msgid "Org Unit Counts"
+msgid "Org unit counts"
 msgstr ""
 
 msgid "Constants"
 msgstr ""
 
 msgid "Reporting rates"
+msgstr ""
+
+msgid "Data Element"
+msgstr ""
+
+msgid "Organisation unit group"
+msgstr ""
+
+msgid "Constant"
+msgstr ""
+
+msgid "Category option combo"
 msgstr ""
 
 msgid "Close"
@@ -116,9 +149,6 @@ msgstr ""
 msgid "Please provide a valid identifier"
 msgstr ""
 
-msgid "Code"
-msgstr ""
-
 msgid "Name"
 msgstr ""
 
@@ -162,6 +192,12 @@ msgid "Sample skip test description"
 msgstr ""
 
 msgid "Sample skip test formula"
+msgstr ""
+
+msgid "Test 1"
+msgstr ""
+
+msgid "Test 2"
 msgstr ""
 
 msgid "Daily"

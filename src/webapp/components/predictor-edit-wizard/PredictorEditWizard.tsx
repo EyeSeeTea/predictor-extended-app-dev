@@ -16,7 +16,17 @@ const steps = [
         module,
         label: i18n.t("General info"),
         component: PredictorEditWizardStep,
-        props: { fields: ["name", "code", "description", "periodType", "organisationUnitLevels", "predictorGroups"] },
+        props: {
+            fields: [
+                "name",
+                "code",
+                "description",
+                "periodType",
+                "output",
+                "organisationUnitLevels",
+                "predictorGroups",
+            ],
+        },
     },
     {
         key: `generator`,

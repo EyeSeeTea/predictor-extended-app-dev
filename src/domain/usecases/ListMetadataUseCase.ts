@@ -9,8 +9,9 @@ export class ListMetadataUseCase implements UseCase {
 
     public execute(
         type: MetadataType,
-        options: { pageSize?: number; page?: number } = {}
+        options: { pageSize?: number; page?: number } = {},
+        fieldOptions: {} = {}
     ): FutureData<{ pager: Pager; objects: Metadata[] }> {
-        return this.metadataRepository.list(type, options);
+        return this.metadataRepository.list(type, options, fieldOptions);
     }
 }
