@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import useDeepCompareEffect from "use-deep-compare-effect";
 import { Future, FutureData } from "../../domain/entities/Future";
 
 type Callback = () => void;
@@ -15,7 +16,6 @@ export function useFuture<Obj, Params extends any[]>(
     inputParams: Params
 ): ResultType<Params, Obj> {
     const [future] = useState(() => inputFuture);
-    const [params] = useState(inputParams);
 
     const [data, setData] = useState<Obj>();
     const [loading, setLoading] = useState<boolean>(true);
@@ -45,9 +45,9 @@ export function useFuture<Obj, Params extends any[]>(
         [future]
     );
 
-    useEffect(() => {
-        return refetch(...params);
-    }, [refetch, params]);
+    useDeepCompareEffect(() => {
+        return refetch(...inputParams);
+    }, [refetch, inputParams]);
 
     return { data, loading, cancel, error, refetch };
 }
