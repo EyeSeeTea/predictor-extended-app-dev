@@ -36,7 +36,7 @@ export const PredictorImportPage: React.FC = () => {
                     onSubmit={() => {}}
                     initialValues={{ predictors }}
                     render={({ handleSubmit, values }) => (
-                        <Wrapper2 onSubmit={handleSubmit}>
+                        <StyledForm onSubmit={handleSubmit}>
                             <AutoSizer>
                                 {({ height, width }) => (
                                     <Grid
@@ -53,7 +53,7 @@ export const PredictorImportPage: React.FC = () => {
                                     </Grid>
                                 )}
                             </AutoSizer>
-                        </Wrapper2>
+                        </StyledForm>
                     )}
                 />
             </Container>
@@ -111,7 +111,7 @@ const Wrapper = styled.div`
     margin: 20px;
 `;
 
-const Wrapper2 = styled.form`
+const StyledForm = styled.form`
     margin: 10px;
     height: 71vh;
 `;

@@ -225,35 +225,51 @@ declare module "@dhis2/ui" {
         validationText?: string;
     };
 
-    export type SingleSelectProps = {
+    export type SingleSelectFieldProps = {
         className?: string;
-        clearText?: string;
+        clearText?: string | ((...args: any[]) => any);
         clearable?: boolean;
         dataTest?: string;
         dense?: boolean;
         disabled?: boolean;
-        empty?: React.ReactNode;
-        error?: boolean;
-        filterPlaceholder?: string;
+        empty?: React.ReactNode | ((...args: any[]) => any);
+        error?: any;
+        filterPlaceholder?: React.ReactNode | ((...args: any[]) => any);
         filterable?: boolean;
+        helpText?: string;
         initialFocus?: boolean;
         inputMaxHeight?: string;
+        inputWidth?: string;
+        label?: string;
         loading?: boolean;
-        loadingText?: string;
+        loadingText?: string | ((...args: any[]) => any);
         maxHeight?: string;
-        noMatchText?: string;
+        noMatchText?: string | ((...args: any[]) => any);
         placeholder?: string;
         prefix?: string;
+        required?: boolean;
         selected?: string;
         tabIndex?: string;
-        valid?: boolean;
-        warning?: boolean;
-        onBlur?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
-        onChange?: (data: { value?: string; name?: string }, event: ChangeEvent) => void;
-        onFocus?: (data: { value?: string; name?: string }, event: FocusEvent) => void;
+        valid?: any;
+        validationText?: string;
+        warning?: any;
+        children?: React.ReactNode;
+        onBlur?: (...args: any[]) => any;
+        onChange?: (...args: any[]) => any;
+        onFocus?: (...args: any[]) => any;
     };
 
-    export type SingleSelectFieldFFProps = SingleSelectProps & {
+    export type SingleSelectOptionProps = {
+        label: string;
+        value: string;
+        active?: boolean;
+        className?: string;
+        dataTest?: string;
+        disabled?: boolean;
+        onClick?: (...args: any[]) => any;
+    };
+
+    export type SingleSelectFieldFFProps = SingleSelectFieldProps & {
         input: FinalFormInput;
         meta: FinalFormMeta;
         options: {
@@ -412,7 +428,8 @@ declare module "@dhis2/ui" {
     export function MultiSelect(props: MultiSelectProps): React.ReactElement;
     export function MultiSelectFieldFF(props: MultiSelectFieldFFProps): React.ReactElement;
     export function SingleSelectFieldFF(props: SingleSelectFieldFFProps): React.ReactElement;
-    export function SingleSelect(props: SingleSelectProps): React.ReactElement;
+    export function SingleSelectField(props: SingleSelectFieldProps): React.ReactElement;
+    export function SingleSelectOption(props: SingleSelectOptionProps): React.ReactElement;
     export function Tab(props: TabProps): React.ReactElement;
     export function TabBar(props: TabBarProps): React.ReactElement;
     export function Menu(props: MenuProps): React.ReactElement;

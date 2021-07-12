@@ -18,10 +18,11 @@ import { FormField } from "../form/fields/FormField";
 import { NumberInputFF } from "../form/fields/NumberInputFF";
 import { PreviewInputFF } from "../form/fields/PreviewInputFF";
 import { hasItems } from "../form/validators/hasItems";
+import { DataElementOutputFF } from "./components/DataElementOutputFF";
+import { CategoryOptionComboFF } from "./components/CategoryOptionComboFF";
 import { ExpressionBoxFF } from "./components/ExpressionBoxFF";
 import { OrgUnitLevelsFF } from "./components/OrgUnitLevelsFF";
 import { PredictorGroupsFF } from "./components/PredictorGroupsFF";
-//import { OutputDEFF } from "./components/OutputDEFF";
 
 const useValidations = (
     field: PredictorFormField,
@@ -86,7 +87,6 @@ const useValidations = (
 export const RenderPredictorWizardField: React.FC<{ row: number; field: PredictorFormField }> = ({ row, field }) => {
     const name = `predictors[${row}.${field}]`;
     const { validation, props: validationProps = {} } = useValidations(field, name);
-
     const props = {
         name,
         placeholder: getPredictorFieldName(field),
@@ -102,12 +102,14 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
         case "generator.description":
         case "sampleSkipTest.description":
             return <FormField {...props} component={InputFieldFF} />;
+        case "output":
+            return <FormField {...props} component={DataElementOutputFF} />;
+        case "outputCombo":
+            return <FormField {...props} component={CategoryOptionComboFF} />;
         case "periodType":
             return <FormField {...props} component={SingleSelectFieldFF} options={periodTypes} />;
         case "organisationUnitLevels":
             return <FormField {...props} component={OrgUnitLevelsFF} />;
-        case "output":
-            return <FormField {...props} component={SingleSelectFieldFF} options={outputDeTypes} />;
         case "predictorGroups":
             return <FormField {...props} component={PredictorGroupsFF} />;
         case "generator.missingValueStrategy":
@@ -219,10 +221,6 @@ export const getPredictorFieldName = (field: PredictorFormField) => {
     return _.compact([name, required ? "(*)" : undefined]).join(" ");
 };
 
-const outputDeTypes = [
-    { value: "test1", label: i18n.t("Test 1") },
-    { value: "test2", label: i18n.t("Test 2") },
-];
 const periodTypes = [
     { value: "Daily", label: i18n.t("Daily") },
     { value: "Weekly", label: i18n.t("Weekly") },

@@ -1,8 +1,9 @@
 import { Button, ButtonStrip } from "@dhis2/ui";
-import { Wizard } from "@eyeseetea/d2-ui-components";
+import { ConfirmationDialog, Wizard } from "@eyeseetea/d2-ui-components";
 import i18n from "@eyeseetea/d2-ui-components/locales";
 import { Paper } from "@material-ui/core";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
+import { FormApi, FORM_ERROR } from "final-form";
 import React, { useCallback } from "react";
 import { Form } from "react-final-form";
 import styled from "styled-components";
@@ -23,6 +24,7 @@ const steps = [
                 "description",
                 "periodType",
                 "output",
+                "outputCombo",
                 "organisationUnitLevels",
                 "predictorGroups",
             ],
@@ -64,7 +66,7 @@ const steps = [
 export interface PredictorEditWizardProps {
     predictor: Predictor;
     onCancel: () => void;
-    onSave: (predictor: Predictor) => void;
+    onSave: (predictor: Predictor) => Promise<string | undefined>;
 }
 
 interface WizardState {
@@ -73,6 +75,7 @@ interface WizardState {
 
 export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel }) => {
     const [state, setState] = useQueryState<WizardState>({ step: steps[0]?.key ?? "" });
+    const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
 
     const onNext = useCallback(() => {
         setState(state => {
@@ -96,8 +99,19 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
     );
 
     const onSubmit = useCallback(
-        ({ predictors }: { predictors: Predictor[] }) => {
-            if (predictors[0]) onSave(predictors[0]);
+        async (
+            values: { predictors: Predictor[] },
+            form: FormApi<{ predictors: Predictor[] }, Partial<{ predictors: Predictor[] }>>
+        ) => {
+            const predictor = values.predictors[0];
+            if (!predictor) return;
+
+            const error = await onSave(predictor);
+            if (error) {
+                form.restart(values);
+                setErrorDialogOpen(true);
+                return { [FORM_ERROR]: error };
+            }
         },
         [onSave]
     );
@@ -108,7 +122,7 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
                 autocomplete="off"
                 onSubmit={onSubmit}
                 initialValues={{ predictors: [predictor] }}
-                render={({ handleSubmit }) => (
+                render={({ handleSubmit, submitError }) => (
                     <Wrapper onSubmit={handleSubmit}>
                         <Paper square={true}>
                             <StyledWizard
@@ -134,6 +148,13 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
 
                             <Button onClick={onNext} icon={<ArrowForward />} />
                         </ButtonsRow>
+
+                        <ConfirmationDialog
+                            isOpen={errorDialogOpen}
+                            title={i18n.t("Please fix the following problems before saving")}
+                            description={submitError}
+                            onCancel={() => setErrorDialogOpen(false)}
+                        />
                     </Wrapper>
                 )}
             />

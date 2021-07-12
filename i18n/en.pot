@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-12T11:15:02.756Z\n"
-"PO-Revision-Date: 2021-07-12T11:15:02.756Z\n"
+"POT-Creation-Date: 2021-07-12T16:37:56.166Z\n"
+"PO-Revision-Date: 2021-07-12T16:37:56.166Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -143,6 +143,9 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "Please fix the following problems before saving"
+msgstr ""
+
 msgid "Unable to validate"
 msgstr ""
 
@@ -269,7 +272,7 @@ msgstr ""
 msgid "New predictor"
 msgstr ""
 
-msgid "Unable to save predictor: {{error}}"
+msgid "Network error"
 msgstr ""
 
 msgid "Unable to load predictor {{id}}"
