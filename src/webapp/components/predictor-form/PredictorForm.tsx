@@ -18,6 +18,7 @@ import { FormField } from "../form/fields/FormField";
 import { NumberInputFF } from "../form/fields/NumberInputFF";
 import { PreviewInputFF } from "../form/fields/PreviewInputFF";
 import { hasItems } from "../form/validators/hasItems";
+import { DataElementOutputFF } from "./components/DataElementOutputFF";
 import { ExpressionBoxFF } from "./components/ExpressionBoxFF";
 import { OrgUnitLevelsFF } from "./components/OrgUnitLevelsFF";
 import { PredictorGroupsFF } from "./components/PredictorGroupsFF";
@@ -101,6 +102,8 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
         case "generator.description":
         case "sampleSkipTest.description":
             return <FormField {...props} component={InputFieldFF} />;
+        case "output":
+            return <FormField {...props} component={DataElementOutputFF} />;
         case "periodType":
             return <FormField {...props} component={SingleSelectFieldFF} options={periodTypes} />;
         case "organisationUnitLevels":

@@ -1,12 +1,33 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2021-07-11T10:37:13.577Z\n"
+"POT-Creation-Date: 2021-07-12T14:33:35.343Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "Aggregation Type"
+msgstr ""
+
+msgid "Aggregation Levels"
+msgstr ""
+
+msgid "Domain Type"
+msgstr ""
+
+msgid "Value Type"
+msgstr ""
+
+msgid "Zero Is Significant"
+msgstr ""
+
+msgid "Category Combo"
+msgstr ""
+
+msgid "Code"
+msgstr ""
 
 msgid "Column {{column}} not valid for type predictor"
 msgstr ""
@@ -14,19 +35,31 @@ msgstr ""
 msgid "Reference {{template}} was not found on this instance"
 msgstr ""
 
-msgid "Data Elements"
+msgid "Data elements"
 msgstr ""
 
 msgid "Programs"
 msgstr ""
 
-msgid "Org Unit Counts"
+msgid "Org unit counts"
 msgstr ""
 
 msgid "Constants"
 msgstr ""
 
 msgid "Reporting rates"
+msgstr ""
+
+msgid "Data Element"
+msgstr ""
+
+msgid "Organisation unit group"
+msgstr ""
+
+msgid "Constant"
+msgstr ""
+
+msgid "Category option combo"
 msgstr ""
 
 msgid "Close"
@@ -114,9 +147,6 @@ msgid "Unable to validate"
 msgstr ""
 
 msgid "Please provide a valid identifier"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "Name"

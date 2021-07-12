@@ -3,7 +3,7 @@ import { Codec, Schema } from "../utils/codec";
 import { NamedRefModel } from "./DHIS2Model";
 
 export const FormulaModel: Codec<Formula> = Schema.object({
-    expression: Schema.string,
+    expression: Schema.nonEmptyString,
     description: Schema.optionalSafe(Schema.string, "Description"),
     slidingWindow: Schema.optionalSafe(Schema.boolean, false),
     missingValueStrategy: Schema.optionalSafe(

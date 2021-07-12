@@ -34,13 +34,15 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
     const title = type === "edit" && isValidEdit ? i18n.t("Edit predictor") : i18n.t("New predictor");
 
     const savePredictor = useCallback(
-        (predictor: Predictor) => {
-            compositionRoot.usecases.save([predictor]).run(
-                () => goBack(true),
-                error => snackbar.error(i18n.t("Unable to save predictor: {{error}}", { error, nsSeparator: false }))
-            );
+        async (predictor: Predictor) => {
+            const { data = [], error } = await compositionRoot.usecases.save([predictor]).runAsync();
+            if (error || _.some(data, ({ status }) => status === "ERROR")) {
+                return error ?? i18n.t("Network error");
+            } else {
+                goBack(true);
+            }
         },
-        [compositionRoot, goBack, snackbar]
+        [compositionRoot, goBack]
     );
 
     const openMaintenance = useCallback(() => {

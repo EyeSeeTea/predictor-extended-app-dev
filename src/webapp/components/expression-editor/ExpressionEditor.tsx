@@ -45,7 +45,7 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
                         ),
                         contents: _.compact([
                             { value: _.compact([`**${_.trim(variable.label)}**`, variable.description]).join("\n\n") },
-                            { value: `*${formatType(variable.type)}*`},
+                            { value: `*${formatType(variable.type)}*` },
                             descriptions ? { value: descriptions } : undefined,
                         ]),
                     };

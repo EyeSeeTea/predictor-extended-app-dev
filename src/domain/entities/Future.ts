@@ -34,6 +34,15 @@ export class Future<E, D> {
         });
     }
 
+    runAsync(): Promise<{ data?: D; error?: E }> {
+        return new Promise(resolve => {
+            this.run(
+                data => resolve({ data }),
+                error => resolve({ error })
+            );
+        });
+    }
+
     /* Static methods */
     static noCancel: Cancel = () => {};
 
