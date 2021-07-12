@@ -8,13 +8,13 @@ export const ItemPicker: React.FC<ItemPickerProps> = ({ type, append }) => {
         case "dataElements":
             return <GenericElementPicker type="dataElements" append={id => append(`#{${id}}`)} />;
         case "programs":
-            return null;
+            return <p>Not yet implemented</p>;
         case "orgUnitCounts":
             return <GenericElementPicker type="organisationUnitGroups" append={id => append(`OUG{${id}}`)} />;
         case "constants":
             return <GenericElementPicker type="constants" append={id => append(`OUG{${id}}`)} />;
         case "reportingRates":
-            return null;
+            return <p>Not yet implemented</p>;
         default:
             return null;
     }
