@@ -30,24 +30,34 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
                         },
                     },
                 },
+                constants: {
+                    fields: {
+                        ...baseFields,
+                        value: true,
+                    },
+                },
+                organisationUnitGroups: {
+                    fields: baseFields,
+                },
+                predictors: {
+                    fields: { ...baseFields, output: { id: true, name: true }, outputCombo: { id: true, name: true } },
+                },
             })
-        ).map(({ dataElements = [] }) => {
+        ).map(({ dataElements = [], constants = [], organisationUnitGroups = [], predictors = [] }) => {
             const dataElementVariables = dataElements.map(({ id, name, description, categoryCombo, ...rest }) => ({
                 id,
                 label: name,
                 filterText: name,
                 insertText: id,
                 description,
-                autocomplete: true,
-                type: i18n.t("Data element"),
+                type: "dataElements",
                 options: categoryCombo.categoryOptionCombos.map(({ id, name, description }) => ({
                     id,
                     label: name,
                     filterText: name,
                     insertText: id,
                     description,
-                    autocomplete: false,
-                    type: i18n.t("Category option combo"),
+                    type: "categoryOptionCombos",
                 })),
                 properties: _(rest)
                     .mapValues((value, key) => ({
@@ -59,7 +69,56 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
                     .value(),
             }));
 
-            return [...dataElementVariables, ..._.flatMap(dataElementVariables, "options")];
+            const constantVariables = constants.map(({ id, name, description, ...rest }) => ({
+                id,
+                label: name,
+                filterText: name,
+                insertText: id,
+                description,
+                type: "constants",
+                properties: _(rest)
+                    .mapValues((value, key) => ({
+                        property: key,
+                        label: buildLabel(key),
+                        value: buildValue(value),
+                    }))
+                    .values()
+                    .value(),
+            }));
+
+            const orgUnitGroupVariables = organisationUnitGroups.map(({ id, name, description, ...rest }) => ({
+                id,
+                label: name,
+                filterText: name,
+                insertText: id,
+                description,
+                type: "organisationUnitGroups",
+                properties: _(rest)
+                    .mapValues((value, key) => ({
+                        property: key,
+                        label: buildLabel(key),
+                        value: buildValue(value),
+                    }))
+                    .values()
+                    .value(),
+            }));
+
+            const predictorVariables = predictors.map(({ id, name, description, output, outputCombo }) => ({
+                id,
+                label: name,
+                filterText: name,
+                insertText: `${output.id}.${outputCombo.id}`,
+                description,
+                type: "dataElements",
+            }));
+
+            return [
+                ...dataElementVariables,
+                ..._.flatMap(dataElementVariables, "options"),
+                ...constantVariables,
+                ...orgUnitGroupVariables,
+                ...predictorVariables,
+            ];
         });
     }
 }
@@ -93,6 +152,6 @@ function buildValue(value: unknown): string {
     if (value === false) return "No";
     if (_.has(value, "name")) return (value as any).name;
     if (_.has(value, "id")) return (value as any).id;
-    if (typeof value === "string") return _.trim(value);
+    if (typeof value === "string") return value;
     return "";
 }

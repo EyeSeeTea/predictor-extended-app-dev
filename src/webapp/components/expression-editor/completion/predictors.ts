@@ -12,14 +12,17 @@ export interface CompletionProviderOptions {
 export const buildPredictorsCompletionProvider = ({
     variables = [],
 }: CompletionProviderOptions): languages.CompletionItemProvider => ({
-    triggerCharacters: ["."],
+    triggerCharacters: [".", "{"],
     provideCompletionItems: async (
         model: editor.ITextModel,
         position: Position,
         _context: languages.CompletionContext,
         _token: CancellationToken
     ): Promise<languages.CompletionList | null | undefined> => {
+        const value = model.getValue();
+        const token = value[position.column - 2];
         const item = model.getWordUntilPosition(position);
+        const prevWord = model.getWordAtPosition({ ...position, column: item.startColumn - 1 });
 
         const range = {
             startLineNumber: position.lineNumber,
@@ -28,21 +31,28 @@ export const buildPredictorsCompletionProvider = ({
             endColumn: item.endColumn,
         };
 
-        const prevWord = model.getWordAtPosition({ ...position, column: item.startColumn - 1 });
-        const prevWordVariable = variables.find(v => v.id === prevWord?.word);
-        if (prevWordVariable) {
-            return { suggestions: prevWordVariable.options?.map(variable => formatVariable(range, variable)) ?? [] };
-        } else if (model.getValue().endsWith(".")) {
-            return { suggestions: [] };
+        // Detect auto-complete of opening braces
+        if (token === "{") {
+            const variableToken = value.substr(0, item.startColumn - 1).match(/#{$/) ? "#" : prevWord?.word;
+
+            return {
+                suggestions: variables
+                    .filter(({ type }) => type === getVariableType(variableToken))
+                    .map(variable => formatVariable(range, variable)),
+            };
+        }
+
+        // Detect auto-complete of nested properties
+        if (token === ".") {
+            const prevWordVariable = variables.find(v => v.id === prevWord?.word);
+
+            return {
+                suggestions: prevWordVariable?.options?.map(variable => formatVariable(range, variable)) ?? [],
+            };
         }
 
         return {
-            suggestions: [
-                ...PredictorSuggestions.map(item => ({ ...item, range })),
-                ...variables
-                    .filter(({ autocomplete }) => autocomplete)
-                    .map(variable => formatVariable(range, variable)),
-            ],
+            suggestions: PredictorSuggestions.map(item => ({ ...item, range })),
         };
     },
 });
@@ -55,4 +65,15 @@ function formatVariable(range: IRange, { filterText, insertText, label }: Formul
         insertText,
         range,
     };
+}
+
+function getVariableType(token?: string): string | undefined {
+    switch (token) {
+        case "C":
+            return "constants";
+        case "OUG":
+            return "organisationUnitGroups";
+        case "#":
+            return "dataElements";
+    }
 }

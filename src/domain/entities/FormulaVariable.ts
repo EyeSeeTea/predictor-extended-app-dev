@@ -6,7 +6,6 @@ export interface FormulaVariable {
     description?: string;
     properties?: FormulaVariableProperties[];
     options?: FormulaVariable[];
-    autocomplete: boolean;
     type: string;
 }
 

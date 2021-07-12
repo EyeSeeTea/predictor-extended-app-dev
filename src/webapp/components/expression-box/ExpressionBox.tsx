@@ -1,12 +1,12 @@
-import { Button, Menu, MenuItem, Pagination } from "@dhis2/ui";
+import { Button } from "@dhis2/ui";
+import _ from "lodash";
 import React, { useState } from "react";
 import styled from "styled-components";
-import i18n from "../../../locales";
-import { D2ModelSchemas } from "../../../types/d2-api";
 import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { ExpressionEditor } from "../expression-editor/ExpressionEditor";
 import { TabRow } from "../tab-row/TabRow";
+import { ItemPicker, ItemPickerType, itemPickerTypes } from "./item-picker/ItemPicker";
 
 const functionsForExpressionType: any = {
     indicator: [".periodOffset("],
@@ -21,15 +21,11 @@ export interface ExpressionBoxProps {
 export const ExpressionBox: React.FC<ExpressionBoxProps> = ({ expressionType, formula, onChange }) => {
     const { compositionRoot } = useAppContext();
 
-    const [variableListType, setVariableListType] = useState<keyof D2ModelSchemas>("dataElements");
+    const [variableListType, setVariableListType] = useState<ItemPickerType>("dataElements");
 
     const extraFunctionsForType = expressionType ? functionsForExpressionType[expressionType] : [];
 
     const { data: variables = [] } = useFuture(compositionRoot.usecases.getExpressionSuggestions, []);
-
-    const { data: variableList, refetch: updateVariableList } = useFuture(compositionRoot.usecases.listMetadata, [
-        variableListType,
-    ]);
 
     const formulaChange = (formula = "") => {
         onChange(formula);
@@ -67,53 +63,21 @@ export const ExpressionBox: React.FC<ExpressionBoxProps> = ({ expressionType, fo
             </GridItem>
 
             <GridItem column={2}>
-                <TabRow<keyof D2ModelSchemas>
+                <TabRow<ItemPickerType>
                     options={tabs}
                     selected={variableListType}
-                    onClick={value => {
-                        setVariableListType(value);
-                        updateVariableList(value, {
-                            page: variableList?.pager.page,
-                            pageSize: variableList?.pager.pageSize,
-                        });
-                    }}
-                    scrollable={true}
+                    onClick={value => setVariableListType(value)}
                 />
-                <StyledPagination
-                    page={variableList?.pager.page ?? 0}
-                    pageCount={variableList?.pager.pageCount ?? 0}
-                    pageSize={variableList?.pager.pageSize ?? 0}
-                    total={variableList?.pager.total ?? 0}
-                    hidePageSelect={true}
-                    hidePageSizeSelect={true}
-                    onPageChange={page => {
-                        updateVariableList("dataElements", { page, pageSize: variableList?.pager.pageSize });
-                    }}
-                    onPageSizeChange={pageSize => {
-                        updateVariableList("dataElements", { page: variableList?.pager.page, pageSize });
-                    }}
-                />
-                <StyledMenu dense={true}>
-                    {variableList?.objects.map(item => (
-                        <MenuItem key={`item-${item.id}`} label={item.name} />
-                    ))}
-                </StyledMenu>
+                <ItemPicker type={variableListType} append={appendToFormula} />
             </GridItem>
         </GridContainer>
     );
 };
 
-const tabs: Array<{ value: keyof D2ModelSchemas; label: string }> = [
-    { value: "dataElements", label: i18n.t("Data Elements") },
-    { value: "programs", label: i18n.t("Programs") },
-    //{ value: "orgUnitCounts", label: i18n.t("Org Unit Counts") },
-    { value: "constants", label: i18n.t("Constants") },
-    { value: "reportingRates", label: i18n.t("Reporting rates") },
-];
-
-const StyledPagination = styled(Pagination)`
-    margin: 8px;
-`;
+const tabs: Array<{ value: ItemPickerType; label: string }> = _(itemPickerTypes)
+    .mapValues((label, value) => ({ label, value: value as ItemPickerType }))
+    .values()
+    .value();
 
 const GridContainer = styled.div`
     display: grid;
@@ -150,11 +114,6 @@ const FormulaEditor = styled(ExpressionEditor)`
 function trimTrailing(x: string) {
     return x.replace(/\s+$/gm, "");
 }
-
-const StyledMenu = styled(Menu)`
-    height: 10em;
-    overflow-y: scroll;
-`;
 
 const FunctionButton: React.FC<{ label?: string; value: string; handleClick: (value: string) => void }> = ({
     handleClick,

@@ -2,6 +2,7 @@ import Editor, { useMonaco } from "@monaco-editor/react";
 import _ from "lodash";
 import React, { useEffect } from "react";
 import { FormulaVariable } from "../../../domain/entities/FormulaVariable";
+import i18n from "../../../locales";
 import { buildPredictorsCompletionProvider } from "./completion/predictors";
 import { PredictorsLanguageConfiguration } from "./language/predictors";
 import { ValidationMarker } from "./types";
@@ -43,8 +44,8 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
                             reference?.endColumn ?? 0
                         ),
                         contents: _.compact([
-                            { value: _.compact([`**${variable.label}**`, variable.description]).join("\n\n") },
-                            { value: `*${variable.type}*`},
+                            { value: _.compact([`**${_.trim(variable.label)}**`, variable.description]).join("\n\n") },
+                            { value: `*${formatType(variable.type)}*`},
                             descriptions ? { value: descriptions } : undefined,
                         ]),
                     };
@@ -79,4 +80,19 @@ export interface ExpressionEditorProps {
     onValidate?: (expression: string) => Promise<ValidationMarker[] | undefined>;
     onChange?: (expression?: string) => void;
     value: string;
+}
+
+function formatType(type: string): string {
+    switch (type) {
+        case "dataElements":
+            return i18n.t("Data Element");
+        case "organisationUnitGroups":
+            return i18n.t("Organisation unit group");
+        case "constants":
+            return i18n.t("Constant");
+        case "categoryOptionCombos":
+            return i18n.t("Category option combo");
+        default:
+            return type;
+    }
 }
