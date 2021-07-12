@@ -1,12 +1,12 @@
 import { UseCase } from "../../compositionRoot";
+import { FormulaVariable } from "../entities/FormulaVariable";
 import { FutureData } from "../entities/Future";
-import { Metadata } from "../entities/Metadata";
-import { MetadataRepository } from "../repositories/MetadataRepository";
+import { FormulaVariableRepository } from "../repositories/FormulaVariableRepository";
 
 export class GetExpressionSuggestionsUseCase implements UseCase {
-    constructor(private metadataRepository: MetadataRepository) {}
+    constructor(private formulaRepository: FormulaVariableRepository) {}
 
-    public execute(): FutureData<Metadata[]> {
-        return this.metadataRepository.listAll(["dataElements"]).map(({ dataElements }) => dataElements ?? []);
+    public execute(): FutureData<FormulaVariable[]> {
+        return this.formulaRepository.get();
     }
 }

@@ -1,7 +1,8 @@
 import { ExcelXlsxPopulateRepository } from "./data/ExcelXlsxPopulateRepository";
 import { FileBrowserRepository } from "./data/FileBrowserRepository";
-import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
+import { FormulaVariableD2ApiRepository } from "./data/FormulaVariableD2ApiRepository";
 import { InstanceD2ApiRepository } from "./data/InstanceD2ApiRepository";
+import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
 import { DeletePredictorsUseCase } from "./domain/usecases/DeletePredictorsUseCase";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
@@ -9,13 +10,13 @@ import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpression
 import { GetOutputDataElementsUseCase } from "./domain/usecases/GetOutputDataElementsUseCase";
 import { GetPredictorGroupsUseCase } from "./domain/usecases/GetPredictorGroupsUseCase";
 import { GetPredictorsUseCase } from "./domain/usecases/GetPredictorsUseCase";
-import { SavePredictorsUseCase } from "./domain/usecases/SavePredictorsUseCase";
 import { ListMetadataUseCase } from "./domain/usecases/ListMetadataUseCase";
 import { ListPredictorsUseCase } from "./domain/usecases/ListPredictorsUseCase";
 import { ReadPredictorsExcelUseCase } from "./domain/usecases/ReadPredictorsExcelUseCase";
 import { RunPredictorsUseCase } from "./domain/usecases/RunPredictorsUseCase";
-import { ValidateExpressionUseCase } from "./domain/usecases/ValidateExpressionUseCase";
+import { SavePredictorsUseCase } from "./domain/usecases/SavePredictorsUseCase";
 import { SearchUsersUseCase } from "./domain/usecases/SearchUsersUseCase";
+import { ValidateExpressionUseCase } from "./domain/usecases/ValidateExpressionUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
     const predictorRepository = new PredictorD2ApiRepository(baseUrl);
@@ -23,6 +24,7 @@ export function getCompositionRoot(baseUrl: string) {
     const instanceRepository = new InstanceD2ApiRepository(baseUrl);
     const excelRepository = new ExcelXlsxPopulateRepository();
     const fileRepository = new FileBrowserRepository();
+    const formulaVariableRepository = new FormulaVariableD2ApiRepository(baseUrl);
 
     return {
         usecases: getExecute({
@@ -30,7 +32,7 @@ export function getCompositionRoot(baseUrl: string) {
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             getDataElements: new GetOutputDataElementsUseCase(predictorRepository),
-            getExpressionSuggestions: new GetExpressionSuggestionsUseCase(metadataRepository),
+            getExpressionSuggestions: new GetExpressionSuggestionsUseCase(formulaVariableRepository),
             run: new RunPredictorsUseCase(predictorRepository),
             readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
             save: new SavePredictorsUseCase(predictorRepository),

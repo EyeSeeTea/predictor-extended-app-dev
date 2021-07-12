@@ -1,9 +1,10 @@
-import { languages, editor, Position, CancellationToken, MarkerSeverity } from "monaco-editor";
+import { CancellationToken, editor, IRange, languages, Position } from "monaco-editor";
+import { FormulaVariable } from "../../../../domain/entities/FormulaVariable";
 import { PredictorSuggestions } from "../suggestions/predictors";
-import { ValidationMarker, Variable } from "../types";
+import { ValidationMarker } from "../types";
 
 export interface CompletionProviderOptions {
-    variables?: Variable[];
+    variables?: FormulaVariable[];
     includeNameAndCodeSuggestions?: boolean;
     onValidate?: (expression: string) => Promise<ValidationMarker[] | undefined>;
 }
@@ -11,6 +12,7 @@ export interface CompletionProviderOptions {
 export const buildPredictorsCompletionProvider = ({
     variables = [],
 }: CompletionProviderOptions): languages.CompletionItemProvider => ({
+    triggerCharacters: ["."],
     provideCompletionItems: async (
         model: editor.ITextModel,
         position: Position,
@@ -26,36 +28,31 @@ export const buildPredictorsCompletionProvider = ({
             endColumn: item.endColumn,
         };
 
-        editor.setModelMarkers(model, "predictors", [
-            {
-                severity: MarkerSeverity.Error,
-                startLineNumber: 1,
-                startColumn: 2,
-                endLineNumber: 1,
-                endColumn: 5,
-                message: "hi there",
-            },
-        ]);
+        const prevWord = model.getWordAtPosition({ ...position, column: item.startColumn - 1 });
+        const prevWordVariable = variables.find(v => v.id === prevWord?.word);
+        if (prevWordVariable) {
+            return { suggestions: prevWordVariable.options?.map(variable => formatVariable(range, variable)) ?? [] };
+        } else if (model.getValue().endsWith(".")) {
+            return { suggestions: [] };
+        }
 
         return {
             suggestions: [
                 ...PredictorSuggestions.map(item => ({ ...item, range })),
-                ...variables.map(({ name }) => ({
-                    label: name,
-                    kind: languages.CompletionItemKind.Constant,
-                    insertText: name,
-                    range,
-                })),
                 ...variables
-                    .filter(item => item.code !== undefined)
-                    .map(({ name, code = "" }) => ({
-                        label: name,
-                        filterText: code,
-                        kind: languages.CompletionItemKind.Constant,
-                        insertText: code,
-                        range,
-                    })),
+                    .filter(({ autocomplete }) => autocomplete)
+                    .map(variable => formatVariable(range, variable)),
             ],
         };
     },
 });
+
+function formatVariable(range: IRange, { filterText, insertText, label }: FormulaVariable): languages.CompletionItem {
+    return {
+        label,
+        filterText,
+        kind: languages.CompletionItemKind.Constant,
+        insertText,
+        range,
+    };
+}
