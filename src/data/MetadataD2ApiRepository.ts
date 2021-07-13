@@ -16,12 +16,13 @@ export class MetadataD2ApiRepository implements MetadataRepository {
 
     public list(
         type: MetadataType,
-        options: { pageSize?: number; page?: number },
+        options: { pageSize?: number; page?: number; filter?: object },
         fieldOptions: {}
     ): FutureData<{ pager: Pager; objects: Metadata[] }> {
         return toFuture(
             //@ts-ignore
             this.api.models[type].get({
+                filter: options.filter,
                 fields: { ...fieldOptions, id: true, name: true, code: true },
                 pageSize: options.pageSize ?? 25,
                 page: options.page ?? 1,
@@ -29,10 +30,14 @@ export class MetadataD2ApiRepository implements MetadataRepository {
         );
     }
 
-    public listAll(types: MetadataType[]): FutureData<MetadataPackage> {
+    public listAll(
+        types: MetadataType[],
+        fields = { id: true, name: true, code: true },
+        filter?: object
+    ): FutureData<MetadataPackage> {
         const params = _.zipObject(
             types,
-            types.map(() => ({ fields: { id: true, name: true, code: true } }))
+            types.map(() => ({ fields, filter }))
         );
 
         return toFuture(this.api.metadata.get(params));

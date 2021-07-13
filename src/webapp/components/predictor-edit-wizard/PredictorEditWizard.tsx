@@ -24,7 +24,6 @@ const steps = [
                 "description",
                 "periodType",
                 "output",
-                "outputCombo",
                 "organisationUnitLevels",
                 "predictorGroups",
             ],

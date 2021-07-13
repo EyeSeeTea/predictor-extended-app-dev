@@ -18,10 +18,9 @@ import { FormField } from "../form/fields/FormField";
 import { NumberInputFF } from "../form/fields/NumberInputFF";
 import { PreviewInputFF } from "../form/fields/PreviewInputFF";
 import { hasItems } from "../form/validators/hasItems";
-import { DataElementOutputFF } from "./components/DataElementOutputFF";
-import { CategoryOptionComboFF } from "./components/CategoryOptionComboFF";
 import { ExpressionBoxFF } from "./components/ExpressionBoxFF";
 import { OrgUnitLevelsFF } from "./components/OrgUnitLevelsFF";
+import { OutputFF } from "./components/OutputFF";
 import { PredictorGroupsFF } from "./components/PredictorGroupsFF";
 
 const useValidations = (
@@ -103,9 +102,7 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
         case "sampleSkipTest.description":
             return <FormField {...props} component={InputFieldFF} />;
         case "output":
-            return <FormField {...props} component={DataElementOutputFF} />;
-        case "outputCombo":
-            return <FormField {...props} component={CategoryOptionComboFF} />;
+            return <FormField {...props} component={OutputFF} optionComboField={`predictors[${row}.outputCombo]`} />;
         case "periodType":
             return <FormField {...props} component={SingleSelectFieldFF} options={periodTypes} />;
         case "organisationUnitLevels":
@@ -142,6 +139,7 @@ export const RenderPredictorImportField: React.FC<{ row: number; field: Predicto
         case "predictorGroups":
         case "generator.expression":
         case "sampleSkipTest.expression":
+        case "output":
             return (
                 <PreviewInputFF {...props}>
                     <RenderPredictorWizardField row={row} field={field} />
