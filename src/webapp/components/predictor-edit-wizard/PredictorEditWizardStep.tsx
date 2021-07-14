@@ -7,7 +7,7 @@ export const PredictorEditWizardStep: React.FC<PredictorEditWizardStepProps> = (
         <React.Fragment>
             {fields.map(field => (
                 <Row key={`wizard-row-${field}`}>
-                    <label>{getPredictorFieldName(field)}</label>
+                    <b>{getPredictorFieldName(field)}</b>
                     <RenderPredictorWizardField row={0} field={field} />
                 </Row>
             ))}
