@@ -36,7 +36,7 @@ export const TransferFF = ({
 
     return (
         <React.Fragment>
-            <Transfer {...rest} options={options} loading={isLoading} onChange={onChange} selected={selected} />
+            <StyledTransfer {...rest} options={options} loading={isLoading} onChange={onChange} selected={selected} />
 
             {!!message && <WarningBox warning={true} title={message} />}
         </React.Fragment>
@@ -49,5 +49,15 @@ const WarningBox = styled(NoticeBox)`
 
     h6 {
         margin: 0px;
+    }
+`;
+
+const StyledTransfer = styled(Transfer)`
+    div {
+        border-color: rgb(160, 173, 186);
+    }
+
+    .status-icon {
+        margin-left: 0;
     }
 `;
