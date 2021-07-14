@@ -162,7 +162,6 @@ export const predictorFormFields = [
     "name",
     "description",
     "output",
-    "outputCombo",
     "periodType",
     "annualSampleCount",
     "sequentialSampleCount",
