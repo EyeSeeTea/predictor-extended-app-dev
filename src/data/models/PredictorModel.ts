@@ -1,4 +1,4 @@
-import { Formula, PeriodType, Predictor, PredictorSave } from "../../domain/entities/Predictor";
+import { Formula, PeriodType, Predictor, PredictorSave, Scheduling } from "../../domain/entities/Predictor";
 import { Codec, Schema } from "../utils/codec";
 import { NamedRefModel } from "./DHIS2Model";
 
@@ -14,6 +14,12 @@ export const FormulaModel: Codec<Formula> = Schema.object({
         ]),
         "SKIP_IF_ALL_VALUES_MISSING"
     ),
+});
+
+export const SchedulingModel: Codec<Scheduling> = Schema.object({
+    type: Schema.exact("FIXED"),
+    sequence: Schema.number,
+    variable: Schema.number,
 });
 
 export const PeriodTypeModel: Codec<PeriodType> = Schema.oneOf([
@@ -38,9 +44,9 @@ export const PeriodTypeModel: Codec<PeriodType> = Schema.oneOf([
 ]);
 
 export const PredictorModel: Codec<Predictor> = Schema.object({
-    id: Schema.string,
+    id: Schema.nonEmptyString,
     code: Schema.optional(Schema.string),
-    name: Schema.string,
+    name: Schema.nonEmptyString,
     description: Schema.optional(Schema.string),
     output: NamedRefModel,
     outputCombo: Schema.optional(NamedRefModel),
@@ -56,12 +62,13 @@ export const PredictorModel: Codec<Predictor> = Schema.object({
     lastUpdatedBy: NamedRefModel,
     created: Schema.string,
     user: NamedRefModel,
+    scheduling: SchedulingModel,
 });
 
 export const PredictorSaveModel: Codec<PredictorSave> = Schema.object({
-    id: Schema.string,
+    id: Schema.nonEmptyString,
     code: Schema.optional(Schema.string),
-    name: Schema.string,
+    name: Schema.nonEmptyString,
     description: Schema.optional(Schema.string),
     output: NamedRefModel,
     outputCombo: Schema.optional(NamedRefModel),
@@ -72,4 +79,5 @@ export const PredictorSaveModel: Codec<PredictorSave> = Schema.object({
     sequentialSampleCount: Schema.number,
     annualSampleCount: Schema.number,
     sequentialSkipCount: Schema.optional(Schema.number),
+    scheduling: SchedulingModel,
 });

@@ -1,4 +1,4 @@
-import { NamedRef } from "./DHIS2";
+import { NamedRef, Ref } from "./DHIS2";
 
 export type PeriodType =
     | "Daily"
@@ -29,6 +29,14 @@ export interface Formula {
     missingValueStrategy: FormulaMissingValueStrategy;
 }
 
+export type Scheduling = {
+    type: "FIXED";
+    sequence: number;
+    variable: number;
+};
+
+export type SaveScheduling = Scheduling & Ref;
+
 export interface Predictor {
     id: string;
     code?: string | undefined;
@@ -48,6 +56,7 @@ export interface Predictor {
     lastUpdatedBy: NamedRef;
     created: string; // TODO: Convert to date
     user: NamedRef;
+    scheduling: Scheduling;
 }
 
 export type PredictorSave = Omit<Predictor, "lastUpdated" | "lastUpdatedBy" | "created" | "user" | "predictorGroups">;
@@ -66,6 +75,7 @@ export const defaultPredictor: Predictor = {
     lastUpdatedBy: { id: "", name: "" },
     created: "",
     user: { id: "", name: "" },
+    scheduling: { type: "FIXED", sequence: 0, variable: 0 },
 };
 
 export const predictorColumns: Array<keyof Predictor> = [

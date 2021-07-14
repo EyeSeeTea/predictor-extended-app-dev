@@ -2,13 +2,14 @@ import { TableSorting } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Future, FutureData } from "../domain/entities/Future";
-import { Predictor } from "../domain/entities/Predictor";
+import { Predictor, SaveScheduling } from "../domain/entities/Predictor";
 import {
     ExpressionType,
     ExpressionValidation,
     ListPredictorsFilters,
     PredictorRepository,
 } from "../domain/repositories/PredictorRepository";
+import { Namespaces, StorageRepository } from "../domain/repositories/StorageRepository";
 import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { formatDate } from "../utils/dates";
@@ -19,7 +20,7 @@ import { toFuture } from "./utils/futures";
 export class PredictorD2ApiRepository implements PredictorRepository {
     private api: D2Api;
 
-    constructor(baseUrl: string) {
+    constructor(baseUrl: string, private storageRepository: StorageRepository) {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
@@ -33,13 +34,22 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public get(ids: string[]): FutureData<Predictor[]> {
-        return toFuture(
+        const predictorData$ = toFuture(
             this.api.models.predictors.get({
                 filter: { id: { in: ids } },
                 paging: false,
                 fields: predictorFields,
             })
-        ).map(({ objects }) => objects);
+        );
+
+        const schedulingData$ = this.storageRepository.getObject<SaveScheduling[]>(Namespaces.SCHEDULING, []);
+
+        return Future.join2(predictorData$, schedulingData$).map(([{ objects }, scheduling]) => {
+            return objects.map(item => {
+                const { type = "FIXED", sequence = 0, variable = 0 } = scheduling.find(s => s.id === item.id) ?? {};
+                return { ...item, scheduling: { type, sequence, variable } };
+            });
+        });
     }
 
     public list(
@@ -99,6 +109,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     public save(inputPredictors: Predictor[]): FutureData<MetadataResponse[]> {
         const validations = inputPredictors.map(predictor => PredictorSaveModel.decode(cleanPredictor(predictor)));
         const predictors = _.compact(validations.map(either => either.toMaybe().extract()));
+        const schedulingData = predictors.map(item => ({ id: item.id, ...item.scheduling }));
         const errors = _.compact(validations.map(either => either.leftOrDefault("")));
         if (errors.length > 0) {
             return Future.error(errors.join("\n"));
@@ -107,12 +118,16 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         const savePredictor$ = toFuture(this.api.metadata.post({ predictors }));
         const existingPredictors$ = this.get(predictors.map(({ id }) => id));
 
-        return Future.join2(savePredictor$, existingPredictors$).flatMap(([savePayload, existingPredictors]) =>
-            this.getGroupsToSave(inputPredictors, existingPredictors).flatMap(groupsToSave => {
-                const groupPayload$ = toFuture(this.api.metadata.post({ predictorGroups: groupsToSave }));
-                return groupPayload$.map(groupPayload => [savePayload, groupPayload]);
-            })
-        );
+        return this.storageRepository
+            .saveObjectsInCollection<SaveScheduling>(Namespaces.SCHEDULING, schedulingData)
+            .flatMap(() =>
+                Future.join2(savePredictor$, existingPredictors$).flatMap(([savePayload, existingPredictors]) =>
+                    this.getGroupsToSave(inputPredictors, existingPredictors).flatMap(groupsToSave => {
+                        const groupPayload$ = toFuture(this.api.metadata.post({ predictorGroups: groupsToSave }));
+                        return groupPayload$.map(groupPayload => [savePayload, groupPayload]);
+                    })
+                )
+            );
     }
 
     public delete(ids: string[]): FutureData<any> {

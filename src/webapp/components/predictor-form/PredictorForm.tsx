@@ -63,6 +63,8 @@ const useValidations = (
         case "sequentialSampleCount":
         case "annualSampleCount":
         case "sequentialSkipCount":
+        case "scheduling.sequence":
+        case "scheduling.variable":
             return { validation: composeValidators(integer, createMinNumber(0)) };
         case "generator.expression":
         case "sampleSkipTest.expression":
@@ -114,6 +116,8 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
         case "sequentialSampleCount":
         case "annualSampleCount":
         case "sequentialSkipCount":
+        case "scheduling.sequence":
+        case "scheduling.variable":
             return <FormField {...props} component={NumberInputFF} defaultValue="0" min="0" />;
         case "generator.expression":
         case "sampleSkipTest.expression":
@@ -210,6 +214,10 @@ const getPredictorName = (field: PredictorFormField) => {
             return i18n.t("Sample skip test description");
         case "sampleSkipTest.expression":
             return i18n.t("Sample skip test formula");
+        case "scheduling.sequence":
+            return i18n.t("Sequence");
+        case "scheduling.variable":
+            return i18n.t("Variable");
     }
 };
 

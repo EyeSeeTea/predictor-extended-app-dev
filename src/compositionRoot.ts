@@ -4,6 +4,7 @@ import { FormulaVariableD2ApiRepository } from "./data/FormulaVariableD2ApiRepos
 import { InstanceD2ApiRepository } from "./data/InstanceD2ApiRepository";
 import { MetadataD2ApiRepository } from "./data/MetadataD2ApiRepository";
 import { PredictorD2ApiRepository } from "./data/PredictorD2ApiRepository";
+import { StorageDataStoreRepository } from "./data/StorageDataStoreRepository";
 import { DeletePredictorsUseCase } from "./domain/usecases/DeletePredictorsUseCase";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
 import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpressionSuggestionsUseCase";
@@ -19,7 +20,8 @@ import { SearchUsersUseCase } from "./domain/usecases/SearchUsersUseCase";
 import { ValidateExpressionUseCase } from "./domain/usecases/ValidateExpressionUseCase";
 
 export function getCompositionRoot(baseUrl: string) {
-    const predictorRepository = new PredictorD2ApiRepository(baseUrl);
+    const storageRepository = new StorageDataStoreRepository(baseUrl);
+    const predictorRepository = new PredictorD2ApiRepository(baseUrl, storageRepository);
     const metadataRepository = new MetadataD2ApiRepository(baseUrl);
     const instanceRepository = new InstanceD2ApiRepository(baseUrl);
     const excelRepository = new ExcelXlsxPopulateRepository();

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-13T05:11:15.673Z\n"
-"PO-Revision-Date: 2021-07-13T05:11:15.673Z\n"
+"POT-Creation-Date: 2021-07-14T06:09:16.427Z\n"
+"PO-Revision-Date: 2021-07-14T06:09:16.427Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -137,13 +137,13 @@ msgstr ""
 msgid "Scheduling"
 msgstr ""
 
+msgid "Please fix the following problems before saving"
+msgstr ""
+
 msgid "Save"
 msgstr ""
 
 msgid "Cancel"
-msgstr ""
-
-msgid "Please fix the following problems before saving"
 msgstr ""
 
 msgid "Unable to validate"
@@ -195,6 +195,12 @@ msgid "Sample skip test description"
 msgstr ""
 
 msgid "Sample skip test formula"
+msgstr ""
+
+msgid "Sequence"
+msgstr ""
+
+msgid "Variable"
 msgstr ""
 
 msgid "Daily"
