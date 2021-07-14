@@ -179,8 +179,7 @@ const StyledStepLabel = styled(StepLabel)`
 `;
 
 const StyledStepper = styled(Stepper)`
-    padding: 20px;
-    padding-bottom: 30px;
+    padding: 20px 20px 35px;
 `;
 
 const ButtonsRow = styled(ButtonStrip)`
@@ -197,9 +196,4 @@ const Container = styled.div`
 
 const Wrapper = styled(Paper)`
     padding: 45px;
-
-    b {
-        display: block;
-        margin-bottom: 15px;
-    }
 `;
