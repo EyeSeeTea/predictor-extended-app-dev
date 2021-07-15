@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-// Match group between brackets {{template}}
-const bracketRegex = /\{\{([^{].*?)\}\}/g;
+// Match group between brackets {template}
+const bracketRegex = /\{([^{].*?)\}/g;
 
 export function interpolate(string: string, dictionary: Record<string, unknown>, regex = bracketRegex): string {
     return string.replace(regex, (_, key) => toString(dictionary[key]) ?? key);
