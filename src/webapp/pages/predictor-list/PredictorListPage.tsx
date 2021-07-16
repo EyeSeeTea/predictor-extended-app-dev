@@ -1,15 +1,19 @@
 import {
     DatePicker,
-    DropdownItem,
     MultipleDropdown,
+    ObjectsList,
+    Pager,
+    TableConfig,
     TablePagination,
     TableSorting,
     useLoading,
+    useObjectsTable,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
-import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Sync } from "@material-ui/icons";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext } from "@material-ui/icons";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
+import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
@@ -18,9 +22,8 @@ import i18n from "../../../locales";
 import { formatDate } from "../../../utils/dates";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
-import { Pager, TableConfig, useObjectsTable } from "../../components/objects-list/objects-list-hooks";
-import { ObjectsList } from "../../components/objects-list/ObjectsList";
 import { useAppContext } from "../../contexts/app-context";
+import { useFuture } from "../../hooks/useFuture";
 import { useQueryState } from "../../hooks/useQueryState";
 import { useReload } from "../../hooks/useReload";
 
@@ -28,19 +31,30 @@ export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const loading = useLoading();
     const snackbar = useSnackbar();
+    const history = useHistory();
 
     const fileRef = useRef<DropzoneRef>(null);
 
     const [state, setState] = useQueryState<ListPredictorsFilters>({});
-    const [predictorGroupOptions, setPredictorGroupOptions] = useState<DropdownItem[]>([]);
-    const [dataElementsOptions, setDataElementsOptions] = useState<DropdownItem[]>([]);
-    const [response, setResponse] = useState<MetadataResponse>();
+    const [response, setResponse] = useState<MetadataResponse[]>();
     const [reloadKey, reload] = useReload();
+
+    const { data: predictorGroupOptions = [] } = useFuture(() => {
+        return compositionRoot.usecases
+            .getGroups()
+            .map(groups => groups.map(({ id, name }) => ({ value: id, text: name })));
+    }, []);
+
+    const { data: dataElementsOptions = [] } = useFuture(() => {
+        return compositionRoot.usecases
+            .getDataElements()
+            .map(dataElements => dataElements.map(({ id, name }) => ({ value: id, text: name })));
+    }, []);
 
     const runPredictors = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
-            const results = await compositionRoot.usecases.run(ids);
+            const results = await compositionRoot.usecases.run(ids).toPromise();
             snackbar.info(results.map((response: any) => response?.message).join("\n"));
             loading.reset();
         },
@@ -56,6 +70,16 @@ export const PredictorListPage: React.FC = () => {
         [compositionRoot, loading]
     );
 
+    const newPredictor = useCallback(() => history.push(`/new`), [history]);
+
+    const editPredictor = useCallback(
+        (ids: string[]) => {
+            if (ids[0] === undefined) return;
+            history.push(`/edit/${ids[0]}`);
+        },
+        [history]
+    );
+
     const deletePredictor = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Deleting predictors"));
@@ -69,10 +93,6 @@ export const PredictorListPage: React.FC = () => {
     const openImportDialog = useCallback(async () => {
         fileRef.current?.openDialog();
     }, [fileRef]);
-
-    const placeholderAction = useCallback(() => {
-        snackbar.info("Not implemented yet");
-    }, [snackbar]);
 
     const baseConfig = useMemo((): TableConfig<Predictor> => {
         return {
@@ -130,7 +150,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "edit",
                     text: i18n.t("Edit"),
                     multiple: false,
-                    onClick: placeholderAction,
+                    onClick: editPredictor,
                     icon: <Edit />,
                 },
                 {
@@ -154,13 +174,6 @@ export const PredictorListPage: React.FC = () => {
                     onClick: exportPredictors,
                     icon: <ArrowDownward />,
                 },
-                {
-                    name: "validate",
-                    text: i18n.t("Validate"),
-                    multiple: true,
-                    onClick: placeholderAction,
-                    icon: <Sync />,
-                },
             ],
             globalActions: [
                 {
@@ -179,8 +192,9 @@ export const PredictorListPage: React.FC = () => {
                 pageSizeInitialValue: 25,
             },
             searchBoxLabel: i18n.t("Search by name"),
+            onActionButtonClick: newPredictor,
         };
-    }, [runPredictors, exportPredictors, deletePredictor, openImportDialog, placeholderAction]);
+    }, [runPredictors, exportPredictors, newPredictor, editPredictor, deletePredictor, openImportDialog]);
 
     const refreshRows = useCallback(
         (
@@ -188,8 +202,8 @@ export const PredictorListPage: React.FC = () => {
             paging: TablePagination,
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
-            console.log("Reloading", reloadKey);
-            return compositionRoot.usecases.list({ ...state, search }, paging, sorting);
+            console.debug("Reloading", reloadKey);
+            return compositionRoot.usecases.list({ ...state, search }, paging, sorting).toPromise();
         },
         [compositionRoot, state, reloadKey]
     );
@@ -211,7 +225,7 @@ export const PredictorListPage: React.FC = () => {
             }
 
             //@ts-ignore TODO FIXME: Add validation
-            const response = await compositionRoot.usecases.import(predictors);
+            const response = await compositionRoot.usecases.save(predictors).toPromise();
             setResponse(response);
 
             loading.reset();
@@ -248,18 +262,6 @@ export const PredictorListPage: React.FC = () => {
             }),
         [onChangeFilter]
     );
-
-    useEffect(() => {
-        compositionRoot.usecases.getGroups().then(groups => {
-            const options = groups.map(({ id, name }) => ({ value: id, text: name }));
-            setPredictorGroupOptions(options);
-        });
-
-        compositionRoot.usecases.getDataElements().then(dataElements => {
-            const options = dataElements.map(({ id, name }) => ({ value: id, text: name }));
-            setDataElementsOptions(options);
-        });
-    }, [compositionRoot]);
 
     return (
         <Wrapper>
@@ -298,7 +300,7 @@ export const PredictorListPage: React.FC = () => {
                 </ObjectsList>
             </Dropzone>
 
-            {response && <ImportSummary results={[response]} onClose={() => setResponse(undefined)} />}
+            {response && <ImportSummary results={response} onClose={() => setResponse(undefined)} />}
         </Wrapper>
     );
 };
