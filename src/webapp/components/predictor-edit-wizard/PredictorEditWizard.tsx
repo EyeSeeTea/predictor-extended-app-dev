@@ -1,9 +1,8 @@
-import { Button, ButtonStrip } from "@dhis2/ui";
-import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
+import { Button, ButtonStrip, NoticeBox } from "@dhis2/ui";
 import i18n from "@eyeseetea/d2-ui-components/locales";
 import { Paper, Step, StepLabel, Stepper } from "@material-ui/core";
 import { ArrowBack, ArrowForward } from "@material-ui/icons";
-import { FormApi, FORM_ERROR } from "final-form";
+import { FORM_ERROR } from "final-form";
 import _ from "lodash";
 import React, { FunctionComponent, useCallback, useState } from "react";
 import { Form } from "react-final-form";
@@ -72,50 +71,40 @@ export interface PredictorEditWizardProps {
 }
 
 export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel }) => {
-    const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
-
     const onSubmit = useCallback(
-        async (
-            values: { predictors: Predictor[] },
-            form: FormApi<{ predictors: Predictor[] }, Partial<{ predictors: Predictor[] }>>
-        ) => {
+        async (values: { predictors: Predictor[] }) => {
             const predictor = values.predictors[0];
-            if (!predictor) return;
+            if (!predictor) return { [FORM_ERROR]: i18n.t("Error saving predictor") };
 
             const error = await onSave(predictor);
-            if (error) {
-                form.restart(values);
-                setErrorDialogOpen(true);
-                return { [FORM_ERROR]: error };
-            }
+            if (error) return { [FORM_ERROR]: error };
+
+            onCancel();
         },
-        [onSave]
+        [onSave, onCancel]
     );
 
     return (
-        <React.Fragment>
-            <Form<{ predictors: Predictor[] }>
-                autocomplete="off"
-                onSubmit={onSubmit}
-                initialValues={{ predictors: [predictor] }}
-                render={({ handleSubmit, submitError }) => (
-                    <form onSubmit={handleSubmit}>
-                        <Wizard onCancel={onCancel}>
-                            {steps.map(({ component: Component, props, key }) => (
-                                <Component key={key} {...props} />
-                            ))}
-                        </Wizard>
+        <Form<{ predictors: Predictor[] }>
+            autocomplete="off"
+            onSubmit={onSubmit}
+            initialValues={{ predictors: [predictor] }}
+            render={({ handleSubmit, submitError }) => (
+                <form onSubmit={handleSubmit}>
+                    {submitError && (
+                        <NoticeBox title={i18n.t("Error saving predictor")} error={true}>
+                            {submitError}
+                        </NoticeBox>
+                    )}
 
-                        <ConfirmationDialog
-                            isOpen={errorDialogOpen}
-                            title={i18n.t("Please fix the following problems before saving")}
-                            description={submitError}
-                            onCancel={() => setErrorDialogOpen(false)}
-                        />
-                    </form>
-                )}
-            />
-        </React.Fragment>
+                    <Wizard onCancel={onCancel}>
+                        {steps.map(({ component: Component, props, key }) => (
+                            <Component key={key} {...props} />
+                        ))}
+                    </Wizard>
+                </form>
+            )}
+        />
     );
 };
 
