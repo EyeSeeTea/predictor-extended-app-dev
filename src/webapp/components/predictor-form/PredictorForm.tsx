@@ -175,7 +175,13 @@ export const predictorFormFields = [
     "sampleSkipTest.expression",
 ];
 
-const predictorRequiredFields: PredictorFormField[] = ["name", "generator.expression", "organisationUnitLevels"];
+const predictorRequiredFields: PredictorFormField[] = [
+    "name",
+    "generator.expression",
+    "organisationUnitLevels",
+    "output",
+    "outputCombo",
+];
 
 const getPredictorName = (field: PredictorFormField) => {
     switch (field) {
