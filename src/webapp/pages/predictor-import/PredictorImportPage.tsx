@@ -1,3 +1,4 @@
+import { Button, ButtonStrip, CenteredContent } from "@dhis2/ui";
 import { Paper } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
 import { IconButton } from "material-ui";
@@ -37,22 +38,34 @@ export const PredictorImportPage: React.FC = () => {
                     initialValues={{ predictors }}
                     render={({ handleSubmit, values }) => (
                         <StyledForm onSubmit={handleSubmit}>
-                            <AutoSizer>
-                                {({ height, width }) => (
-                                    <Grid
-                                        height={height}
-                                        width={width}
-                                        rowCount={values.predictors.length + 1}
-                                        columnCount={predictorFormFields.length + 1}
-                                        estimatedColumnWidth={250}
-                                        estimatedRowHeight={70}
-                                        rowHeight={rowHeight}
-                                        columnWidth={columnWidth}
-                                    >
-                                        {Row}
-                                    </Grid>
-                                )}
-                            </AutoSizer>
+                            <MaxHeight>
+                                <AutoSizer>
+                                    {({ height, width }) => (
+                                        <Grid
+                                            height={height}
+                                            width={width}
+                                            rowCount={values.predictors.length + 1}
+                                            columnCount={predictorFormFields.length + 1}
+                                            estimatedColumnWidth={250}
+                                            estimatedRowHeight={70}
+                                            rowHeight={rowHeight}
+                                            columnWidth={columnWidth}
+                                        >
+                                            {Row}
+                                        </Grid>
+                                    )}
+                                </AutoSizer>
+                            </MaxHeight>
+
+                            <ButtonsRow middle>
+                                <Button type="submit" primary>
+                                    {i18n.t("Save")}
+                                </Button>
+
+                                <Button type="reset" onClick={goBack}>
+                                    {i18n.t("Cancel")}
+                                </Button>
+                            </ButtonsRow>
                         </StyledForm>
                     )}
                 />
@@ -60,6 +73,18 @@ export const PredictorImportPage: React.FC = () => {
         </Wrapper>
     );
 };
+
+const MaxHeight = styled.div`
+    height: 95%;
+`;
+
+const ButtonsRow = styled(ButtonStrip)`
+    padding: 20px;
+
+    button:focus::after {
+        border-color: transparent !important;
+    }
+`;
 
 const Row: React.FC<RowItemProps & { style: object }> = ({ style, ...props }) => (
     <div style={style}>
@@ -88,22 +113,28 @@ const RowItem: React.FC<RowItemProps> = ({ columnIndex, rowIndex }) => {
 
     if (deleteRow) {
         return headerRow ? null : (
-            <IconButton tooltip={i18n.t("Delete")} tooltipPosition="top-center" onClick={removeRow}>
-                <Delete />
-            </IconButton>
+            <CenteredContent>
+                <IconButton tooltip={i18n.t("Delete")} tooltipPosition="top-center" onClick={removeRow}>
+                    <Delete />
+                </IconButton>
+            </CenteredContent>
         );
     }
 
     if (!field) return null;
 
     if (headerRow) {
-        return <Title>{getPredictorFieldName(field)}</Title>;
+        return (
+            <CenteredContent>
+                <Title>{getPredictorFieldName(field)}</Title>
+            </CenteredContent>
+        );
     }
 
     return (
-        <Center>
+        <Item>
             <RenderPredictorImportField row={row} field={field} />
-        </Center>
+        </Item>
     );
 };
 
@@ -112,7 +143,6 @@ const Wrapper = styled.div`
 `;
 
 const StyledForm = styled.form`
-    margin: 10px;
     height: 71vh;
 `;
 
@@ -121,7 +151,7 @@ const Container = styled(Paper)`
     padding: 40px;
 `;
 
-const Center = styled.div`
+const Item = styled.div`
     margin: 4px 0;
     padding: 10px;
 `;
