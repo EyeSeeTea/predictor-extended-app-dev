@@ -1,13 +1,17 @@
 import _ from "lodash";
 
-// Match group between brackets {template}
-const bracketRegex = /\{([^{].*?)\}/g;
+export const RegularExpression = {
+    // Match group between brackets {template}
+    BRACKET: /\{([^{].*?)\}/g,
+    // Match group for words
+    WORD: /\w+/g,
+};
 
-export function interpolate(string: string, dictionary: Record<string, unknown>, regex = bracketRegex): string {
+export function interpolate(string: string, dictionary: Record<string, unknown>, regex = RegularExpression.BRACKET): string {
     return string.replace(regex, (_, key) => toString(dictionary[key]) ?? key);
 }
 
-export function getTemplates(string: string, regex = bracketRegex): string[] {
+export function getTemplates(string: string, regex = RegularExpression.BRACKET): string[] {
     const match = string.matchAll(regex);
     return _.compact(Array.from(match).map(item => item[1]));
 }
