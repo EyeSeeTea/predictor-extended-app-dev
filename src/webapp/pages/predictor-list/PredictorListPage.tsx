@@ -22,6 +22,7 @@ import i18n from "../../../locales";
 import { formatDate } from "../../../utils/dates";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
+import { periodTypes } from "../../components/predictor-form/PredictorForm";
 import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { useQueryState } from "../../hooks/useQueryState";
@@ -126,7 +127,14 @@ export const PredictorListPage: React.FC = () => {
                     },
                 },
                 { name: "predictorGroups", text: i18n.t("Predictor groups"), sortable: true },
-                { name: "periodType", text: i18n.t("Period type"), sortable: true },
+                {
+                    name: "periodType",
+                    text: i18n.t("Period type"),
+                    sortable: true,
+                    getValue: ({ periodType }: Predictor) => {
+                        return periodTypes.find(({ value }) => value === periodType)?.label ?? "-";
+                    },
+                },
                 {
                     name: "sampleSkipTest",
                     text: i18n.t("Sample skip test"),

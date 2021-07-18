@@ -232,7 +232,7 @@ export const getPredictorFieldName = (field: PredictorFormField) => {
     return _.compact([name, required ? "(*)" : undefined]).join(" ");
 };
 
-const periodTypes = [
+export const periodTypes = [
     { value: "Daily", label: i18n.t("Daily") },
     { value: "Weekly", label: i18n.t("Weekly") },
     { value: "WeeklyWednesday", label: i18n.t("Weekly starting Wednesday") },
@@ -253,7 +253,7 @@ const periodTypes = [
     { value: "FinancialNov", label: i18n.t("Financial year starting November") },
 ];
 
-const missingValueStrategy = [
+export const missingValueStrategy = [
     { value: "SKIP_IF_ANY_VALUE_MISSING", label: i18n.t("Skip if any value is missing") },
     { value: "SKIP_IF_ALL_VALUES_MISSING", label: i18n.t("Skip if all values are missing") },
     { value: "NEVER_SKIP", label: i18n.t("Never skip") },
