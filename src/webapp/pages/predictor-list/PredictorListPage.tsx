@@ -104,6 +104,16 @@ export const PredictorListPage: React.FC = () => {
                     hidden: true,
                 },
                 { name: "name", text: i18n.t("Name"), sortable: true },
+                {
+                    name: "scheduling",
+                    text: i18n.t("Sequence"),
+                    sortable: true,
+                    getValue: ({ scheduling }: Predictor) => {
+                        return scheduling.type === "NONE"
+                            ? "-"
+                            : `Sequence: ${scheduling.sequence}\nVariable: ${scheduling.variable}`;
+                    },
+                },
                 { name: "output", text: i18n.t("Output data element"), sortable: true },
                 { name: "outputCombo", text: i18n.t("Output category option"), sortable: true },
                 { name: "description", text: i18n.t("Description"), sortable: false },

@@ -63,7 +63,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     ): FutureData<{ pager: Pager; objects: Predictor[] }> {
         const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
 
-        return toFuture(
+        const predictorData$ = toFuture(
             this.api.models.predictors.get({
                 filter: {
                     name: search ? { token: search } : undefined,
@@ -77,6 +77,18 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 fields: predictorFields,
             })
         );
+
+        const schedulingData$ = this.storageRepository.getObject<SaveScheduling[]>(Namespaces.SCHEDULING, []);
+
+        return Future.join2(predictorData$, schedulingData$).map(([{ objects, pager }, schedulingData]) => {
+            return {
+                pager,
+                objects: objects.map(item => {
+                    const scheduling = schedulingData.find(s => s.id === item.id) ?? { type: "NONE" };
+                    return { ...item, scheduling };
+                }),
+            };
+        });
     }
 
     public getGroups(): FutureData<NamedRef[]> {
