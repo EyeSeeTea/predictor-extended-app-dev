@@ -16,11 +16,16 @@ export const FormulaModel: Codec<Formula> = Schema.object({
     ),
 });
 
-export const SchedulingModel: Codec<Scheduling> = Schema.object({
-    type: Schema.exact("FIXED"),
-    sequence: Schema.number,
-    variable: Schema.number,
-});
+export const SchedulingModel: Codec<Scheduling> = Schema.oneOf([
+    Schema.object({
+        type: Schema.exact("FIXED"),
+        sequence: Schema.number,
+        variable: Schema.number,
+    }),
+    Schema.object({
+        type: Schema.exact("NONE"),
+    }),
+]);
 
 export const PeriodTypeModel: Codec<PeriodType> = Schema.oneOf([
     Schema.exact("Daily"),

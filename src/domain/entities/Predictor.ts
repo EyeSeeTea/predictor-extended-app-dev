@@ -29,12 +29,7 @@ export interface Formula {
     missingValueStrategy: FormulaMissingValueStrategy;
 }
 
-export type Scheduling = {
-    type: "FIXED";
-    sequence: number;
-    variable: number;
-};
-
+export type Scheduling = { type: "NONE" } | { type: "FIXED"; sequence: number; variable: number };
 export type SaveScheduling = Scheduling & Ref;
 
 export interface Predictor {
@@ -75,7 +70,7 @@ export const defaultPredictor: Predictor = {
     lastUpdatedBy: { id: "", name: "" },
     created: "",
     user: { id: "", name: "" },
-    scheduling: { type: "FIXED", sequence: 0, variable: 0 },
+    scheduling: { type: "NONE" },
 };
 
 export const predictorColumns: Array<keyof Predictor> = [

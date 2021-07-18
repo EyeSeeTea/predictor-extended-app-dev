@@ -48,10 +48,10 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
         const schedulingData$ = this.storageRepository.getObject<SaveScheduling[]>(Namespaces.SCHEDULING, []);
 
-        return Future.join2(predictorData$, schedulingData$).map(([{ objects }, scheduling]) => {
+        return Future.join2(predictorData$, schedulingData$).map(([{ objects }, schedulingData]) => {
             return objects.map(item => {
-                const { type = "FIXED", sequence = 0, variable = 0 } = scheduling.find(s => s.id === item.id) ?? {};
-                return { ...item, scheduling: { type, sequence, variable } };
+                const scheduling = schedulingData.find(s => s.id === item.id) ?? { type: "NONE" };
+                return { ...item, scheduling };
             });
         });
     }
@@ -204,7 +204,8 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         const scheduling = _.uniqBy([...newScheduling, ...existingScheduling], ({ id }) => id);
 
         const groups = _(scheduling)
-            .groupBy(({ sequence, variable }) => `${sequence}-${variable}`)
+            .filter(s => s.type === "FIXED")
+            .groupBy(item => (item.type === "FIXED" ? `${item.sequence}-${item.variable}` : ""))
             .toPairs()
             .orderBy(pair => pair[0])
             .value();
