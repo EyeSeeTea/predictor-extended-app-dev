@@ -1,7 +1,8 @@
-import { HashRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
 import { PredictorEditPage } from "./predictor-edit/PredictorEditPage";
 import { PredictorImportPage } from "./predictor-import/PredictorImportPage";
 import { PredictorListPage } from "./predictor-list/PredictorListPage";
+import { SettingsPage } from "./settings/Settings";
 
 export const Router = () => {
     return (
@@ -12,9 +13,11 @@ export const Router = () => {
                     render={({ match }) => <PredictorEditPage type={match.params.type} id={match.params.id} />}
                 />
 
+                <Route path="/list" render={() => <PredictorListPage />} />
                 <Route path="/import" render={() => <PredictorImportPage />} />
+                <Route path="/settings" render={() => <SettingsPage />} />
 
-                <Route render={() => <PredictorListPage />} />
+                <Redirect from="*" to="/list" />
             </Switch>
         </HashRouter>
     );
