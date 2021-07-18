@@ -7,7 +7,11 @@ export const RegularExpression = {
     WORD: /\w+/g,
 };
 
-export function interpolate(string: string, dictionary: Record<string, unknown>, regex = RegularExpression.BRACKET): string {
+export function interpolate(
+    string: string,
+    dictionary: Record<string, unknown>,
+    regex = RegularExpression.BRACKET
+): string {
     return string.replace(regex, (_, key) => toString(dictionary[key]) ?? key);
 }
 
