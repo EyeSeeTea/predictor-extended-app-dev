@@ -420,6 +420,13 @@ declare module "@dhis2/ui" {
         validationText?: string;
     };
 
+    export type CenteredContentProps = {
+        children?: React.ReactNode;
+        dataTest?: string;
+        className?: string;
+        position?: "top" | "bottom" | "middle";
+    };
+
     export function HeaderBar(props: { className?: string; appName: string }): React.ReactElement;
     export function InputField(props: InputFieldProps): React.ReactElement;
     export function InputFieldFF(props: InputFieldFFProps): React.ReactElement;
@@ -441,6 +448,7 @@ declare module "@dhis2/ui" {
     export function CheckboxFieldFF(props: CheckboxFieldFFProps): React.ReactElement;
     export function SwitchField(props: SwitchFieldProps): React.ReactElement;
     export function SwitchFieldFF(props: SwitchFieldFFProps): React.ReactElement;
+    export function CenteredContent(props: CenteredContentProps): React.ReactElement;
 
     export function composeValidators(
         ...validators: ((value: unknown) => string | undefined)[]
