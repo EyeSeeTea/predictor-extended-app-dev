@@ -14,8 +14,8 @@ export const OutputFF: React.FC<CategoryOptionComboFFProps> = ({ input, optionCo
 
     const { data: dataElements = [] } = useFuture(
         () =>
-            compositionRoot.usecases
-                .listMetadata(
+            compositionRoot.metadata
+                .list(
                     "dataElements",
                     { paging: false },
                     { id: true, name: true, categoryCombo: { categoryOptionCombos: { id: true, name: true } } }

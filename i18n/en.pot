@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-18T09:07:22.227Z\n"
-"PO-Revision-Date: 2021-07-18T09:07:22.227Z\n"
+"POT-Creation-Date: 2021-07-19T20:36:39.175Z\n"
+"PO-Revision-Date: 2021-07-19T20:36:39.175Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -27,9 +27,6 @@ msgid "Category Combo"
 msgstr ""
 
 msgid "Code"
-msgstr ""
-
-msgid "Column {{column}} not valid for type predictor"
 msgstr ""
 
 msgid "Reference {{template}} was not found on this instance"
@@ -332,6 +329,9 @@ msgstr ""
 msgid "Import excel"
 msgstr ""
 
+msgid "Scheduling options"
+msgstr ""
+
 msgid "Search by name"
 msgstr ""
 
@@ -351,10 +351,4 @@ msgid "Recurrence (hours)"
 msgstr ""
 
 msgid "Delay between executions (seconds)"
-msgstr ""
-
-msgid "Period start date"
-msgstr ""
-
-msgid "Period end date"
 msgstr ""

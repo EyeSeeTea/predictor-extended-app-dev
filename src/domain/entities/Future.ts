@@ -1,5 +1,6 @@
 import * as fluture from "fluture";
 import _ from "lodash";
+import { Either } from "purify-ts";
 
 export class Future<E, D> {
     private constructor(private instance: fluture.FutureInstance<E, D>) {}
@@ -48,6 +49,16 @@ export class Future<E, D> {
 
     static fromComputation<E, D>(computation: Computation<E, D>): Future<E, D> {
         return new Future(fluture.Future((reject, resolve) => computation(resolve, reject)));
+    }
+
+    static fromPurifyEither<E, D>(input: Either<E, D>): Future<E, D> {
+        return new Future(
+            fluture.Future((reject, resolve) => {
+                if (input.isRight()) resolve(input.extract());
+                else if (input.isLeft()) reject(input.extract());
+                return () => {};
+            })
+        );
     }
 
     static success<D, E = unknown>(data: D): Future<E, D> {

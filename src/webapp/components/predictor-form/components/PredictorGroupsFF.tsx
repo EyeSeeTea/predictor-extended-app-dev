@@ -8,10 +8,7 @@ export const PredictorGroupsFF: React.FC<Omit<TransferFFProps, "options">> = pro
     const { compositionRoot } = useAppContext();
 
     const { data: orgUnitLevels = [] } = useFuture(
-        () =>
-            compositionRoot.usecases
-                .listMetadata("predictorGroups")
-                .map(({ objects }) => buildTransferOptions(objects)),
+        () => compositionRoot.metadata.list("predictorGroups").map(({ objects }) => buildTransferOptions(objects)),
         []
     );
 

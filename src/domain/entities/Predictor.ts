@@ -72,22 +72,3 @@ export const defaultPredictor: Predictor = {
     user: { id: "", name: "" },
     scheduling: { type: "NONE" },
 };
-
-export const predictorColumns: Array<keyof Predictor> = [
-    "id",
-    "code",
-    "name",
-    "description",
-    "output",
-    "outputCombo",
-    "periodType",
-    "annualSampleCount",
-    "generator",
-    "organisationUnitLevels",
-    "predictorGroups",
-    "sampleSkipTest",
-    "sequentialSampleCount",
-    "sequentialSkipCount",
-    "created",
-    "lastUpdated",
-];

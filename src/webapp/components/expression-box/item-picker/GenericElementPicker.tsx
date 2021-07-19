@@ -8,9 +8,7 @@ import { StyledMenu, StyledPagination } from "./ItemPicker";
 export const GenericElementPicker: React.FC<GenericElementPickerProps> = ({ type, append }) => {
     const { compositionRoot } = useAppContext();
 
-    const { data: variableList, refetch: updateVariableList } = useFuture(compositionRoot.usecases.listMetadata, [
-        type,
-    ]);
+    const { data: variableList, refetch: updateVariableList } = useFuture(compositionRoot.metadata.list, [type]);
 
     return (
         <React.Fragment>

@@ -2,7 +2,7 @@ import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
 import { PredictorEditPage } from "./predictor-edit/PredictorEditPage";
 import { PredictorImportPage } from "./predictor-import/PredictorImportPage";
 import { PredictorListPage } from "./predictor-list/PredictorListPage";
-import { SettingsPage } from "./settings/Settings";
+import { SettingsPage } from "./settings/SettingsPage";
 
 export const Router = () => {
     return (

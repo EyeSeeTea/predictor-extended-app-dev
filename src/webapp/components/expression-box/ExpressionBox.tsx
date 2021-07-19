@@ -25,7 +25,7 @@ export const ExpressionBox: React.FC<ExpressionBoxProps> = ({ expressionType, fo
 
     const extraFunctionsForType = expressionType ? functionsForExpressionType[expressionType] : [];
 
-    const { data: variables = [] } = useFuture(compositionRoot.usecases.getExpressionSuggestions, []);
+    const { data: variables = [] } = useFuture(compositionRoot.expressions.getSuggestions, []);
 
     const formulaChange = (formula = "") => {
         onChange(formula);

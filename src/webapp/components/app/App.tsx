@@ -46,9 +46,9 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
     useEffect(() => {
         async function setup() {
             const compositionRoot = getCompositionRoot(baseUrl);
-            const appContext: AppContextState = { api, compositionRoot };
+            const currentUser = await compositionRoot.users.getCurrent();
 
-            setAppContext(appContext);
+            setAppContext({ api, compositionRoot, currentUser });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
             initFeedbackTool(d2, appConfig);
             setLoading(false);

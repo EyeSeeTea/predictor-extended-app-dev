@@ -41,7 +41,7 @@ const useValidations = (
         }
 
         const type = field === "generator.expression" ? "predictor-formula" : "predictor-skip-test";
-        compositionRoot.usecases.validateExpression(type, formula).run(
+        compositionRoot.expressions.validate(type, formula).run(
             validation => setExpressionValidation(validations => ({ ...validations, [meta.name]: validation })),
             error =>
                 setExpressionValidation(validations => ({
@@ -183,7 +183,7 @@ const predictorRequiredFields: PredictorFormField[] = [
     "outputCombo",
 ];
 
-const getPredictorName = (field: PredictorFormField) => {
+export const getPredictorName = (field: PredictorFormField) => {
     switch (field) {
         case "id":
             return i18n.t("Identifier");

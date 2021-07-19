@@ -43,4 +43,5 @@ export abstract class StorageRepository {
 
 export const Namespaces = {
     SCHEDULING: "scheduling",
+    SETTINGS: "settings",
 };

@@ -9,9 +9,7 @@ export const OrgUnitLevelsFF: React.FC<Omit<TransferFFProps, "options">> = props
 
     const { data: orgUnitLevels = [] } = useFuture(
         () =>
-            compositionRoot.usecases
-                .listMetadata("organisationUnitLevels")
-                .map(({ objects }) => buildTransferOptions(objects)),
+            compositionRoot.metadata.list("organisationUnitLevels").map(({ objects }) => buildTransferOptions(objects)),
         []
     );
 

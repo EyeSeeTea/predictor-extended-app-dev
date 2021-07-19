@@ -26,7 +26,9 @@ export const PredictorImportPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const goBack = useGoBack();
 
-    const { data: { objects: predictors = [] } = {} } = useFuture(compositionRoot.usecases.list, []);
+    const { data: { objects: predictors = [] } = {} } = useFuture(compositionRoot.predictors.list, []);
+
+    const goHome = useCallback(() => goBack(true), [goBack]);
 
     return (
         <Wrapper>
@@ -62,7 +64,7 @@ export const PredictorImportPage: React.FC = () => {
                                     {i18n.t("Save")}
                                 </Button>
 
-                                <Button type="reset" onClick={goBack}>
+                                <Button type="reset" onClick={goHome}>
                                     {i18n.t("Cancel")}
                                 </Button>
                             </ButtonsRow>

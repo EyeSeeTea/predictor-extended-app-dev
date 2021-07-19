@@ -1,13 +1,11 @@
 import _ from "lodash";
-import { Either } from "purify-ts";
 import { UseCase } from "../../compositionRoot";
-import { PredictorModel } from "../../data/models/PredictorModel";
 import i18n from "../../locales";
 import { promiseMap } from "../../utils/promises";
-import { getTemplates, interpolate } from "../../utils/strings";
+import { getTemplates, interpolate, RegularExpression } from "../../utils/strings";
 import { generateUid } from "../../utils/uid";
 import { ExcelCell, ExcelModel, getColumn, getRow } from "../entities/Excel";
-import { Predictor, predictorColumns } from "../entities/Predictor";
+import { FormulaMissingValueStrategy, Predictor } from "../entities/Predictor";
 import { Validation } from "../entities/Validation";
 import { ExcelRepository } from "../repositories/ExcelRepository";
 import { MetadataRepository } from "../repositories/MetadataRepository";
@@ -33,7 +31,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
         if (!sheet) throw new Error("Invalid excel file");
 
         const { cells } = sheet;
-        const { columns, warnings: columnWarnings } = this.buildColumns(cells);
+        const columns = this.buildColumns(cells);
 
         const entries = _(cells)
             .groupBy(item => getRow(item.ref))
@@ -44,7 +42,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                     _.compact(
                         cells?.map(cell => {
                             const column = columns[getColumn(cell.ref)];
-                            return column ? [column, String(cell.contents.value)] : undefined;
+                            return column ? [String(column).replace(/^_/, ""), String(cell.contents.value)] : undefined;
                         })
                     )
                 )
@@ -53,33 +51,18 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             .value();
 
         const { dictionary, warnings: dictionaryWarnings } = await this.buildDictionary(entries);
-        const parseResults = await this.cleanPredictors(entries, dictionary);
-        const parseWarnings = Either.lefts(parseResults);
-
-        const predictors = _.flatten(Either.rights(parseResults));
-        const warnings = [...columnWarnings, ...dictionaryWarnings, ...parseWarnings];
+        const predictors = await this.cleanPredictors(entries, dictionary);
+        const warnings = dictionaryWarnings;
 
         return { predictors, warnings };
     }
 
     private buildColumns(cells: ExcelCell[]) {
-        const columns: Record<number, string> = _(cells)
+        return _(cells)
             .filter(item => getRow(item.ref) === 0)
             .map(item => [getColumn(item.ref), String(item.contents.value)])
             .fromPairs()
             .value();
-
-        const warnings: Validation<"UNKNOWN_COLUMN">[] = _(columns)
-            .values()
-            .difference(predictorColumns)
-            .map(column => ({
-                id: column,
-                error: "UNKNOWN_COLUMN" as const,
-                description: i18n.t("Column {{column}} not valid for type predictor", { column }),
-            }))
-            .value();
-
-        return { columns, warnings };
     }
 
     private async buildDictionary(entries: Record<string, string>[]) {
@@ -126,7 +109,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
     private async cleanPredictors(
         entries: Record<string, string | undefined>[],
         dictionary: Record<string, string>
-    ): Promise<Either<Validation<"PARSE_ERROR">, Predictor>[]> {
+    ): Promise<Partial<Predictor>[]> {
         return promiseMap(entries, async object => {
             const output = await this.metadataRepository.search("dataElements", object.output ?? "");
 
@@ -144,27 +127,34 @@ export class ReadPredictorsExcelUseCase implements UseCase {
                 )
             );
 
-            return PredictorModel.decode({
+            return {
                 ...object,
                 output,
                 outputCombo,
                 predictorGroups,
                 organisationUnitLevels,
                 generator: {
-                    expression: interpolate(object.generator ?? "", dictionary),
-                    description: "Description",
+                    expression: interpolate(object["_generator.expression"] ?? "", dictionary, RegularExpression.WORD),
+                    description: object["_generator.description"] ?? "",
+                    slidingWindow: false,
+                    missingValueStrategy:
+                        (object["_generator.missingValueStrategy"] as FormulaMissingValueStrategy) ?? "NEVER_SKIP",
                 },
                 sampleSkipTest: object.sampleSkipTest
                     ? {
-                          expression: interpolate(object.sampleSkipTest, dictionary),
-                          description: "Description",
+                          expression: interpolate(
+                              object["_sampleSkipTest.expression"] ?? "",
+                              dictionary,
+                              RegularExpression.WORD
+                          ),
+                          description: object["_sampleSkipTest.description"] ?? "",
+                          slidingWindow: false,
+                          missingValueStrategy:
+                              (object["_sampleSkipTest.missingValueStrategy"] as FormulaMissingValueStrategy) ??
+                              "NEVER_SKIP",
                       }
                     : undefined,
-            }).mapLeft(description => ({
-                id: object.id ?? "",
-                error: "PARSE_ERROR" as const,
-                description: `${object.name ?? object.id}: ${description.replace(/\{.*\}/, "")}`,
-            }));
+            };
         });
     }
 }

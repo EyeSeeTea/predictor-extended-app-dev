@@ -35,7 +35,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
 
     const savePredictor = useCallback(
         async (predictor: Predictor) => {
-            const { data = [], error } = await compositionRoot.usecases.save([predictor]).runAsync();
+            const { data = [], error } = await compositionRoot.predictors.save([predictor]).runAsync();
             if (error || _.some(data, ({ status }) => status === "ERROR")) {
                 return error ?? i18n.t("Network error");
             } else {
@@ -58,7 +58,7 @@ export const PredictorEditPage: React.FC<PredictorEditPageProps> = ({ type, id }
             return;
         }
 
-        compositionRoot.usecases
+        compositionRoot.predictors
             .get(_.compact([id]))
             .toPromise()
             .then(([predictor]) => {

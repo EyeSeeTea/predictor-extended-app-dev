@@ -58,8 +58,6 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
     public async writeFile(buffer: Buffer | ArrayBuffer, file: ExcelModel, _options?: WriteOptions): Promise<Buffer> {
         const workbook = await this.fromBuffer(buffer);
 
-        // TODO: Handle defined names
-
         for (const [sheetName, { cells }] of _.toPairs(file.sheets)) {
             const sheet = getOrCreateSheet(workbook, sheetName);
             for (const cell of cells) {
@@ -67,6 +65,12 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
                 if (cell.contents.type === "formula") location.formula(cell.contents.value);
                 else location.value(cell.contents.value);
             }
+        }
+
+        for (const [name, cell] of _.toPairs(file.definedNames)) {
+            const sheet = getOrCreateSheet(workbook, cell.ref.sheet);
+            const location = parseLocation(sheet, cell.ref);
+            workbook.definedName(name, location);
         }
 
         // TODO: Add options to keep existing sheets

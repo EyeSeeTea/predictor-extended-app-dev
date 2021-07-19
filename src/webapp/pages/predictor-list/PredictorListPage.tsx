@@ -10,7 +10,8 @@ import {
     useObjectsTable,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
-import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext } from "@material-ui/icons";
+import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Schedule } from "@material-ui/icons";
+import _ from "lodash";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import { useHistory } from "react-router-dom";
@@ -29,7 +30,7 @@ import { useQueryState } from "../../hooks/useQueryState";
 import { useReload } from "../../hooks/useReload";
 
 export const PredictorListPage: React.FC = () => {
-    const { compositionRoot } = useAppContext();
+    const { compositionRoot, currentUser } = useAppContext();
     const loading = useLoading();
     const snackbar = useSnackbar();
     const history = useHistory();
@@ -41,21 +42,25 @@ export const PredictorListPage: React.FC = () => {
     const [reloadKey, reload] = useReload();
 
     const { data: predictorGroupOptions = [] } = useFuture(() => {
-        return compositionRoot.usecases
+        return compositionRoot.predictors
             .getGroups()
             .map(groups => groups.map(({ id, name }) => ({ value: id, text: name })));
     }, []);
 
     const { data: dataElementsOptions = [] } = useFuture(() => {
-        return compositionRoot.usecases
+        return compositionRoot.predictors
             .getDataElements()
             .map(dataElements => dataElements.map(({ id, name }) => ({ value: id, text: name })));
     }, []);
 
+    const goToSettings = useCallback(() => {
+        history.push("/settings");
+    }, [history]);
+
     const runPredictors = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
-            const results = await compositionRoot.usecases.run(ids).toPromise();
+            const results = await compositionRoot.predictors.run(ids).toPromise();
             snackbar.info(results.map((response: any) => response?.message).join("\n"));
             loading.reset();
         },
@@ -65,7 +70,7 @@ export const PredictorListPage: React.FC = () => {
     const exportPredictors = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Exporting predictors"));
-            await compositionRoot.usecases.export(ids);
+            await compositionRoot.predictors.export(ids);
             loading.reset();
         },
         [compositionRoot, loading]
@@ -84,7 +89,7 @@ export const PredictorListPage: React.FC = () => {
     const deletePredictor = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Deleting predictors"));
-            await compositionRoot.usecases.delete(ids);
+            await compositionRoot.predictors.delete(ids);
             loading.reset();
             reload();
         },
@@ -193,14 +198,22 @@ export const PredictorListPage: React.FC = () => {
                     icon: <ArrowDownward />,
                 },
             ],
-            globalActions: [
+            globalActions: _.compact([
                 {
                     name: "import",
                     text: i18n.t("Import excel"),
                     onClick: openImportDialog,
                     icon: <ArrowUpward />,
                 },
-            ],
+                currentUser.isAdmin
+                    ? {
+                          name: "scheduling",
+                          text: i18n.t("Scheduling options"),
+                          onClick: goToSettings,
+                          icon: <Schedule />,
+                      }
+                    : undefined,
+            ]),
             initialSorting: {
                 field: "name",
                 order: "asc",
@@ -212,7 +225,16 @@ export const PredictorListPage: React.FC = () => {
             searchBoxLabel: i18n.t("Search by name"),
             onActionButtonClick: newPredictor,
         };
-    }, [runPredictors, exportPredictors, newPredictor, editPredictor, deletePredictor, openImportDialog]);
+    }, [
+        runPredictors,
+        exportPredictors,
+        newPredictor,
+        editPredictor,
+        deletePredictor,
+        openImportDialog,
+        currentUser,
+        goToSettings,
+    ]);
 
     const refreshRows = useCallback(
         (
@@ -221,7 +243,7 @@ export const PredictorListPage: React.FC = () => {
             sorting: TableSorting<Predictor>
         ): Promise<{ objects: Predictor[]; pager: Pager }> => {
             console.debug("Reloading", reloadKey);
-            return compositionRoot.usecases.list({ ...state, search }, paging, sorting).toPromise();
+            return compositionRoot.predictors.list({ ...state, search }, paging, sorting).toPromise();
         },
         [compositionRoot, state, reloadKey]
     );
@@ -237,14 +259,15 @@ export const PredictorListPage: React.FC = () => {
 
             loading.show(true, i18n.t("Reading files"));
 
-            const { predictors, warnings } = await compositionRoot.usecases.readExcel(files);
+            const { predictors, warnings } = await compositionRoot.predictors.readExcel(files);
             if (warnings && warnings.length > 0) {
                 snackbar.warning(warnings.map(({ description }) => description).join("\n"));
             }
 
+            console.log(predictors);
+
             //@ts-ignore TODO FIXME: Add validation
-            const response = await compositionRoot.usecases.save(predictors).toPromise();
-            setResponse(response);
+            //setResponse(response);
 
             loading.reset();
             tableProps.reload();
