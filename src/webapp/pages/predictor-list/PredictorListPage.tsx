@@ -10,7 +10,7 @@ import {
     useObjectsTable,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
-import { ArrowDownward, ArrowUpward, Delete, Edit, QueuePlayNext, Schedule } from "@material-ui/icons";
+import { ArrowDownward, ArrowUpward, Delete, Edit, GridOn, QueuePlayNext, Schedule } from "@material-ui/icons";
 import _ from "lodash";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
@@ -215,6 +215,12 @@ export const PredictorListPage: React.FC = () => {
                     text: i18n.t("Import excel"),
                     onClick: openImportDialog,
                     icon: <ArrowUpward />,
+                },
+                {
+                    name: "export",
+                    text: i18n.t("Download empty excel template"),
+                    onClick: () => exportPredictors([]),
+                    icon: <GridOn />,
                 },
                 currentUser.isAdmin
                     ? {
