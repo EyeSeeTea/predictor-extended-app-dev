@@ -13,7 +13,7 @@ export function PreviewInputFF({ warning, placeholder, children, name, validate 
             <ConfirmationDialog
                 title={placeholder}
                 isOpen={open}
-                maxWidth="lg"
+                maxWidth="xl"
                 fullWidth={true}
                 onCancel={() => setOpen(false)}
                 cancelText={i18n.t("Close")}

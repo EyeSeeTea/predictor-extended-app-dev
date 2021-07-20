@@ -1,5 +1,6 @@
 import {
     composeValidators,
+    createMaxCharacterLength,
     createMinNumber,
     createPattern,
     FieldState,
@@ -17,7 +18,6 @@ import { useAppContext } from "../../contexts/app-context";
 import { FormField } from "../form/fields/FormField";
 import { NumberInputFF } from "../form/fields/NumberInputFF";
 import { PreviewInputFF } from "../form/fields/PreviewInputFF";
-import { hasItems } from "../form/validators/hasItems";
 import { ExpressionBoxFF } from "./components/ExpressionBoxFF";
 import { OrgUnitLevelsFF } from "./components/OrgUnitLevelsFF";
 import { OutputFF } from "./components/OutputFF";
@@ -58,8 +58,10 @@ const useValidations = (
     switch (field) {
         case "id":
             return { validation: createPattern(fullUidRegex, i18n.t("Please provide a valid identifier")) };
-        case "organisationUnitLevels":
-            return { validation: hasItems };
+        case "description":
+        case "generator.description":
+        case "sampleSkipTest.description":
+            return { validation: createMaxCharacterLength(255) };
         case "sequentialSampleCount":
         case "annualSampleCount":
         case "sequentialSkipCount":
@@ -173,15 +175,11 @@ export const predictorFormFields = [
     "generator.missingValueStrategy",
     "sampleSkipTest.description",
     "sampleSkipTest.expression",
+    "scheduling.sequence",
+    "scheduling.variable",
 ];
 
-const predictorRequiredFields: PredictorFormField[] = [
-    "name",
-    "generator.expression",
-    "organisationUnitLevels",
-    "output",
-    "outputCombo",
-];
+const predictorRequiredFields: PredictorFormField[] = ["name", "generator.expression", "output", "outputCombo"];
 
 export const getPredictorName = (field: PredictorFormField) => {
     switch (field) {

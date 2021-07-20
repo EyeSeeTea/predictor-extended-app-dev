@@ -4,6 +4,7 @@ import { FutureData } from "../domain/entities/Future";
 import { FormulaVariableRepository } from "../domain/repositories/FormulaVariableRepository";
 import i18n from "../locales";
 import { D2Api } from "../types/d2-api";
+import { cache } from "../utils/cache";
 import { getD2APiFromUrl } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
@@ -14,6 +15,7 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
         this.api = getD2APiFromUrl(baseUrl);
     }
 
+    @cache()
     public get(): FutureData<FormulaVariable[]> {
         return toFuture(
             this.api.metadata.get({

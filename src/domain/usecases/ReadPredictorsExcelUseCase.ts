@@ -2,10 +2,10 @@ import _ from "lodash";
 import { UseCase } from "../../compositionRoot";
 import i18n from "../../locales";
 import { promiseMap } from "../../utils/promises";
-import { getTemplates, interpolate, RegularExpression } from "../../utils/strings";
+import { getTemplates, interpolate } from "../../utils/strings";
 import { generateUid } from "../../utils/uid";
 import { ExcelCell, ExcelModel, getColumn, getRow } from "../entities/Excel";
-import { FormulaMissingValueStrategy, Predictor } from "../entities/Predictor";
+import { defaultPredictor, PredictorDetails } from "../entities/Predictor";
 import { Validation } from "../entities/Validation";
 import { ExcelRepository } from "../repositories/ExcelRepository";
 import { MetadataRepository } from "../repositories/MetadataRepository";
@@ -37,17 +37,17 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             .groupBy(item => getRow(item.ref))
             .omitBy((_value, key) => parseInt(key) <= 1)
             .values()
-            .map(cells =>
-                _.fromPairs(
-                    _.compact(
-                        cells?.map(cell => {
-                            const column = columns[getColumn(cell.ref)];
-                            return column ? [String(column).replace(/^_/, ""), String(cell.contents.value)] : undefined;
-                        })
-                    )
-                )
-            )
-            .map(({ id, ...rest }) => ({ id: id ?? generateUid(), ...rest }))
+            .map(cells => {
+                const pairs = _.compact(
+                    cells?.map(cell => {
+                        const column = columns[getColumn(cell.ref)];
+                        return column ? [String(column).replace(/^_/, ""), String(cell.contents.value)] : undefined;
+                    })
+                );
+
+                return [_.compact(pairs.map(item => item[0])), _.compact(pairs.map(item => item[1]))];
+            })
+            .map(([keys, values]) => _.zipObjectDeep(keys, values) as Record<string, string>)
             .value();
 
         const { dictionary, warnings: dictionaryWarnings } = await this.buildDictionary(entries);
@@ -65,14 +65,14 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             .value();
     }
 
-    private async buildDictionary(entries: Record<string, string>[]) {
+    private async buildDictionary(entries: Record<string, any>[]) {
         const newPredictors = _.flatMap(entries, ({ id, name, code }) => [
             [name, id],
             [code, id],
         ]);
 
         const templates = _(entries)
-            .flatMap(({ generator, sampleSkipTest }) => [generator, sampleSkipTest])
+            .flatMap(({ generator, sampleSkipTest }) => [generator?.expression, sampleSkipTest?.expression])
             .compact()
             .flatMap(formula => getTemplates(formula))
             .value();
@@ -82,9 +82,10 @@ export class ReadPredictorsExcelUseCase implements UseCase {
         const dictionary = _(metadata)
             .values()
             .flatten()
-            .flatMap(({ id, name, code }) => [
+            .flatMap(({ id, name, shortName, code }) => [
                 [name, id],
                 [code, id],
+                [shortName, id],
             ])
             .union(newPredictors)
             .uniqBy(([key]) => key)
@@ -107,51 +108,42 @@ export class ReadPredictorsExcelUseCase implements UseCase {
     }
 
     private async cleanPredictors(
-        entries: Record<string, string | undefined>[],
+        entries: Record<string, any>[],
         dictionary: Record<string, string>
-    ): Promise<Partial<Predictor>[]> {
+    ): Promise<Partial<PredictorDetails>[]> {
         return promiseMap(entries, async object => {
             const output = await this.metadataRepository.search("dataElements", object.output ?? "");
 
             const outputCombo = await this.metadataRepository.search("categoryOptionCombos", object.outputCombo ?? "");
 
             const predictorGroups = _.compact(
-                await promiseMap(object.predictorGroups?.split(",") ?? [], group =>
+                await promiseMap(object.predictorGroups?.split(",") ?? [], (group: string) =>
                     this.metadataRepository.search("predictorGroups", group)
                 )
             );
 
             const organisationUnitLevels = _.compact(
-                await promiseMap(object.organisationUnitLevels?.split(",") ?? [], level =>
+                await promiseMap(object.organisationUnitLevels?.split(",") ?? [], (level: string) =>
                     this.metadataRepository.search("organisationUnitLevels", level)
                 )
             );
 
             return {
+                ...defaultPredictor,
                 ...object,
+                id: object.id ?? generateUid(),
                 output,
                 outputCombo,
                 predictorGroups,
                 organisationUnitLevels,
                 generator: {
-                    expression: interpolate(object["_generator.expression"] ?? "", dictionary, RegularExpression.WORD),
-                    description: object["_generator.description"] ?? "",
-                    slidingWindow: false,
-                    missingValueStrategy:
-                        (object["_generator.missingValueStrategy"] as FormulaMissingValueStrategy) ?? "NEVER_SKIP",
+                    ...object.generator,
+                    expression: interpolate(object.generator.expression ?? "", dictionary),
                 },
                 sampleSkipTest: object.sampleSkipTest
                     ? {
-                          expression: interpolate(
-                              object["_sampleSkipTest.expression"] ?? "",
-                              dictionary,
-                              RegularExpression.WORD
-                          ),
-                          description: object["_sampleSkipTest.description"] ?? "",
-                          slidingWindow: false,
-                          missingValueStrategy:
-                              (object["_sampleSkipTest.missingValueStrategy"] as FormulaMissingValueStrategy) ??
-                              "NEVER_SKIP",
+                          ...object.sampleSkipTest,
+                          expression: interpolate(object.sampleSkipTest.expression ?? "", dictionary),
                       }
                     : undefined,
             };
@@ -160,6 +152,6 @@ export class ReadPredictorsExcelUseCase implements UseCase {
 }
 
 export interface ImportResult {
-    predictors: Partial<Predictor>[];
+    predictors: Partial<PredictorDetails>[];
     warnings?: Validation<"UNKNOWN_COLUMN" | "UNKNOWN_REF" | "PARSE_ERROR">[];
 }

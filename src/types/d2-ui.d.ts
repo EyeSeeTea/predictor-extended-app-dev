@@ -463,4 +463,6 @@ declare module "@dhis2/ui" {
     export function hasValue(value: unknown): string | undefined;
     export function createMinNumber(min: number): (value: unknown) => string | undefined;
     export function createPattern(pattern: RegExp, message?: string): (value: unknown) => string | undefined;
+    export function createMaxCharacterLength(bound: number): (value: unknown) => string | undefined;
+    export function createMinCharacterLength(bound: number): (value: unknown) => string | undefined;
 }

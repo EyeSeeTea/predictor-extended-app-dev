@@ -29,7 +29,7 @@ export interface Formula {
     missingValueStrategy: FormulaMissingValueStrategy;
 }
 
-export type Scheduling = { type: "NONE" } | { type: "FIXED"; sequence: number; variable: number };
+export type Scheduling = { sequence: number; variable: number };
 export type SaveScheduling = Scheduling & Ref;
 
 export interface Predictor {
@@ -47,14 +47,15 @@ export interface Predictor {
     annualSampleCount: number;
     sequentialSkipCount?: number | undefined;
     predictorGroups: NamedRef[];
+    scheduling: Scheduling;
+}
+
+export interface PredictorDetails extends Predictor {
     lastUpdated: string; // TODO: Convert to date
     lastUpdatedBy: NamedRef;
     created: string; // TODO: Convert to date
     user: NamedRef;
-    scheduling: Scheduling;
 }
-
-export type PredictorSave = Omit<Predictor, "lastUpdated" | "lastUpdatedBy" | "created" | "user" | "predictorGroups">;
 
 export const defaultPredictor: Predictor = {
     id: "",
@@ -66,9 +67,5 @@ export const defaultPredictor: Predictor = {
     sequentialSampleCount: 0,
     annualSampleCount: 0,
     predictorGroups: [],
-    lastUpdated: "",
-    lastUpdatedBy: { id: "", name: "" },
-    created: "",
-    user: { id: "", name: "" },
-    scheduling: { type: "NONE" },
+    scheduling: { sequence: 0, variable: 0 },
 };

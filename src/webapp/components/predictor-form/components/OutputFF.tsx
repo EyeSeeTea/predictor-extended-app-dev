@@ -4,6 +4,7 @@ import React, { useCallback } from "react";
 import { useField } from "react-final-form";
 import styled from "styled-components";
 import { NamedRef } from "../../../../domain/entities/DHIS2";
+import i18n from "../../../../locales";
 import { useAppContext } from "../../../contexts/app-context";
 import { useFuture } from "../../../hooks/useFuture";
 import { getPredictorFieldName } from "../PredictorForm";
@@ -51,12 +52,22 @@ export const OutputFF: React.FC<CategoryOptionComboFFProps> = ({ input, optionCo
         [dataElements, input, optionComboInput]
     );
 
-    if (dataElements.length === 0) return null;
+    const dataElementItems = _.unionBy(
+        dataElements,
+        [{ value: input.value.id, label: i18n.t("Invalid option"), categoryOptions: [] }],
+        ({ value }) => value
+    );
+
+    const categoryItems = _.unionBy(
+        dataElements.find(({ value }) => value === input.value.id)?.categoryOptions,
+        [{ value: optionComboInput.value.id, label: i18n.t("Invalid option") }],
+        ({ value }) => value
+    );
 
     return (
         <React.Fragment>
             <SingleSelectField onChange={onChangeDataElement} selected={input.value.id} filterable={true}>
-                {dataElements.map(({ value, label }) => (
+                {dataElementItems.map(({ value, label }) => (
                     <SingleSelectOption value={value} label={label} key={value} />
                 ))}
             </SingleSelectField>
@@ -65,11 +76,9 @@ export const OutputFF: React.FC<CategoryOptionComboFFProps> = ({ input, optionCo
                 <React.Fragment>
                     <Row>{getPredictorFieldName("outputCombo")}</Row>
                     <SingleSelectField onChange={onChangeOptionCombo} selected={optionComboInput.value.id}>
-                        {dataElements
-                            .find(({ value }) => value === input.value.id)
-                            ?.categoryOptions.map(({ value, label }) => (
-                                <SingleSelectOption value={value} label={label} key={value} />
-                            ))}
+                        {categoryItems.map(({ value, label }) => (
+                            <SingleSelectOption value={value} label={label} key={value} />
+                        ))}
                     </SingleSelectField>
                 </React.Fragment>
             )}

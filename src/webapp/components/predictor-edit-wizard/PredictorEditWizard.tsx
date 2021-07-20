@@ -8,6 +8,7 @@ import React, { FunctionComponent, useCallback, useState } from "react";
 import { Form } from "react-final-form";
 import styled from "styled-components";
 import { Predictor } from "../../../domain/entities/Predictor";
+import { useGoBack } from "../../hooks/useGoBack";
 import { PredictorEditWizardStep, PredictorEditWizardStepProps } from "./PredictorEditWizardStep";
 
 const steps: WizardStep[] = [
@@ -71,6 +72,8 @@ export interface PredictorEditWizardProps {
 }
 
 export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel }) => {
+    const goBack = useGoBack();
+
     const onSubmit = useCallback(
         async (values: { predictors: Predictor[] }) => {
             const predictor = values.predictors[0];
@@ -79,9 +82,9 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
             const error = await onSave(predictor);
             if (error) return { [FORM_ERROR]: error };
 
-            onCancel();
+            goBack(true);
         },
-        [onSave, onCancel]
+        [onSave, goBack]
     );
 
     return (

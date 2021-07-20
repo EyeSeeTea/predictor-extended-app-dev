@@ -4,7 +4,7 @@ import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Future, FutureData } from "../domain/entities/Future";
 import { SaveJobConfiguration } from "../domain/entities/JobConfiguration";
-import { Predictor, SaveScheduling } from "../domain/entities/Predictor";
+import { Predictor, PredictorDetails, SaveScheduling } from "../domain/entities/Predictor";
 import {
     ExpressionType,
     ExpressionValidation,
@@ -17,7 +17,7 @@ import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { formatDate } from "../utils/dates";
 import { generateUid } from "../utils/uid";
-import { PredictorSaveModel } from "./models/PredictorModel";
+import { PredictorModel } from "./models/PredictorModel";
 import { getD2APiFromUrl } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
@@ -43,7 +43,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         }));
     }
 
-    public get(ids: string[]): FutureData<Predictor[]> {
+    public get(ids: string[]): FutureData<PredictorDetails[]> {
         const predictorData$ = toFuture(
             this.api.models.predictors.get({
                 filter: { id: { in: ids } },
@@ -56,7 +56,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
         return Future.join2(predictorData$, schedulingData$).map(([{ objects }, schedulingData]) => {
             return objects.map(item => {
-                const scheduling = schedulingData.find(s => s.id === item.id) ?? { type: "NONE" };
+                const scheduling = schedulingData.find(s => s.id === item.id) ?? { sequence: 0, variable: 0 };
                 return { ...item, scheduling };
             });
         });
@@ -65,8 +65,8 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     public list(
         filters?: ListPredictorsFilters,
         paging?: { page: number; pageSize: number },
-        sorting?: TableSorting<Predictor>
-    ): FutureData<{ pager: Pager; objects: Predictor[] }> {
+        sorting?: TableSorting<PredictorDetails>
+    ): FutureData<{ pager: Pager; objects: PredictorDetails[] }> {
         const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
 
         const predictorData$ = toFuture(
@@ -90,7 +90,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             return {
                 pager,
                 objects: objects.map(item => {
-                    const scheduling = schedulingData.find(s => s.id === item.id) ?? { type: "NONE" };
+                    const scheduling = schedulingData.find(s => s.id === item.id) ?? { sequence: 0, variable: 0 };
                     return { ...item, scheduling };
                 }),
             };
@@ -129,7 +129,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public save(inputPredictors: Predictor[]): FutureData<MetadataResponse[]> {
-        const validations = inputPredictors.map(predictor => PredictorSaveModel.decode(cleanPredictor(predictor)));
+        const validations = inputPredictors.map(predictor => PredictorModel.decode(cleanPredictor(predictor)));
         const predictors = _.compact(validations.map(either => either.toMaybe().extract()));
         const errors = _.compact(validations.map(either => either.leftOrDefault("")));
         if (errors.length > 0) {
@@ -226,8 +226,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         const scheduling = _.uniqBy([...newScheduling, ...existingScheduling], ({ id }) => id);
 
         const groups = _(scheduling)
-            .filter(s => s.type === "FIXED")
-            .groupBy(item => (item.type === "FIXED" ? `${item.sequence}-${item.variable}` : ""))
+            .groupBy(item => `${item.sequence}-${item.variable}`)
             .toPairs()
             .orderBy(pair => pair[0])
             .value();
@@ -299,7 +298,10 @@ const predictorFields = {
     userGroupAccesses: { id: true, access: true, displayName: true },
 };
 
-function cleanPredictor(predictor: Partial<Predictor>): Partial<Predictor> {
+function cleanPredictor(predictor: Partial<PredictorDetails>): Partial<PredictorDetails> {
     const hasSampleSkipTest = _.has(predictor, "sampleSkipTest.expression");
-    return { ...predictor, sampleSkipTest: hasSampleSkipTest ? predictor.sampleSkipTest : undefined };
+    return {
+        ...predictor,
+        sampleSkipTest: hasSampleSkipTest ? predictor.sampleSkipTest : undefined,
+    };
 }

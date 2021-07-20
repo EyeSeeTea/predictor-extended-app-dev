@@ -59,6 +59,7 @@ export class MetadataD2ApiRepository implements MetadataRepository {
         const { objects: similar } = await this.api.models[type]
             //@ts-ignore D2-api index bug
             .get({
+                fields: { id: true, name: true },
                 filter: { identifiable: { token: query } },
                 paging: false,
             })
@@ -70,7 +71,7 @@ export class MetadataD2ApiRepository implements MetadataRepository {
     public lookup(queries: string[]): FutureData<MetadataPackage> {
         const metadataByCode = toFuture(
             this.api.get<MetadataPackage>("/metadata", {
-                fields: getFieldsAsString({ id: true, name: true }),
+                fields: getFieldsAsString({ id: true, name: true, shortName: true, code: true }),
                 filter: getFilterAsString({ code: { in: queries } }),
                 paging: false,
             })
@@ -78,7 +79,7 @@ export class MetadataD2ApiRepository implements MetadataRepository {
 
         const metadataByName = toFuture(
             this.api.get<MetadataPackage>("/metadata", {
-                fields: getFieldsAsString({ id: true, name: true }),
+                fields: getFieldsAsString({ id: true, name: true, shortName: true, code: true }),
                 filter: getFilterAsString({ name: { in: queries } }),
                 paging: false,
             })

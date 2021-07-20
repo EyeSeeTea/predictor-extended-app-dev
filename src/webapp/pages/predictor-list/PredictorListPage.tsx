@@ -16,11 +16,13 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
+import { NamedRef } from "../../../domain/entities/DHIS2";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
-import { Predictor } from "../../../domain/entities/Predictor";
+import { PredictorDetails } from "../../../domain/entities/Predictor";
 import { ListPredictorsFilters } from "../../../domain/repositories/PredictorRepository";
 import i18n from "../../../locales";
 import { formatDate } from "../../../utils/dates";
+import { AlertIcon } from "../../components/alert-icon/AlertIcon";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import { periodTypes } from "../../components/predictor-form/PredictorForm";
@@ -100,7 +102,7 @@ export const PredictorListPage: React.FC = () => {
         fileRef.current?.openDialog();
     }, [fileRef]);
 
-    const baseConfig = useMemo((): TableConfig<Predictor> => {
+    const baseConfig = useMemo((): TableConfig<PredictorDetails> => {
         return {
             columns: [
                 {
@@ -114,29 +116,38 @@ export const PredictorListPage: React.FC = () => {
                     name: "scheduling",
                     text: i18n.t("Sequence"),
                     sortable: true,
-                    getValue: ({ scheduling }: Predictor) => {
-                        return scheduling.type === "NONE"
-                            ? "-"
-                            : `Sequence: ${scheduling.sequence}\nVariable: ${scheduling.variable}`;
+                    getValue: ({ scheduling }: PredictorDetails) => {
+                        return `Sequence: ${scheduling.sequence}\nVariable: ${scheduling.variable}`;
                     },
                 },
                 { name: "output", text: i18n.t("Output data element"), sortable: true },
-                { name: "outputCombo", text: i18n.t("Output category option"), sortable: true },
+                {
+                    name: "outputCombo",
+                    text: i18n.t("Output category option"),
+                    sortable: true,
+                    getValue: ({ output, outputCombo }) => (
+                        <OutputComboCell output={output} outputCombo={outputCombo} />
+                    ),
+                },
                 { name: "description", text: i18n.t("Description"), sortable: false },
                 {
                     name: "generator",
                     text: i18n.t("Formula"),
                     sortable: false,
-                    getValue: ({ generator }: Predictor) => {
-                        return generator.expression;
-                    },
+                    getValue: ({ generator }: PredictorDetails) => <FormulaCell formula={generator.expression} />,
                 },
                 { name: "predictorGroups", text: i18n.t("Predictor groups"), sortable: true },
+                {
+                    name: "organisationUnitLevels",
+                    text: i18n.t("Organisation unit levels"),
+                    sortable: true,
+                    hidden: true,
+                },
                 {
                     name: "periodType",
                     text: i18n.t("Period type"),
                     sortable: true,
-                    getValue: ({ periodType }: Predictor) => {
+                    getValue: ({ periodType }: PredictorDetails) => {
                         return periodTypes.find(({ value }) => value === periodType)?.label ?? "-";
                     },
                 },
@@ -144,7 +155,7 @@ export const PredictorListPage: React.FC = () => {
                     name: "sampleSkipTest",
                     text: i18n.t("Sample skip test"),
                     sortable: false,
-                    getValue: ({ sampleSkipTest }: Predictor) => {
+                    getValue: ({ sampleSkipTest }: PredictorDetails) => {
                         return sampleSkipTest?.expression ?? "-";
                     },
                 },
@@ -240,8 +251,8 @@ export const PredictorListPage: React.FC = () => {
         (
             search: string,
             paging: TablePagination,
-            sorting: TableSorting<Predictor>
-        ): Promise<{ objects: Predictor[]; pager: Pager }> => {
+            sorting: TableSorting<PredictorDetails>
+        ): Promise<{ objects: PredictorDetails[]; pager: Pager }> => {
             console.debug("Reloading", reloadKey);
             return compositionRoot.predictors.list({ ...state, search }, paging, sorting).toPromise();
         },
@@ -259,20 +270,11 @@ export const PredictorListPage: React.FC = () => {
 
             loading.show(true, i18n.t("Reading files"));
 
-            const { predictors, warnings } = await compositionRoot.predictors.readExcel(files);
-            if (warnings && warnings.length > 0) {
-                snackbar.warning(warnings.map(({ description }) => description).join("\n"));
-            }
-
-            console.log(predictors);
-
-            //@ts-ignore TODO FIXME: Add validation
-            //setResponse(response);
-
+            const { predictors } = await compositionRoot.predictors.readExcel(files);
+            history.push({ pathname: `/import`, state: { predictors } });
             loading.reset();
-            tableProps.reload();
         },
-        [compositionRoot, tableProps, loading, snackbar]
+        [compositionRoot, loading, snackbar, history]
     );
 
     const onChangeFilter = useCallback(
@@ -311,7 +313,7 @@ export const PredictorListPage: React.FC = () => {
                 accept={"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
                 onDrop={handleFileUpload}
             >
-                <ObjectsList<Predictor>
+                <ObjectsList<PredictorDetails>
                     {...tableProps}
                     onChangeSearch={search => onChangeFilter({ search })}
                     initialSearch={state.search ?? ""}
@@ -354,3 +356,38 @@ const Wrapper = styled.div`
 const Filter = styled(MultipleDropdown)`
     min-width: 200px;
 `;
+
+const FormulaCell: React.FC<{ formula: string }> = ({ formula }) => {
+    const { compositionRoot } = useAppContext();
+    const { data: validation } = useFuture(compositionRoot.expressions.validate, ["predictor-formula", formula]);
+
+    switch (validation?.status) {
+        case "OK":
+            return <React.Fragment>{validation.description}</React.Fragment>;
+        case "ERROR":
+            return (
+                <React.Fragment>
+                    {formula}
+                    <AlertIcon tooltip={validation.message} />
+                </React.Fragment>
+            );
+        default:
+            return <React.Fragment>{formula}</React.Fragment>;
+    }
+};
+
+const OutputComboCell: React.FC<{ output: NamedRef; outputCombo?: NamedRef }> = ({ output, outputCombo }) => {
+    const { compositionRoot } = useAppContext();
+    const { data: variables } = useFuture(compositionRoot.expressions.getSuggestions, []);
+
+    const validCombos = variables?.find(({ id }) => id === output.id)?.options;
+
+    return (
+        <React.Fragment>
+            {outputCombo?.name ?? "-"}
+            {validCombos && !validCombos.find(({ id }) => id === outputCombo?.id) ? (
+                <AlertIcon tooltip={i18n.t("Invalid output combo")} />
+            ) : null}
+        </React.Fragment>
+    );
+};

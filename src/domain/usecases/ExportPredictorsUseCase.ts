@@ -1,12 +1,8 @@
 import _ from "lodash";
 import { UseCase } from "../../compositionRoot";
-import {
-    getPredictorName,
-    PredictorFormField,
-    predictorFormFields,
-} from "../../webapp/components/predictor-form/PredictorForm";
+import { getPredictorName, PredictorFormField } from "../../webapp/components/predictor-form/PredictorForm";
 import { ExcelCell, ExcelModel } from "../entities/Excel";
-import { Predictor } from "../entities/Predictor";
+import { PredictorDetails } from "../entities/Predictor";
 import { ExcelRepository } from "../repositories/ExcelRepository";
 import { FileRepository } from "../repositories/FileRepository";
 import { PredictorRepository } from "../repositories/PredictorRepository";
@@ -22,9 +18,9 @@ export class ExportPredictorsUseCase implements UseCase {
         const emptyFile = await this.excelRepository.createFile();
         const predictors = await this.predictorRepository.get(ids).toPromise();
 
-        const definedNames = _(predictorFormFields)
+        const definedNames = _(exportFields)
             .map((field, index) => [
-                `_${field}`,
+                field,
                 {
                     ref: {
                         type: "cell" as const,
@@ -38,16 +34,16 @@ export class ExportPredictorsUseCase implements UseCase {
             .value();
 
         const cells: ExcelCell[] = [
-            ...predictorFormFields.map((field: string, index: number) => ({
+            ...exportFields.map((field: string, index: number) => ({
                 ref: {
                     type: "cell" as const,
                     sheet: "Predictors",
                     address: { row: 0, column: index },
                 },
-                contents: { type: "formula" as const, value: `_${field}` },
+                contents: { type: "formula" as const, value: field },
             })),
-            ..._.flatMap(predictors, (predictor: Predictor, row: number) =>
-                predictorFormFields.map((key: PredictorFormField, column: number) => ({
+            ..._.flatMap(predictors, (predictor: PredictorDetails, row: number) =>
+                exportFields.map((key: PredictorFormField, column: number) => ({
                     ref: {
                         type: "cell" as const,
                         sheet: "Predictors",
@@ -72,7 +68,7 @@ export class ExportPredictorsUseCase implements UseCase {
 }
 
 // TODO: This should be a mapper and be improved
-const formatValue = (predictor: Predictor, key: PredictorFormField): string | number => {
+const formatValue = (predictor: PredictorDetails, key: PredictorFormField): string | number => {
     const value = _.get(predictor, key);
     if (!value) return "";
 
@@ -81,6 +77,7 @@ const formatValue = (predictor: Predictor, key: PredictorFormField): string | nu
         case "outputCombo":
             return predictor[key]?.name ?? "";
         case "predictorGroups":
+        case "organisationUnitLevels":
             return predictor[key]?.map(({ name }) => name).join(",") ?? "";
         case "generator":
         case "sampleSkipTest":
@@ -91,3 +88,25 @@ const formatValue = (predictor: Predictor, key: PredictorFormField): string | nu
 
     return "";
 };
+
+export const exportFields = [
+    "id",
+    "code",
+    "name",
+    "description",
+    "output",
+    "outputCombo",
+    "periodType",
+    "annualSampleCount",
+    "sequentialSampleCount",
+    "organisationUnitLevels",
+    "predictorGroups",
+    "sequentialSkipCount",
+    "generator.description",
+    "generator.expression",
+    "generator.missingValueStrategy",
+    "sampleSkipTest.description",
+    "sampleSkipTest.expression",
+    "scheduling.sequence",
+    "scheduling.variable",
+];

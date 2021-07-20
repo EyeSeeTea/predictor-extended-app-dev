@@ -6,7 +6,6 @@ import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-// defaultPredictor,
 import { defaultPredictor, Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
 import { generateUid } from "../../../utils/uid";

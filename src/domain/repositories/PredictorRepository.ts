@@ -3,16 +3,16 @@ import { Pager } from "../../types/d2-api";
 import { NamedRef } from "../entities/DHIS2";
 import { FutureData } from "../entities/Future";
 import { MetadataResponse } from "../entities/Metadata";
-import { Predictor } from "../entities/Predictor";
+import { PredictorDetails, Predictor } from "../entities/Predictor";
 
 export interface PredictorRepository {
-    get(ids: string[]): FutureData<Predictor[]>;
+    get(ids: string[]): FutureData<PredictorDetails[]>;
 
     list(
         filters?: ListPredictorsFilters,
         paging?: { page: number; pageSize: number },
-        sorting?: TableSorting<Predictor>
-    ): FutureData<{ pager: Pager; objects: Predictor[] }>;
+        sorting?: TableSorting<PredictorDetails>
+    ): FutureData<{ pager: Pager; objects: PredictorDetails[] }>;
 
     getGroups(): FutureData<NamedRef[]>;
 

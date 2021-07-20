@@ -1,14 +1,18 @@
-import { Button, ButtonStrip, CenteredContent } from "@dhis2/ui";
+import { Button, ButtonStrip, CenteredContent, NoticeBox } from "@dhis2/ui";
 import { Paper } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
+import _ from "lodash";
 import { IconButton } from "material-ui";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { Form, useForm } from "react-final-form";
+import { Redirect, useLocation } from "react-router";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeGrid as Grid } from "react-window";
 import styled from "styled-components";
+import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
+import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import { PageHeader } from "../../components/page-header/PageHeader";
 import {
     getPredictorFieldName,
@@ -16,7 +20,6 @@ import {
     RenderPredictorImportField,
 } from "../../components/predictor-form/PredictorForm";
 import { useAppContext } from "../../contexts/app-context";
-import { useFuture } from "../../hooks/useFuture";
 import { useGoBack } from "../../hooks/useGoBack";
 
 const rowHeight = (index: number) => (index === 0 ? 30 : 70);
@@ -26,19 +29,36 @@ export const PredictorImportPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
     const goBack = useGoBack();
 
-    const { data: { objects: predictors = [] } = {} } = useFuture(compositionRoot.predictors.list, []);
+    const location = useLocation<{ predictors: Predictor[] }>();
+    const [predictors] = React.useState<Predictor[]>(location.state?.predictors ?? []);
+    const [summary, setSummary] = useState<MetadataResponse[]>();
 
     const goHome = useCallback(() => goBack(true), [goBack]);
+
+    const onSubmit = useCallback(
+        async ({ predictors }: { predictors: Predictor[] }) => {
+            const { data = [], error } = await compositionRoot.predictors.save(predictors).runAsync();
+            if (error) return error ?? i18n.t("Network error");
+
+            setSummary(data);
+        },
+        [compositionRoot]
+    );
+
+    if (predictors.length === 0) return <Redirect to="/" />;
 
     return (
         <Wrapper>
             <PageHeader onBackClick={goBack} title={i18n.t("Import predictors")} />
+
+            {summary ? <ImportSummary results={summary} onClose={() => setSummary(undefined)} /> : null}
+
             <Container>
                 <Form<{ predictors: Predictor[] }>
                     autocomplete="off"
-                    onSubmit={() => {}}
+                    onSubmit={onSubmit}
                     initialValues={{ predictors }}
-                    render={({ handleSubmit, values }) => (
+                    render={({ handleSubmit, values, submitError }) => (
                         <StyledForm onSubmit={handleSubmit}>
                             <MaxHeight>
                                 <AutoSizer>
@@ -59,13 +79,19 @@ export const PredictorImportPage: React.FC = () => {
                                 </AutoSizer>
                             </MaxHeight>
 
+                            {submitError && (
+                                <NoticeBox title={i18n.t("Error saving predictors")} error={true}>
+                                    {submitError}
+                                </NoticeBox>
+                            )}
+
                             <ButtonsRow middle>
                                 <Button type="submit" primary>
                                     {i18n.t("Save")}
                                 </Button>
 
                                 <Button type="reset" onClick={goHome}>
-                                    {i18n.t("Cancel")}
+                                    {i18n.t("Close")}
                                 </Button>
                             </ButtonsRow>
                         </StyledForm>
