@@ -230,7 +230,7 @@ export const PredictorListPage: React.FC = () => {
                     onClick: () => exportPredictors([]),
                     icon: <GridOn />,
                 },
-                currentUser.isAdmin
+                process.env.NODE_ENV === "development" && currentUser.isAdmin
                     ? {
                           name: "scheduling",
                           text: i18n.t("Scheduling options"),
