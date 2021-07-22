@@ -1,7 +1,7 @@
 import { Button, ButtonStrip, CenteredContent, NoticeBox } from "@dhis2/ui";
 import { useLoading } from "@eyeseetea/d2-ui-components";
 import { Paper } from "@material-ui/core";
-import { Delete } from "@material-ui/icons";
+import { Delete, ViewColumn } from "@material-ui/icons";
 import _ from "lodash";
 import { IconButton } from "material-ui";
 import React, { useCallback, useState } from "react";
@@ -13,12 +13,13 @@ import styled from "styled-components";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
 import i18n from "../../../locales";
+import { ColumnSelectorDialog } from "../../components/column-selector-dialog/ColumnSelectorDialog";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import { PageHeader } from "../../components/page-header/PageHeader";
 import {
     getPredictorFieldName,
     predictorFormFields,
-    RenderPredictorImportField
+    RenderPredictorImportField,
 } from "../../components/predictor-form/PredictorForm";
 import { useAppContext } from "../../contexts/app-context";
 import { useGoBack } from "../../hooks/useGoBack";
@@ -38,6 +39,8 @@ export const PredictorBulkEditPage: React.FC<PredictorBulkEditPageProps> = ({ ty
     const location = useLocation<{ predictors: Predictor[] }>();
     const [predictors] = React.useState<Predictor[]>(location.state?.predictors ?? []);
     const [summary, setSummary] = useState<MetadataResponse[]>();
+    const [columns, setColumns] = useState<string[]>(basePredictorColumns);
+    const [columnSelectorOpen, setColumnSelectorOpen] = useState<boolean>(false);
 
     const goHome = useCallback(() => goBack(true), [goBack]);
 
@@ -64,9 +67,27 @@ export const PredictorBulkEditPage: React.FC<PredictorBulkEditPageProps> = ({ ty
 
     return (
         <Wrapper>
-            <PageHeader onBackClick={goBack} title={title} />
+            <PageHeader onBackClick={goBack} title={title}>
+                <IconButton
+                    tooltip={i18n.t("Column settings")}
+                    onClick={() => setColumnSelectorOpen(true)}
+                    style={{ float: "right" }}
+                >
+                    <ViewColumn />
+                </IconButton>
+            </PageHeader>
 
             {summary ? <ImportSummary results={summary} onClose={closeSummary} /> : null}
+
+            {columnSelectorOpen && (
+                <ColumnSelectorDialog
+                    columns={predictorFormFields}
+                    visibleColumns={columns}
+                    onChange={setColumns}
+                    getName={getPredictorFieldName}
+                    onCancel={() => setColumnSelectorOpen(false)}
+                />
+            )}
 
             <Container>
                 <Form<{ predictors: Predictor[] }>
@@ -82,11 +103,12 @@ export const PredictorBulkEditPage: React.FC<PredictorBulkEditPageProps> = ({ ty
                                             height={height}
                                             width={width}
                                             rowCount={values.predictors.length + 1}
-                                            columnCount={predictorFormFields.length + 1}
+                                            columnCount={columns.length + 1}
                                             estimatedColumnWidth={250}
                                             estimatedRowHeight={70}
                                             rowHeight={rowHeight}
                                             columnWidth={columnWidth}
+                                            itemData={{ columns }}
                                         >
                                             {Row}
                                         </Grid>
@@ -117,6 +139,15 @@ export const PredictorBulkEditPage: React.FC<PredictorBulkEditPageProps> = ({ ty
     );
 };
 
+const basePredictorColumns = [
+    "id",
+    "name",
+    "scheduling.sequence",
+    "scheduling.variable",
+    "output",
+    "generator.expression",
+];
+
 const MaxHeight = styled.div`
     height: 95%;
 `;
@@ -136,17 +167,18 @@ const Row: React.FC<RowItemProps & { style: object }> = ({ style, ...props }) =>
 );
 
 interface RowItemProps {
+    data: { columns: string[] };
     columnIndex: number;
     rowIndex: number;
 }
 
-const RowItem: React.FC<RowItemProps> = ({ columnIndex, rowIndex }) => {
+const RowItem: React.FC<RowItemProps> = ({ data, columnIndex, rowIndex }) => {
     const form = useForm<{ predictors: Predictor[] }>();
 
     const headerRow = rowIndex === 0;
     const deleteRow = columnIndex === 0;
     const row = rowIndex - 1;
-    const field = predictorFormFields[columnIndex - 1];
+    const field = data.columns[columnIndex - 1];
 
     const removeRow = useCallback(() => {
         const original = form.getState().values.predictors;
