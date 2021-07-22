@@ -17,6 +17,7 @@ import { FileRejection } from "react-dropzone";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { NamedRef } from "../../../domain/entities/DHIS2";
+import { FormulaVariable } from "../../../domain/entities/FormulaVariable";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { PredictorDetails } from "../../../domain/entities/Predictor";
 import { ListPredictorsFilters } from "../../../domain/repositories/PredictorRepository";
@@ -53,6 +54,10 @@ export const PredictorListPage: React.FC = () => {
         return compositionRoot.predictors
             .getDataElements()
             .map(dataElements => dataElements.map(({ id, name }) => ({ value: id, text: name })));
+    }, []);
+
+    const { data: variables = [] } = useFuture(() => {
+        return compositionRoot.expressions.getSuggestions();
     }, []);
 
     const goToSettings = useCallback(() => {
@@ -134,7 +139,7 @@ export const PredictorListPage: React.FC = () => {
                     text: i18n.t("Output category option"),
                     sortable: true,
                     getValue: ({ output, outputCombo }) => (
-                        <OutputComboCell output={output} outputCombo={outputCombo} />
+                        <OutputComboCell output={output} outputCombo={outputCombo} variables={variables} />
                     ),
                 },
                 { name: "description", text: i18n.t("Description"), sortable: false },
@@ -266,6 +271,7 @@ export const PredictorListPage: React.FC = () => {
         openImportDialog,
         currentUser,
         goToSettings,
+        variables,
     ]);
 
     const refreshRows = useCallback(
@@ -399,8 +405,11 @@ const FormulaCell: React.FC<{ formula: string }> = ({ formula }) => {
     }
 };
 
-const OutputComboCell: React.FC<{ output: NamedRef; outputCombo?: NamedRef }> = ({ output, outputCombo }) => {
-    const { variables } = useAppContext();
+const OutputComboCell: React.FC<{ output: NamedRef; outputCombo?: NamedRef; variables: FormulaVariable[] }> = ({
+    output,
+    outputCombo,
+    variables,
+}) => {
     const validCombos = variables?.find(({ id }) => id === output.id)?.options;
 
     return (

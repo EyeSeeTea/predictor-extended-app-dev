@@ -3,6 +3,7 @@ import _ from "lodash";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useAppContext } from "../../contexts/app-context";
+import { useFuture } from "../../hooks/useFuture";
 import { ExpressionEditor } from "../expression-editor/ExpressionEditor";
 import { TabRow } from "../tab-row/TabRow";
 import { ItemPicker, ItemPickerType, itemPickerTypes } from "./item-picker/ItemPicker";
@@ -18,7 +19,11 @@ export interface ExpressionBoxProps {
 }
 
 export const ExpressionBox: React.FC<ExpressionBoxProps> = ({ expressionType, formula, onChange }) => {
-    const { variables } = useAppContext();
+    const { compositionRoot } = useAppContext();
+
+    const { data: variables = [] } = useFuture(() => {
+        return compositionRoot.expressions.getSuggestions();
+    }, []);
 
     const [variableListType, setVariableListType] = useState<ItemPickerType>("dataElements");
 
