@@ -22,10 +22,10 @@ export const ItemPicker: React.FC<ItemPickerProps> = ({ type, append }) => {
 
 export const itemPickerTypes = {
     dataElements: i18n.t("Data elements"),
-    programs: i18n.t("Programs"),
+    //programs: i18n.t("Programs"),
     orgUnitCounts: i18n.t("Org unit counts"),
     constants: i18n.t("Constants"),
-    reportingRates: i18n.t("Reporting rates"),
+    //reportingRates: i18n.t("Reporting rates"),
 };
 
 export type ItemPickerType = keyof typeof itemPickerTypes;
