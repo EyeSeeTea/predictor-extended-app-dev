@@ -2,8 +2,8 @@ import _ from "lodash";
 import { UseCase } from "../../compositionRoot";
 import i18n from "../../locales";
 import { promiseMap } from "../../utils/promises";
-import { getTemplates, interpolate } from "../../utils/strings";
 import { generateUid } from "../../utils/uid";
+import { getTemplates, interpolate } from "../../utils/uid-replacement";
 import { ExcelCell, ExcelModel, getColumn, getRow } from "../entities/Excel";
 import { defaultPredictor, PredictorDetails } from "../entities/Predictor";
 import { Validation } from "../entities/Validation";
@@ -78,8 +78,11 @@ export class ReadPredictorsExcelUseCase implements UseCase {
             .value();
 
         const metadata = await this.metadataRepository.lookup(templates).toPromise();
+        const validMetadata = _.pickBy(metadata, (_value, key) =>
+            ["dataElements", "categoryOptionCombos"].includes(key)
+        );
 
-        const dictionary = _(metadata)
+        const dictionary = _(validMetadata)
             .values()
             .flatten()
             .flatMap(({ id, name, shortName, code }) => [
