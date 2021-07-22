@@ -69,6 +69,14 @@ export class MetadataD2ApiRepository implements MetadataRepository {
     }
 
     public lookup(queries: string[]): FutureData<MetadataPackage> {
+        const metadataById = toFuture(
+            this.api.get<MetadataPackage>("/metadata", {
+                fields: getFieldsAsString({ id: true, name: true, shortName: true, code: true }),
+                filter: getFilterAsString({ id: { in: queries } }),
+                paging: false,
+            })
+        );
+
         const metadataByCode = toFuture(
             this.api.get<MetadataPackage>("/metadata", {
                 fields: getFieldsAsString({ id: true, name: true, shortName: true, code: true }),
@@ -85,24 +93,26 @@ export class MetadataD2ApiRepository implements MetadataRepository {
             })
         );
 
-        return Future.joinObj({ metadataByCode, metadataByName }).map(({ metadataByCode, metadataByName }) => {
-            const candidates = [metadataByCode, metadataByName];
+        return Future.joinObj({ metadataById, metadataByCode, metadataByName }).map(
+            ({ metadataById, metadataByCode, metadataByName }) => {
+                const candidates = [metadataById, metadataByCode, metadataByName];
 
-            const listItems = (key: MetadataType) =>
-                _(candidates)
-                    .flatMap(item => item[key])
+                const listItems = (key: MetadataType) =>
+                    _(candidates)
+                        .flatMap(item => item[key])
+                        .compact()
+                        .uniqBy(item => item.id)
+                        .value();
+
+                return _(candidates)
+                    .flatMap(item => _.keys(item))
+                    .filter(key => key !== "system")
                     .compact()
-                    .uniqBy(item => item.id)
-                    .value();
-
-            return _(candidates)
-                .flatMap(item => _.keys(item))
-                .filter(key => key !== "system")
-                .compact()
-                .uniq()
-                .map((key: MetadataType) => [key, listItems(key)])
-                .fromPairs()
-                .value() as MetadataPackage;
-        });
+                    .uniq()
+                    .map((key: MetadataType) => [key, listItems(key)])
+                    .fromPairs()
+                    .value() as MetadataPackage;
+            }
+        );
     }
 }

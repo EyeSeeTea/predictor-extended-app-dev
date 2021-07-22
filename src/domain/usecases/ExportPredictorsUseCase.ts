@@ -1,22 +1,43 @@
 import _ from "lodash";
 import { UseCase } from "../../compositionRoot";
+import { getTemplates, interpolate } from "../../utils/uid-replacement";
 import { getPredictorName, PredictorFormField } from "../../webapp/components/predictor-form/PredictorForm";
 import { ExcelCell, ExcelModel } from "../entities/Excel";
 import { PredictorDetails } from "../entities/Predictor";
 import { ExcelRepository } from "../repositories/ExcelRepository";
 import { FileRepository } from "../repositories/FileRepository";
+import { MetadataRepository } from "../repositories/MetadataRepository";
 import { PredictorRepository } from "../repositories/PredictorRepository";
 
 export class ExportPredictorsUseCase implements UseCase {
     constructor(
         private predictorRepository: PredictorRepository,
         private excelRepository: ExcelRepository,
-        private fileRepository: FileRepository
+        private fileRepository: FileRepository,
+        private metadataRepository: MetadataRepository
     ) {}
 
     public async execute(ids: string[]) {
         const emptyFile = await this.excelRepository.createFile();
         const predictors = await this.predictorRepository.get(ids).toPromise();
+
+        const templates = _(predictors)
+            .flatMap(({ generator, sampleSkipTest }) => [generator?.expression, sampleSkipTest?.expression])
+            .compact()
+            .flatMap(formula => getTemplates(formula))
+            .value();
+
+        const metadata = await this.metadataRepository.lookup(templates).toPromise();
+        const validMetadata = _.pickBy(metadata, (_value, key) =>
+            ["dataElements", "categoryOptionCombos"].includes(key)
+        );
+
+        const dictionary = _(validMetadata)
+            .values()
+            .flatten()
+            .flatMap(({ id, name, shortName, code }) => [[id, code ?? shortName ?? name ?? id]])
+            .fromPairs()
+            .value();
 
         const definedNames = _(exportFields)
             .map((field, index) => [
@@ -49,7 +70,7 @@ export class ExportPredictorsUseCase implements UseCase {
                         sheet: "Predictors",
                         address: { row: row + 2, column },
                     },
-                    contents: { type: "text" as const, value: formatValue(predictor, key) ?? "" },
+                    contents: { type: "text" as const, value: formatValue(predictor, key, dictionary) ?? "" },
                 }))
             ),
         ];
@@ -67,8 +88,11 @@ export class ExportPredictorsUseCase implements UseCase {
     }
 }
 
-// TODO: This should be a mapper and be improved
-const formatValue = (predictor: PredictorDetails, key: PredictorFormField): string | number => {
+const formatValue = (
+    predictor: PredictorDetails,
+    key: PredictorFormField,
+    dictionary: Record<string, string>
+): string | number => {
     const value = _.get(predictor, key);
     if (!value) return "";
 
@@ -79,9 +103,9 @@ const formatValue = (predictor: PredictorDetails, key: PredictorFormField): stri
         case "predictorGroups":
         case "organisationUnitLevels":
             return predictor[key]?.map(({ name }) => name).join(",") ?? "";
-        case "generator":
-        case "sampleSkipTest":
-            return predictor[key]?.expression ?? "";
+        case "generator.expression":
+        case "sampleSkipTest.expression":
+            return interpolate(value, dictionary);
     }
 
     if (typeof value === "string" || typeof value === "number") return value;

@@ -44,7 +44,7 @@ export function getCompositionRoot(baseUrl: string) {
             run: new RunPredictorsUseCase(predictorRepository),
             delete: new DeletePredictorsUseCase(predictorRepository),
             save: new SavePredictorsUseCase(predictorRepository),
-            export: new ExportPredictorsUseCase(predictorRepository, excelRepository, fileRepository),
+            export: new ExportPredictorsUseCase(predictorRepository, excelRepository, fileRepository, metadataRepository),
             readExcel: new ReadPredictorsExcelUseCase(excelRepository, metadataRepository),
         }),
         metadata: getExecute({

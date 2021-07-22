@@ -5,7 +5,7 @@ export const RegularExpression = {
     DATA_ELEMENT: /\{([^{].*?)(?:\.([^{].*?))?\}/g,
 };
 
-export function interpolate(string: string, dictionary: Record<string, unknown>): string {
+export function interpolate(string: string, dictionary: Record<string, string>): string {
     return string.replace(RegularExpression.DATA_ELEMENT, (_match, dataElement, categoryOption) =>
         toBrackedString(_.compact([dataElement, categoryOption].map(key => dictionary[key] ?? key)).join("."))
     );
