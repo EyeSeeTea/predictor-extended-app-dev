@@ -1,4 +1,5 @@
 import { Button, ButtonStrip, CenteredContent, NoticeBox } from "@dhis2/ui";
+import { useLoading } from "@eyeseetea/d2-ui-components";
 import { Paper } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
 import _ from "lodash";
@@ -17,7 +18,7 @@ import { PageHeader } from "../../components/page-header/PageHeader";
 import {
     getPredictorFieldName,
     predictorFormFields,
-    RenderPredictorImportField,
+    RenderPredictorImportField
 } from "../../components/predictor-form/PredictorForm";
 import { useAppContext } from "../../contexts/app-context";
 import { useGoBack } from "../../hooks/useGoBack";
@@ -25,9 +26,14 @@ import { useGoBack } from "../../hooks/useGoBack";
 const rowHeight = (index: number) => (index === 0 ? 30 : 70);
 const columnWidth = (index: number) => (index === 0 ? 50 : 250);
 
-export const PredictorImportPage: React.FC = () => {
+export interface PredictorBulkEditPageProps {
+    type: "import" | "bulk-edit";
+}
+
+export const PredictorBulkEditPage: React.FC<PredictorBulkEditPageProps> = ({ type }) => {
     const { compositionRoot } = useAppContext();
     const goBack = useGoBack();
+    const loading = useLoading();
 
     const location = useLocation<{ predictors: Predictor[] }>();
     const [predictors] = React.useState<Predictor[]>(location.state?.predictors ?? []);
@@ -37,21 +43,30 @@ export const PredictorImportPage: React.FC = () => {
 
     const onSubmit = useCallback(
         async ({ predictors }: { predictors: Predictor[] }) => {
+            loading.show(true, i18n.t("Saving predictors"));
             const { data = [], error } = await compositionRoot.predictors.save(predictors).runAsync();
             if (error) return error ?? i18n.t("Network error");
+            loading.reset();
 
-            setSummary(data);
+            if (_.some(data, foo => foo.status === "ERROR")) {
+                setSummary(data);
+            } else {
+                goHome();
+            }
         },
-        [compositionRoot]
+        [compositionRoot, goHome, loading]
     );
 
     if (predictors.length === 0) return <Redirect to="/" />;
 
+    const title = type === "import" ? i18n.t("Import predictors") : i18n.t("Edit predictors");
+    const closeSummary = () => setSummary(undefined);
+
     return (
         <Wrapper>
-            <PageHeader onBackClick={goBack} title={i18n.t("Import predictors")} />
+            <PageHeader onBackClick={goBack} title={title} />
 
-            {summary ? <ImportSummary results={summary} onClose={() => setSummary(undefined)} /> : null}
+            {summary ? <ImportSummary results={summary} onClose={closeSummary} /> : null}
 
             <Container>
                 <Form<{ predictors: Predictor[] }>

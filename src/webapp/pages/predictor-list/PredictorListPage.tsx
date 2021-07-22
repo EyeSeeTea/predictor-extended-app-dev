@@ -82,10 +82,18 @@ export const PredictorListPage: React.FC = () => {
 
     const editPredictor = useCallback(
         (ids: string[]) => {
-            if (ids[0] === undefined) return;
-            history.push(`/edit/${ids[0]}`);
+            if (ids.length === 1) {
+                history.push(`/edit/${ids[0]}`);
+            } else {
+                compositionRoot.predictors.get(ids).run(
+                    predictors => {
+                        history.push({ pathname: `/bulk-edit`, state: { predictors } });
+                    },
+                    error => snackbar.error(error)
+                );
+            }
         },
-        [history]
+        [history, compositionRoot, snackbar]
     );
 
     const deletePredictor = useCallback(
@@ -183,7 +191,7 @@ export const PredictorListPage: React.FC = () => {
                 {
                     name: "edit",
                     text: i18n.t("Edit"),
-                    multiple: false,
+                    multiple: true,
                     onClick: editPredictor,
                     icon: <Edit />,
                 },

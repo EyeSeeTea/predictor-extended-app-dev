@@ -1,6 +1,6 @@
 import { HashRouter, Redirect, Route, Switch } from "react-router-dom";
 import { PredictorEditPage } from "./predictor-edit/PredictorEditPage";
-import { PredictorImportPage } from "./predictor-import/PredictorImportPage";
+import { PredictorBulkEditPage } from "./predictor-bulk-edit/PredictorBulkEditPage";
 import { PredictorListPage } from "./predictor-list/PredictorListPage";
 import { SettingsPage } from "./settings/SettingsPage";
 
@@ -14,7 +14,10 @@ export const Router = () => {
                 />
 
                 <Route path="/list" render={() => <PredictorListPage />} />
-                <Route path="/import" render={() => <PredictorImportPage />} />
+                <Route
+                    path="/:type(import|bulk-edit)"
+                    render={({ match }) => <PredictorBulkEditPage type={match.params.type} />}
+                />
                 <Route path="/settings" render={() => <SettingsPage />} />
 
                 <Redirect from="*" to="/list" />
