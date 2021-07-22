@@ -107,7 +107,7 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
                 id,
                 label: name,
                 filterText: name,
-                insertText: `${output.id}.${outputCombo.id}`,
+                insertText: _.compact([output.id, outputCombo?.id]).join("."),
                 description,
                 type: "dataElements",
             }));

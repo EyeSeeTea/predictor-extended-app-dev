@@ -1,9 +1,10 @@
 import { Button } from "@dhis2/ui";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { FormulaVariable } from "../../../domain/entities/FormulaVariable";
 import { useAppContext } from "../../contexts/app-context";
-import { useFuture } from "../../hooks/useFuture";
 import { ExpressionEditor } from "../expression-editor/ExpressionEditor";
 import { TabRow } from "../tab-row/TabRow";
 import { ItemPicker, ItemPickerType, itemPickerTypes } from "./item-picker/ItemPicker";
@@ -20,10 +21,9 @@ export interface ExpressionBoxProps {
 
 export const ExpressionBox: React.FC<ExpressionBoxProps> = ({ expressionType, formula, onChange }) => {
     const { compositionRoot } = useAppContext();
+    const snackbar = useSnackbar();
 
-    const { data: variables = [] } = useFuture(() => {
-        return compositionRoot.expressions.getSuggestions();
-    }, []);
+    const [variables, setVariables] = useState<FormulaVariable[]>([]);
 
     const [variableListType, setVariableListType] = useState<ItemPickerType>("dataElements");
 
@@ -36,6 +36,13 @@ export const ExpressionBox: React.FC<ExpressionBoxProps> = ({ expressionType, fo
     const appendToFormula = (partToAppend: string) => {
         formulaChange(`${trimTrailing(formula)} ${partToAppend}`);
     };
+
+    useEffect(() => {
+        compositionRoot.expressions.getSuggestions().run(
+            variables => setVariables(variables),
+            error => snackbar.error(error)
+        );
+    }, [compositionRoot, snackbar]);
 
     return (
         <GridContainer>

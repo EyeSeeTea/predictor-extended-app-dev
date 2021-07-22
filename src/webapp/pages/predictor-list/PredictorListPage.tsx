@@ -12,7 +12,7 @@ import {
 } from "@eyeseetea/d2-ui-components";
 import { ArrowDownward, ArrowUpward, Delete, Edit, GridOn, QueuePlayNext, Schedule } from "@material-ui/icons";
 import _ from "lodash";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
@@ -42,6 +42,7 @@ export const PredictorListPage: React.FC = () => {
 
     const [state, setState] = useQueryState<ListPredictorsFilters>({});
     const [response, setResponse] = useState<MetadataResponse[]>();
+    const [variables, setVariables] = useState<FormulaVariable[]>([]);
     const [reloadKey, reload] = useReload();
 
     const { data: predictorGroupOptions = [] } = useFuture(() => {
@@ -56,9 +57,12 @@ export const PredictorListPage: React.FC = () => {
             .map(dataElements => dataElements.map(({ id, name }) => ({ value: id, text: name })));
     }, []);
 
-    const { data: variables = [] } = useFuture(() => {
-        return compositionRoot.expressions.getSuggestions();
-    }, []);
+    useEffect(() => {
+        compositionRoot.expressions.getSuggestions().run(
+            variables => setVariables(variables),
+            error => snackbar.error(error)
+        );
+    }, [compositionRoot, snackbar]);
 
     const goToSettings = useCallback(() => {
         history.push("/settings");
