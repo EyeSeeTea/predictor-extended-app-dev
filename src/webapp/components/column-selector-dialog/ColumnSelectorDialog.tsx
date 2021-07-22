@@ -25,8 +25,6 @@ export function ColumnSelectorDialog(props: ColumnSelectorDialogProps) {
         onChange(newSelection);
     };
 
-    console.log({ columns, visibleColumns, onChange, onCancel });
-
     return (
         <ConfirmationDialog
             isOpen={true}
