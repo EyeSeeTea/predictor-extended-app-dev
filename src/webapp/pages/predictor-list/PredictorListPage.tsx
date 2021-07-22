@@ -325,12 +325,14 @@ export const PredictorListPage: React.FC = () => {
                     initialSearch={state.search ?? ""}
                 >
                     <React.Fragment>
-                        <Filter
-                            items={predictorGroupOptions}
-                            values={state.predictorGroups ?? []}
-                            onChange={onChangeGroupFilter}
-                            label={i18n.t("Predictor groups")}
-                        />
+                        {state.predictorGroups && state.predictorGroups.length > 0 && (
+                            <Filter
+                                items={predictorGroupOptions}
+                                values={state.predictorGroups ?? []}
+                                onChange={onChangeGroupFilter}
+                                label={i18n.t("Predictor groups")}
+                            />
+                        )}
 
                         <Filter
                             items={dataElementsOptions}
