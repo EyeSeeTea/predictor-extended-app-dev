@@ -7,7 +7,7 @@ import { TransferFF, TransferFFProps } from "../../form/fields/TransferFF";
 export const PredictorGroupsFF: React.FC<Omit<TransferFFProps, "options">> = props => {
     const { compositionRoot } = useAppContext();
 
-    const { data: orgUnitLevels = [] } = useFuture(
+    const { data: predictorGroups = [] } = useFuture(
         () => compositionRoot.metadata.list("predictorGroups").map(({ objects }) => buildTransferOptions(objects)),
         []
     );
@@ -19,7 +19,7 @@ export const PredictorGroupsFF: React.FC<Omit<TransferFFProps, "options">> = pro
             filterablePicked
             selectedWidth="100%"
             optionsWidth="100%"
-            options={orgUnitLevels}
+            options={predictorGroups}
         />
     );
 };

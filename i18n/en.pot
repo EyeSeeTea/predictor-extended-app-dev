@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-07-20T06:56:30.523Z\n"
-"PO-Revision-Date: 2021-07-20T06:56:30.523Z\n"
+"POT-Creation-Date: 2021-07-22T13:53:45.537Z\n"
+"PO-Revision-Date: 2021-07-22T13:53:45.537Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -266,19 +266,7 @@ msgstr ""
 msgid "Invalid option"
 msgstr ""
 
-msgid "Edit predictor"
-msgstr ""
-
-msgid "New predictor"
-msgstr ""
-
 msgid "Network error"
-msgstr ""
-
-msgid "Unable to load predictor {{id}}"
-msgstr ""
-
-msgid "Open in maintenance"
 msgstr ""
 
 msgid "Import predictors"
@@ -288,6 +276,18 @@ msgid "Error saving predictors"
 msgstr ""
 
 msgid "Delete"
+msgstr ""
+
+msgid "Edit predictor"
+msgstr ""
+
+msgid "New predictor"
+msgstr ""
+
+msgid "Unable to load predictor {{id}}"
+msgstr ""
+
+msgid "Open in maintenance"
 msgstr ""
 
 msgid "Running predictors"

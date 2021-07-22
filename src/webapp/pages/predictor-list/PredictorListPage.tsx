@@ -122,7 +122,7 @@ export const PredictorListPage: React.FC = () => {
                 { name: "name", text: i18n.t("Name"), sortable: true },
                 {
                     name: "scheduling",
-                    text: i18n.t("Sequence"),
+                    text: i18n.t("Scheduling"),
                     sortable: true,
                     getValue: ({ scheduling }: PredictorDetails) => {
                         return `Sequence: ${scheduling.sequence}\nVariable: ${scheduling.variable}`;
@@ -239,9 +239,16 @@ export const PredictorListPage: React.FC = () => {
                       }
                     : undefined,
             ]),
+            // TODO: Bug in ObjectsList
             initialSorting: {
                 field: "name",
                 order: "asc",
+            },
+            initialState: {
+                sorting: {
+                    field: "name",
+                    order: "asc",
+                },
             },
             paginationOptions: {
                 pageSizeOptions: [10, 25, 50, 100],
