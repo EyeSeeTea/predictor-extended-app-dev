@@ -27,7 +27,7 @@ import { ValidateExpressionUseCase } from "./domain/usecases/ValidateExpressionU
 export function getCompositionRoot(baseUrl: string) {
     const storageRepository = new StorageDataStoreRepository(baseUrl);
     const settingsRepository = new SettingsD2ApiRepository(storageRepository);
-    const predictorRepository = new PredictorD2ApiRepository(baseUrl, storageRepository, settingsRepository);
+    const predictorRepository = new PredictorD2ApiRepository(baseUrl, storageRepository);
     const metadataRepository = new MetadataD2ApiRepository(baseUrl);
     const instanceRepository = new InstanceD2ApiRepository(baseUrl);
     const excelRepository = new ExcelXlsxPopulateRepository();

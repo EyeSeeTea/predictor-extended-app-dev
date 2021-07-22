@@ -1,9 +1,7 @@
 import { TableSorting } from "@eyeseetea/d2-ui-components";
-import { differenceInDays } from "date-fns";
 import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Future, FutureData } from "../domain/entities/Future";
-import { SaveJobConfiguration } from "../domain/entities/JobConfiguration";
 import { Predictor, PredictorDetails, SaveScheduling } from "../domain/entities/Predictor";
 import {
     ExpressionType,
@@ -11,26 +9,18 @@ import {
     ListPredictorsFilters,
     PredictorRepository,
 } from "../domain/repositories/PredictorRepository";
-import { SettingsRepository } from "../domain/repositories/SettingsRepository";
 import { Namespaces, StorageRepository } from "../domain/repositories/StorageRepository";
 import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { formatDate } from "../utils/dates";
-import { generateUid } from "../utils/uid";
 import { PredictorModel } from "./models/PredictorModel";
 import { getD2APiFromUrl } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
-const JOB_CONFIGURATION_PREFIX = "PREDICTOR_AUTOMATED";
-
 export class PredictorD2ApiRepository implements PredictorRepository {
     private api: D2Api;
 
-    constructor(
-        baseUrl: string,
-        private storageRepository: StorageRepository,
-        private settingsRepository: SettingsRepository
-    ) {
+    constructor(baseUrl: string, private storageRepository: StorageRepository) {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
@@ -138,36 +128,15 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
         const scheduling = predictors.map(item => ({ id: item.id, ...item.scheduling }));
 
-        const futures = {
-            existingScheduling: this.storageRepository.getObject<SaveScheduling[]>(Namespaces.SCHEDULING, []),
-            existingPredictors: this.get(predictors.map(({ id }) => id)),
-            settings: this.settingsRepository.get(),
-            deleteResponse: this.clearJobConfigurations(),
-        };
-
-        return Future.joinObj(futures).flatMap(({ existingScheduling, existingPredictors, settings, deleteResponse }) =>
+        return this.get(predictors.map(({ id }) => id)).flatMap(existingPredictors =>
             this.getGroupsToSave(inputPredictors, existingPredictors).flatMap(predictorGroups => {
-                const jobConfigurations = this.getJobConfigurations(
-                    existingScheduling,
-                    scheduling,
-                    settings.scheduling.delay,
-                    settings.scheduling.recurrence
-                );
-
-                const saveMetadata$ = toFuture(
-                    //@ts-ignore jobParameters is not a string
-                    this.api.metadata.post({ predictors, predictorGroups, jobConfigurations })
-                );
-
+                const saveMetadata$ = toFuture(this.api.metadata.post({ predictors, predictorGroups }));
                 const saveDataStore$ = this.storageRepository.saveObjectsInCollection<SaveScheduling>(
                     Namespaces.SCHEDULING,
                     scheduling
                 );
 
-                return Future.join2(saveMetadata$, saveDataStore$).map(([metadataResponse]) => [
-                    metadataResponse,
-                    deleteResponse,
-                ]);
+                return Future.join2(saveMetadata$, saveDataStore$).map(([metadataResponse]) => [metadataResponse]);
             })
         );
     }
@@ -213,53 +182,6 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
                     return !_.isEqual(_.sortBy(oldIds), _.sortBy(newIds));
                 })
-        );
-    }
-
-    // Delay in seconds, recurrence in hours
-    private getJobConfigurations(
-        existingScheduling: SaveScheduling[],
-        newScheduling: SaveScheduling[],
-        delay = 20,
-        recurrence = 1
-    ): SaveJobConfiguration[] {
-        const scheduling = _.uniqBy([...newScheduling, ...existingScheduling], ({ id }) => id);
-
-        const groups = _(scheduling)
-            .groupBy(item => `${item.sequence}-${item.variable}`)
-            .toPairs()
-            .orderBy(pair => pair[0])
-            .value();
-
-        return _.map(groups, ([, predictors], index) => {
-            const iteration = delay * index;
-            const seconds = iteration % 60;
-            const minutes = Math.floor(iteration / 60);
-
-            return {
-                id: generateUid(),
-                name: `${JOB_CONFIGURATION_PREFIX}_${index + 1}`,
-                enabled: true,
-                jobType: "PREDICTOR",
-                cronExpression: `${seconds} ${minutes} */${recurrence} ? * *`,
-                jobParameters: {
-                    relativeStart: differenceInDays(new Date("1970-01-01"), new Date()),
-                    relativeEnd: 0,
-                    predictors: predictors.map(({ id }) => id),
-                    predictorGroups: [],
-                },
-            };
-        });
-    }
-
-    private clearJobConfigurations(): FutureData<MetadataResponse> {
-        return toFuture(
-            this.api.models.jobConfigurations.get({
-                filter: { name: { $like: JOB_CONFIGURATION_PREFIX } },
-                fields: { $owner: true },
-            })
-        ).flatMap(({ objects }) =>
-            toFuture(this.api.metadata.post({ jobConfigurations: objects }, { importStrategy: "DELETE" }))
         );
     }
 }
