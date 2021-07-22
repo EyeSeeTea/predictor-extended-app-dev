@@ -14,7 +14,7 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import ReactJson from "react-json-view";
 import { MetadataResponse, MetadataResponseStats } from "../../../domain/entities/Metadata";
 import i18n from "../../../locales";
@@ -75,9 +75,7 @@ const buildSummaryTable = (stats: Array<MetadataResponseStats & { type: string }
                         <TableCell>{updated}</TableCell>
                         <TableCell>{deleted}</TableCell>
                         <TableCell>{ignored}</TableCell>
-                        <TableCell>
-                            {total || _.sum([created, deleted, ignored, updated])}
-                        </TableCell>
+                        <TableCell>{total || _.sum([created, deleted, ignored, updated])}</TableCell>
                     </TableRow>
                 ))}
             </TableBody>
@@ -175,9 +173,7 @@ export const ImportSummary = ({ results, onClose }: ImportSummaryProps) => {
                             {errors.length > 0 && (
                                 <div>
                                     <AccordionDetails className={classes.accordionDetails}>
-                                        <Typography variant="overline">
-                                            {i18n.t("Messages")}
-                                        </Typography>
+                                        <Typography variant="overline">{i18n.t("Messages")}</Typography>
                                     </AccordionDetails>
                                     <AccordionDetails className={classes.accordionDetails}>
                                         {buildMessageTable(_.take(errors, 10))}
@@ -190,9 +186,7 @@ export const ImportSummary = ({ results, onClose }: ImportSummaryProps) => {
 
                 <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography className={classes.accordionHeading1}>
-                            {i18n.t("JSON Response")}
-                        </Typography>
+                        <Typography className={classes.accordionHeading1}>{i18n.t("JSON Response")}</Typography>
                     </AccordionSummary>
 
                     <AccordionDetails>

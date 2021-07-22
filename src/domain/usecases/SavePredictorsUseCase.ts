@@ -1,12 +1,13 @@
 import { UseCase } from "../../compositionRoot";
+import { FutureData } from "../entities/Future";
 import { MetadataResponse } from "../entities/Metadata";
 import { Predictor } from "../entities/Predictor";
 import { PredictorRepository } from "../repositories/PredictorRepository";
 
-export class ImportPredictorsUseCase implements UseCase {
+export class SavePredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}
 
-    public async execute(predictors: Predictor[]): Promise<MetadataResponse> {
+    public execute(predictors: Predictor[]): FutureData<MetadataResponse[]> {
         return this.predictorRepository.save(predictors);
     }
 }

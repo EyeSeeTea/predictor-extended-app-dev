@@ -1,16 +1,12 @@
-import { TablePagination, TableSorting } from "@eyeseetea/d2-ui-components";
 import { UseCase } from "../../compositionRoot";
-import { Predictor } from "../entities/Predictor";
-import { ListPredictorsFilters, PredictorRepository } from "../repositories/PredictorRepository";
+import { FutureData } from "../entities/Future";
+import { PredictorDetails } from "../entities/Predictor";
+import { PredictorRepository } from "../repositories/PredictorRepository";
 
-export class ListPredictorsUseCase implements UseCase {
+export class GetPredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}
 
-    public execute(
-        filters: ListPredictorsFilters,
-        paging: TablePagination,
-        sorting: TableSorting<Predictor>
-    ) {
-        return this.predictorRepository.list(filters, paging, sorting);
+    public execute(ids: string[]): FutureData<PredictorDetails[]> {
+        return this.predictorRepository.get(ids);
     }
 }

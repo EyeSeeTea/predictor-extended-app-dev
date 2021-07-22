@@ -11,14 +11,21 @@ expression  // The expression must last until the end of the string
     ;
 
 expr
-    // Allow whitespace on either side of any expression
+    //  Allow whitespace on either side of any expression
 
     :   WS+ expr
     |   expr WS+
 
-    //  Operators (in precedence order)
+    //  Parentheses
 
     |   it='(' expr ')'
+
+    //  Dot notation functions (alphabetical)
+
+    |   expr it= '.periodOffset(' WS* period=integerLiteral WS* ')'
+
+    //  Operators (in precedence order)
+
     |   <assoc=right> expr it='^' expr
     |   it=('+' | '-' | '!' | 'not') expr
     |   expr it=('*' | '/' | '%') expr
@@ -38,7 +45,6 @@ expr
     |   it='least(' expr (',' expr )* ')'
     |   it='log(' expr (',' expr )? ')'
     |   it='log10(' expr ')'
-    |   expr '.' it= 'periodOffset(' WS* period=integerLiteral WS* ')'
 
     //  Aggergation functions (alphabetical)
 
@@ -62,15 +68,19 @@ expr
     |   it='d2:condition(' WS* stringLiteral WS* ',' expr ',' expr ')'
     |   it='d2:count(' WS* '#{' uid0=UID '.' uid1=UID '}' WS* ')'
     |   it='d2:count(' WS* '#{' programRuleVariableName '}' WS* ')'
+    |   it='d2:count(' WS* 'A{' programRuleVariableName '}' WS* ')'
     |   it='d2:count(' WS* programRuleStringVariableName WS* ')'
     |   it='d2:countIfCondition(' WS* '#{' uid0=UID '.' uid1=UID '}' WS* ',' WS* stringLiteral WS* ')'
     |   it='d2:countIfCondition(' WS* '#{' programRuleVariableName '}' WS* ',' WS* stringLiteral WS* ')'
+    |   it='d2:countIfCondition(' WS* 'A{' programRuleVariableName '}' WS* ',' WS* stringLiteral WS* ')'
     |   it='d2:countIfCondition(' WS* programRuleStringVariableName WS* ',' WS* stringLiteral WS* ')'
     |   it='d2:countIfValue(' WS* '#{' uid0=UID '.' uid1=UID '}' WS* ',' expr ')'
     |   it='d2:countIfValue(' WS* '#{' programRuleVariableName '}' WS* ',' expr ')'
+    |   it='d2:countIfValue(' WS* 'A{' programRuleVariableName '}' WS* ',' expr ')'
     |   it='d2:countIfValue(' WS* programRuleStringVariableName WS* ',' expr ')'
     |   it='d2:countIfZeroPos(' WS* '#{' uid0=UID '.' uid1=UID '}' WS* ')'
     |   it='d2:countIfZeroPos(' WS* '#{' programRuleVariableName '}' WS* ')'
+    |   it='d2:countIfZeroPos(' WS* 'A{' programRuleVariableName '}' WS* ')'
     |   it='d2:countIfZeroPos(' WS* programRuleStringVariableName WS* ')'
     |   it='d2:daysBetween(' expr ',' expr ')'
     |   it='d2:floor(' expr ')'
@@ -79,6 +89,7 @@ expr
     |   it='d2:hasValue(' WS* '#{' programRuleVariableName '}' WS* ')'
     |   it='d2:hasValue(' WS* programRuleStringVariableName WS* ')'
     |   it='d2:hasValue(' WS* 'A{' uid0=UID '}' WS* ')'
+    |   it='d2:hasValue(' WS* 'A{' programRuleVariableName '}' WS* ')'
     |   it='d2:hasValue(' WS* 'V{' programVariable '}' WS* ')'
     |   it='d2:inOrgUnitGroup(' expr ')'
     |   it='d2:lastEventDate(' expr ')'
@@ -86,11 +97,13 @@ expr
     |   it='d2:length(' expr ')'
     |   it='d2:maxValue(' WS* '#{' uid0=UID '.' uid1=UID '}' WS* ')'
     |   it='d2:maxValue(' WS* '#{' programRuleVariableName '}' WS* ')'
+    |   it='d2:maxValue(' WS* 'A{' programRuleVariableName '}' WS* ')'
     |   it='d2:maxValue(' WS* programRuleStringVariableName WS* ')'
     |   it='d2:maxValue(' WS* psEventDate='PS_EVENTDATE:' WS* uid0=UID WS* ')'
     |   it='d2:minutesBetween(' expr ',' expr ')'
     |   it='d2:minValue(' WS* '#{' uid0=UID '.' uid1=UID '}' WS* ')'
     |   it='d2:minValue(' WS* '#{' programRuleVariableName '}' WS* ')'
+    |   it='d2:minValue(' WS* 'A{' programRuleVariableName '}' WS* ')'
     |   it='d2:minValue(' WS* programRuleStringVariableName WS* ')'
     |   it='d2:minValue(' WS* psEventDate='PS_EVENTDATE:' WS* uid0=UID WS* ')'
     |   it='d2:modulus(' expr ',' expr ')'
@@ -110,7 +123,7 @@ expr
     |   it='d2:zScoreWFA(' expr ',' expr ',' expr ')'
     |   it='d2:zScoreWFH(' expr ',' expr ',' expr ')'
 
-    //  Data items
+    //  Data items (alphabetical)
 
     |   it='#{' uid0=UID (wild1='.*')? '}'
     |   it='#{' uid0=UID '.' uid1=UID '}'
@@ -212,9 +225,16 @@ programRuleVariablePart
 // Assign token names to parser symbols
 // -----------------------------------------------------------------------------
 
-// Operators
+// Parentheses
 
 PAREN : '(';
+
+// Dot notation functions (alphabetical)
+
+PERIOD_OFFSET   : '.periodOffset(';
+
+// Operators
+
 PLUS  : '+';
 MINUS : '-';
 POWER : '^';
@@ -236,7 +256,6 @@ VERTICAL_BAR_2      : '||';
 
 // Functions (alphabetical)
 
-PERIOD_OFFSET   : 'periodOffset(';
 FIRST_NON_NULL  : 'firstNonNull(';
 GREATEST        : 'greatest(';
 IF              : 'if(';
@@ -328,7 +347,7 @@ D2_ZSCOREHFA            : 'd2:zScoreHFA(';
 D2_ZSCOREWFA            : 'd2:zScoreWFA(';
 D2_ZSCOREWFH            : 'd2:zScoreWFH(';
 
-// Items (alphabetical by symbol)
+// Data Items (alphabetical by symbol)
 
 HASH_BRACE  : '#{';
 A_BRACE     : 'A{';

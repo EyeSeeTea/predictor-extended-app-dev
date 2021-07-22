@@ -1,19 +1,16 @@
-//@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
-//@ts-ignore
-import { HeaderBar } from "@dhis2/ui-widgets";
+import { HeaderBar } from "@dhis2/ui";
+import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
 import { LinearProgress } from "@material-ui/core";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
-//@ts-ignore
 import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import React, { useEffect, useState } from "react";
 import { appConfig } from "../../../app-config";
 import { getCompositionRoot } from "../../../compositionRoot";
 import { D2Api } from "../../../types/d2-api";
 import { AppContext, AppContextState } from "../../contexts/app-context";
-import Root from "../../pages/root/RootPage";
+import { Router } from "../../pages/Router";
 import Share from "../share/Share";
 import "./App.css";
 import muiThemeLegacy from "./themes/dhis2-legacy.theme";
@@ -35,11 +32,11 @@ function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
             ...appConfig.feedback,
             i18nPath: "feedback-tool/i18n",
         };
-        ((window as unknown) as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
+        (window as unknown as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
     }
 }
 
-const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
+const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
     const { baseUrl } = useConfig();
 
     const [showShareButton, setShowShareButton] = useState(false);
@@ -49,15 +46,15 @@ const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
     useEffect(() => {
         async function setup() {
             const compositionRoot = getCompositionRoot(baseUrl);
-            const appContext: AppContextState = { config: {}, compositionRoot };
+            const currentUser = await compositionRoot.users.getCurrent();
 
-            setAppContext(appContext);
+            setAppContext({ api, compositionRoot, currentUser });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
             initFeedbackTool(d2, appConfig);
             setLoading(false);
         }
         setup();
-    }, [d2, baseUrl]);
+    }, [d2, api, baseUrl]);
 
     if (loading) {
         return (
@@ -77,7 +74,7 @@ const App = ({ d2 }: { api: D2Api; d2: D2 }) => {
 
                         <div id="app" className="content">
                             <AppContext.Provider value={appContext}>
-                                <Root />
+                                <Router />
                             </AppContext.Provider>
                         </div>
 

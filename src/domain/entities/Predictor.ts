@@ -1,95 +1,71 @@
-import { array, boolean, Codec, exactly, GetType, oneOf, optional, string } from "purify-ts";
-import { Integer, NumberFromString } from "purify-ts-extra-codec";
+import { NamedRef, Ref } from "./DHIS2";
 
-const number = oneOf([Integer, NumberFromString]);
+export type PeriodType =
+    | "Daily"
+    | "Weekly"
+    | "WeeklyWednesday"
+    | "WeeklyThursday"
+    | "WeeklySaturday"
+    | "WeeklySunday"
+    | "BiWeekly"
+    | "Monthly"
+    | "BiMonthly"
+    | "Quarterly"
+    | "SixMonthly"
+    | "SixMonthlyApril"
+    | "SixMonthlyNov"
+    | "Yearly"
+    | "FinancialApril"
+    | "FinancialJuly"
+    | "FinancialOct"
+    | "FinancialNov";
 
-const Ref = Codec.interface({
-    id: string,
-    name: optional(string),
-});
+export type FormulaMissingValueStrategy = "NEVER_SKIP" | "SKIP_IF_ANY_VALUE_MISSING" | "SKIP_IF_ALL_VALUES_MISSING";
 
-const PeriodType = oneOf([
-    exactly("Daily"),
-    exactly("Weekly"),
-    exactly("WeeklyWednesday"),
-    exactly("WeeklyThursday"),
-    exactly("WeeklySaturday"),
-    exactly("WeeklySunday"),
-    exactly("BiWeekly"),
-    exactly("Monthly"),
-    exactly("BiMonthly"),
-    exactly("Quarterly"),
-    exactly("SixMonthly"),
-    exactly("SixMonthlyApril"),
-    exactly("SixMonthlyNov"),
-    exactly("Yearly"),
-    exactly("FinancialApril"),
-    exactly("FinancialJuly"),
-    exactly("FinancialOct"),
-    exactly("FinancialNov"),
-]);
+export interface Formula {
+    expression: string;
+    description: string;
+    slidingWindow: boolean;
+    missingValueStrategy: FormulaMissingValueStrategy;
+}
 
-export const FormulaModel = Codec.interface({
-    expression: string,
-    description: optional(string),
-    slidingWindow: optional(boolean),
-    missingValueStrategy: optional(
-        oneOf([
-            exactly("NEVER_SKIP"),
-            exactly("SKIP_IF_ANY_VALUE_MISSING"),
-            exactly("SKIP_IF_ALL_VALUES_MISSING"),
-        ])
-    ),
-});
+export type Scheduling = { sequence: number; variable: number };
+export type SaveScheduling = Scheduling & Ref;
 
-const SharingSetting = Codec.interface({
-    access: string,
-    displayName: optional(string),
-    id: optional(string),
-});
+export interface Predictor {
+    id: string;
+    code?: string | undefined;
+    name: string;
+    description?: string | undefined;
+    output: NamedRef;
+    outputCombo?: NamedRef | undefined;
+    periodType: PeriodType;
+    organisationUnitLevels: NamedRef[];
+    generator: Formula;
+    sampleSkipTest?: Formula | undefined;
+    sequentialSampleCount: number;
+    annualSampleCount: number;
+    sequentialSkipCount?: number | undefined;
+    predictorGroups: NamedRef[];
+    scheduling: Scheduling;
+}
 
-export const PredictorModel = Codec.interface({
-    id: string,
-    code: optional(string),
-    name: string,
-    description: optional(string),
-    output: Ref,
-    outputCombo: optional(Ref),
-    periodType: PeriodType,
-    organisationUnitLevels: optional(array(Ref)),
-    generator: FormulaModel,
-    sampleSkipTest: optional(FormulaModel),
-    sequentialSampleCount: number,
-    annualSampleCount: number,
-    sequentialSkipCount: optional(number),
-    predictorGroups: optional(array(Ref)),
-    lastUpdated: optional(string),
-    lastUpdatedBy: optional(Ref),
-    created: optional(string),
-    user: optional(Ref),
-    publicAccess: optional(string),
-    userAccesses: optional(array(SharingSetting)),
-    userGroupAccesses: optional(array(SharingSetting)),
-});
+export interface PredictorDetails extends Predictor {
+    lastUpdated: string; // TODO: Convert to date
+    lastUpdatedBy: NamedRef;
+    created: string; // TODO: Convert to date
+    user: NamedRef;
+}
 
-export const predictorColumns: Array<keyof Predictor> = [
-    "id",
-    "code",
-    "name",
-    "description",
-    "output",
-    "outputCombo",
-    "periodType",
-    "annualSampleCount",
-    "generator",
-    "organisationUnitLevels",
-    "predictorGroups",
-    "sampleSkipTest",
-    "sequentialSampleCount",
-    "sequentialSkipCount",
-    "created",
-    "lastUpdated",
-];
-
-export type Formula = GetType<typeof FormulaModel>;
-export type Predictor = GetType<typeof PredictorModel>;
+export const defaultPredictor: Predictor = {
+    id: "",
+    name: "",
+    output: { id: "", name: "" },
+    periodType: "Daily",
+    organisationUnitLevels: [],
+    generator: { expression: "", description: "", slidingWindow: false, missingValueStrategy: "NEVER_SKIP" },
+    sequentialSampleCount: 0,
+    annualSampleCount: 0,
+    predictorGroups: [],
+    scheduling: { sequence: 0, variable: 0 },
+};

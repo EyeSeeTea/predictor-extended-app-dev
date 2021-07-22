@@ -15,6 +15,6 @@ export type AttributeValue = {
 
 export type SharingSetting = {
     access: string;
-    displayName?: string;
+    displayName: string;
     id: string;
 };
