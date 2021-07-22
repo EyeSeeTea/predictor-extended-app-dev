@@ -400,9 +400,7 @@ const FormulaCell: React.FC<{ formula: string }> = ({ formula }) => {
 };
 
 const OutputComboCell: React.FC<{ output: NamedRef; outputCombo?: NamedRef }> = ({ output, outputCombo }) => {
-    const { compositionRoot } = useAppContext();
-    const { data: variables } = useFuture(compositionRoot.expressions.getSuggestions, []);
-
+    const { variables } = useAppContext();
     const validCombos = variables?.find(({ id }) => id === output.id)?.options;
 
     return (

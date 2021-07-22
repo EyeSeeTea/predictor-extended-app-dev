@@ -47,8 +47,9 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
         async function setup() {
             const compositionRoot = getCompositionRoot(baseUrl);
             const currentUser = await compositionRoot.users.getCurrent();
+            const variables = await compositionRoot.expressions.getSuggestions().toPromise();
 
-            setAppContext({ api, compositionRoot, currentUser });
+            setAppContext({ api, compositionRoot, currentUser, variables });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
             initFeedbackTool(d2, appConfig);
             setLoading(false);
