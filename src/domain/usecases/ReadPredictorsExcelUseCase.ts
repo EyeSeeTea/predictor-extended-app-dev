@@ -35,7 +35,7 @@ export class ReadPredictorsExcelUseCase implements UseCase {
 
         const entries = _(cells)
             .groupBy(item => getRow(item.ref))
-            .omitBy((_value, key) => parseInt(key) <= 1)
+            .omitBy((_value, key) => parseInt(key) === 0)
             .values()
             .map(cells => {
                 const pairs = _.compact(

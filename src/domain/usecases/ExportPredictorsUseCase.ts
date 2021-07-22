@@ -68,7 +68,7 @@ export class ExportPredictorsUseCase implements UseCase {
                     ref: {
                         type: "cell" as const,
                         sheet: "Predictors",
-                        address: { row: row + 2, column },
+                        address: { row: row + 1, column },
                     },
                     contents: { type: "text" as const, value: formatValue(predictor, key, dictionary) ?? "" },
                 }))
