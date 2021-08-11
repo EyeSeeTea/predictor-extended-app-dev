@@ -1,7 +1,8 @@
 import { Future, FutureData } from "../domain/entities/Future";
+import { Instance } from "../domain/entities/Instance";
 import { StorageRepository } from "../domain/repositories/StorageRepository";
 import { D2Api, DataStore } from "../types/d2-api";
-import { getD2APiFromUrl } from "./utils/d2-api";
+import { getD2APiFromInstance } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
 const dataStoreNamespace = "predictor-extended";
@@ -10,9 +11,9 @@ export class StorageDataStoreRepository extends StorageRepository {
     private api: D2Api;
     private dataStore: DataStore;
 
-    constructor(baseUrl: string) {
+    constructor(instance: Instance) {
         super();
-        this.api = getD2APiFromUrl(baseUrl);
+        this.api = getD2APiFromInstance(instance);
         this.dataStore = this.api.dataStore(dataStoreNamespace);
     }
 

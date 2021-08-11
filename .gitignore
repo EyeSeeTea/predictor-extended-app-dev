@@ -9,6 +9,7 @@
 # production
 manifest.webapp
 /build
+dist/
 
 # misc
 .DS_Store
@@ -28,9 +29,9 @@ yarn-error.log*
 src/locales/
 src/react-app.d.ts
 src/react-app-env.d.ts
-scripts/
 bak
 .eslintcache
+config.json
 
 # cypress
 cypress/screenshots/

@@ -2,6 +2,7 @@ import { TableSorting } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
 import { Future, FutureData } from "../domain/entities/Future";
+import { Instance } from "../domain/entities/Instance";
 import { Predictor, PredictorDetails, SaveScheduling } from "../domain/entities/Predictor";
 import {
     ExpressionType,
@@ -14,14 +15,14 @@ import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { formatDate } from "../utils/dates";
 import { PredictorModel } from "./models/PredictorModel";
-import { getD2APiFromUrl } from "./utils/d2-api";
+import { getD2APiFromInstance } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
 export class PredictorD2ApiRepository implements PredictorRepository {
     private api: D2Api;
 
-    constructor(baseUrl: string, private storageRepository: StorageRepository) {
-        this.api = getD2APiFromUrl(baseUrl);
+    constructor(instance: Instance, private storageRepository: StorageRepository) {
+        this.api = getD2APiFromInstance(instance);
     }
 
     @cache()
@@ -54,7 +55,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
     public list(
         filters?: ListPredictorsFilters,
-        paging?: { page: number; pageSize: number },
+        paging?: { page?: number; pageSize?: number; paging?: false },
         sorting?: TableSorting<PredictorDetails>
     ): FutureData<{ pager: Pager; objects: PredictorDetails[] }> {
         const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
@@ -67,6 +68,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                     "output.id": dataElements.length > 0 ? { in: dataElements } : undefined,
                     lastUpdated: lastUpdated ? { ge: lastUpdated } : undefined,
                 },
+                paging: paging?.paging,
                 page: paging?.page,
                 pageSize: paging?.pageSize,
                 order: sorting ? `${sorting.field}:${sorting.order}` : undefined,
@@ -76,10 +78,11 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
         const schedulingData$ = this.storageRepository.getObject<SaveScheduling[]>(Namespaces.SCHEDULING, []);
 
-        return Future.join2(predictorData$, schedulingData$).map(([{ objects, pager }, schedulingData]) => {
+        return Future.join2(predictorData$, schedulingData$).map(([predictorsData, schedulingData]) => {
             return {
-                pager,
-                objects: objects.map(item => {
+                //@ts-ignore: d2-api incorrectly guessing with paging set to false
+                pager: predictorsData.pager ?? { total: predictorsData.objects.length, page: 1, pageSize: 1 },
+                objects: predictorsData.objects.map(item => {
                     const scheduling = schedulingData.find(s => s.id === item.id) ?? { sequence: 0, variable: 0 };
                     return { ...item, scheduling };
                 }),

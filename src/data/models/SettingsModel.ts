@@ -1,12 +1,17 @@
-import { Settings } from "../../domain/entities/Settings";
+import { SchedulingSettings, Settings } from "../../domain/entities/Settings";
 import { Codec, Schema } from "../utils/codec";
 
+export const SchedulingSettingsModel: Codec<SchedulingSettings> = Schema.oneOf([
+    Schema.object({ enabled: Schema.false }),
+    Schema.object({
+        enabled: Schema.true,
+        recurrence: Schema.string,
+        delay: Schema.number,
+        startDate: Schema.date,
+        endDate: Schema.date,
+    }),
+]);
+
 export const SettingsModel: Codec<Settings> = Schema.object({
-    scheduling: Schema.optionalSafe(
-        Schema.object({
-            recurrence: Schema.optionalSafe(Schema.number, 1),
-            delay: Schema.optionalSafe(Schema.number, 0),
-        }),
-        { recurrence: 1, delay: 0 }
-    ),
+    scheduling: Schema.optionalSafe(SchedulingSettingsModel, { enabled: false }),
 });

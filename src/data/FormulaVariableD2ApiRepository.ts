@@ -1,17 +1,18 @@
 import _ from "lodash";
 import { FormulaVariable } from "../domain/entities/FormulaVariable";
 import { FutureData } from "../domain/entities/Future";
+import { Instance } from "../domain/entities/Instance";
 import { FormulaVariableRepository } from "../domain/repositories/FormulaVariableRepository";
 import i18n from "../locales";
 import { D2Api } from "../types/d2-api";
-import { getD2APiFromUrl } from "./utils/d2-api";
+import { getD2APiFromInstance } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
 export class FormulaVariableD2ApiRepository implements FormulaVariableRepository {
     private api: D2Api;
 
-    constructor(baseUrl: string) {
-        this.api = getD2APiFromUrl(baseUrl);
+    constructor(instance: Instance) {
+        this.api = getD2APiFromInstance(instance);
     }
 
     public get(): FutureData<FormulaVariable[]> {

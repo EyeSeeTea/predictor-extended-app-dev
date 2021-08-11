@@ -83,6 +83,18 @@ const undefinedType = Codec.custom<undefined>({
     schema: () => ({ type: "null" }),
 });
 
+export const trueType = Codec.custom<true>({
+    decode: value => (typeof value === "boolean" && value === true ? Right(value) : Left(`${value} is not true`)),
+    encode: identity,
+    schema: () => ({ type: "boolean" }),
+});
+
+export const falseType = Codec.custom<false>({
+    decode: value => (typeof value === "boolean" && value === false ? Right(value) : Left(`${value} is not false`)),
+    encode: identity,
+    schema: () => ({ type: "boolean" }),
+});
+
 export const Schema = {
     object: Interface,
     stringObject: JsonFromString,
@@ -96,6 +108,8 @@ export const Schema = {
     number: oneOf([number, NumberFromString]),
     numberBetween: NumberRangedIn,
     boolean: booleanFromString,
+    true: trueType,
+    false: falseType,
     null: nullType,
     undefined: undefinedType,
     unknown,

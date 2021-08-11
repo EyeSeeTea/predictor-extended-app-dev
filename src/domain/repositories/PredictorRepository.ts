@@ -10,7 +10,7 @@ export interface PredictorRepository {
 
     list(
         filters?: ListPredictorsFilters,
-        paging?: { page: number; pageSize: number },
+        paging?: { page?: number; pageSize?: number; paging?: false },
         sorting?: TableSorting<PredictorDetails>
     ): FutureData<{ pager: Pager; objects: PredictorDetails[] }>;
 

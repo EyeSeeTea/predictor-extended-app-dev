@@ -1,15 +1,15 @@
 import { Future, FutureData } from "../domain/entities/Future";
-import { UserSearch } from "../domain/entities/Instance";
+import { Instance, UserSearch } from "../domain/entities/Instance";
 import { InstanceRepository } from "../domain/repositories/InstanceRepository";
 import { D2Api } from "../types/d2-api";
-import { getD2APiFromUrl } from "./utils/d2-api";
+import { getD2APiFromInstance } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
 export class InstanceD2ApiRepository implements InstanceRepository {
     private api: D2Api;
 
-    constructor(baseUrl: string) {
-        this.api = getD2APiFromUrl(baseUrl);
+    constructor(instance: Instance) {
+        this.api = getD2APiFromInstance(instance);
     }
 
     public searchUsers(query: string): FutureData<UserSearch> {

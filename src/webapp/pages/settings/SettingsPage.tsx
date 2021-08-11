@@ -1,7 +1,6 @@
-import { InputField } from "@dhis2/ui";
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "@eyeseetea/d2-ui-components/locales";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Settings } from "../../../domain/entities/Settings";
 import { PageHeader } from "../../components/page-header/PageHeader";
@@ -15,7 +14,7 @@ export const SettingsPage: React.FC = () => {
 
     const [settings, setSettings] = useState<Settings>();
 
-    const updateSettings = useCallback(
+    /**const updateSettings = useCallback(
         (setting: keyof Settings["scheduling"], value: string | number) => {
             if (!settings) return;
 
@@ -29,7 +28,7 @@ export const SettingsPage: React.FC = () => {
             );
         },
         [compositionRoot, settings, snackbar]
-    );
+    );**/
 
     useEffect(() => {
         compositionRoot.settings.get().run(
@@ -49,24 +48,6 @@ export const SettingsPage: React.FC = () => {
             <PageHeader onBackClick={goBack} title={i18n.t("Settings")} />
 
             <h3>{i18n.t("Scheduling")}</h3>
-
-            <b>{i18n.t("Recurrence (hours)")}</b>
-
-            <InputField
-                value={`${settings.scheduling.recurrence}`}
-                onChange={({ value }) => updateSettings("recurrence", parseInt(value ?? "0"))}
-                type="number"
-                min="0"
-            />
-
-            <b>{i18n.t("Delay between executions (seconds)")}</b>
-
-            <InputField
-                value={settings.scheduling.delay.toString()}
-                onChange={({ value }) => updateSettings("delay", parseInt(value ?? "0"))}
-                type="number"
-                min="0"
-            />
         </Wrapper>
     );
 };

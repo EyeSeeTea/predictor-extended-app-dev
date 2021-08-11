@@ -34,7 +34,7 @@ async function main() {
 
     try {
         const d2 = await init({ baseUrl: baseUrl + "/api", schemas: [] });
-        const api = new D2Api({ baseUrl });
+        const api = new D2Api({ baseUrl, backend: "fetch" });
         Object.assign(window, { d2, api });
 
         const userSettings = await api.get<{ keyUiLocale: string }>("/userSettings").getData();

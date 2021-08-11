@@ -1,17 +1,18 @@
 import _ from "lodash";
 import { Future, FutureData } from "../domain/entities/Future";
+import { Instance } from "../domain/entities/Instance";
 import { Metadata, MetadataPackage, MetadataType } from "../domain/entities/Metadata";
 import { MetadataRepository } from "../domain/repositories/MetadataRepository";
 import { D2Api, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";
-import { getD2APiFromUrl, getFieldsAsString, getFilterAsString } from "./utils/d2-api";
+import { getD2APiFromInstance, getFieldsAsString, getFilterAsString } from "./utils/d2-api";
 import { toFuture } from "./utils/futures";
 
 export class MetadataD2ApiRepository implements MetadataRepository {
     private api: D2Api;
 
-    constructor(baseUrl: string) {
-        this.api = getD2APiFromUrl(baseUrl);
+    constructor(instance: Instance) {
+        this.api = getD2APiFromInstance(instance);
     }
 
     public list(
