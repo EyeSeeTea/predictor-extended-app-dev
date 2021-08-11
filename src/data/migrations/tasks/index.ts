@@ -3,7 +3,7 @@ import { MigrationTasks } from "../client/types";
 
 export function getMigrationTasks(): MigrationTasks<MigrationParams> {
     return [
-        //[1, import("./01.settings-permissions")]
+        [1, import("./01.scheduling-reset")]
     ];
 }
 
