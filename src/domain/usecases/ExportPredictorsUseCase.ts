@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { UseCase } from "../../compositionRoot";
 import { getTemplates, interpolate } from "../../utils/uid-replacement";
-import { getPredictorName, PredictorFormField } from "../../webapp/components/predictor-form/PredictorForm";
+import { getPredictorName, PredictorFormField } from "../../webapp/components/predictor-form/utils";
 import { ExcelCell, ExcelModel } from "../entities/Excel";
 import { PredictorDetails } from "../entities/Predictor";
 import { ExcelRepository } from "../repositories/ExcelRepository";

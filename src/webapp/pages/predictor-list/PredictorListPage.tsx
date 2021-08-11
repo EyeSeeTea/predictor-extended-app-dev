@@ -26,7 +26,7 @@ import { formatDate } from "../../../utils/dates";
 import { AlertIcon } from "../../components/alert-icon/AlertIcon";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
-import { periodTypes } from "../../components/predictor-form/PredictorForm";
+import { periodTypes } from "../../components/predictor-form/utils";
 import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { useQueryState } from "../../hooks/useQueryState";

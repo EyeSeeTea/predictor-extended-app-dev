@@ -1,43 +1,47 @@
 import { ArgumentParser } from "argparse";
 import fs from "fs";
 import _ from "lodash";
-import { PredictorD2ApiRepository } from "../data/PredictorD2ApiRepository";
-import { SettingsD2ApiRepository } from "../data/SettingsD2ApiRepository";
-import { StorageDataStoreRepository } from "../data/StorageDataStoreRepository";
+import { configure, getLogger } from "log4js";
+import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
 import { Future, FutureData } from "../domain/entities/Future";
 import { PredictorDetails } from "../domain/entities/Predictor";
 import { Settings } from "../domain/entities/Settings";
-import { GetSettingsUseCase } from "../domain/usecases/GetSettingsUseCase";
-import { ListPredictorsUseCase } from "../domain/usecases/ListPredictorsUseCase";
-import { ConfigModel, SchedulerConfig, SchedulerInstance } from "./entities/SchedulerConfig";
+import { ConfigModel, SchedulerConfig } from "./entities/SchedulerConfig";
+
+const development = process.env.NODE_ENV === "development";
+
+configure({
+    appenders: {
+        out: { type: "stdout" },
+        file: { type: "file", filename: "debug.log" },
+    },
+    categories: { default: { appenders: ["file", "out"], level: development ? "all" : "debug" } },
+});
 
 function runPredictors(settings: Settings, predictors: PredictorDetails[]) {
     const orderedPredictors = _.sortBy(predictors, ["scheduling.sequence", "scheduling.variable", "id"]);
     console.log(settings, orderedPredictors);
 }
 
-// Tried to use the composition root here, but it was importing React components and failed to compile
-function getPredictors(instance: SchedulerInstance): FutureData<{ objects: PredictorDetails[] }> {
-    const storageRepository = new StorageDataStoreRepository(instance);
-    const predictorRepository = new PredictorD2ApiRepository(instance, storageRepository);
-    return new ListPredictorsUseCase(predictorRepository).execute(undefined, { paging: false });
-}
-
-// Tried to use the composition root here, but it was importing React components and failed to compile
-function getSettings(instance: SchedulerInstance): FutureData<Settings> {
-    const storageRepository = new StorageDataStoreRepository(instance);
-    const settingsRepository = new SettingsD2ApiRepository(storageRepository);
-    return new GetSettingsUseCase(settingsRepository).execute();
-}
+const checkMigrations = (compositionRoot: CompositionRoot): FutureData<boolean> => {
+    return Future.fromPromise(compositionRoot.migrations.hasPending()).mapError(() => {
+        getLogger("migrations").fatal("Scheduler is unable to continue due to database migrations");
+        return "There are pending migrations to be applied to the data store";
+    });
+};
 
 function parseConfig(config: SchedulerConfig) {
     Future.futureMap(config.instances, instance => {
-        const settings$ = getSettings(instance);
-        const predictors$ = getPredictors(instance);
+        const compositionRoot = getCompositionRoot(instance);
 
-        return Future.join2(settings$, predictors$).map(([settings, { objects: predictors }]) =>
-            runPredictors(settings, predictors)
-        );
+        return checkMigrations(compositionRoot)
+            .flatMap(() =>
+                Future.joinObj({
+                    predictors: compositionRoot.predictors.list(undefined, { paging: false }),
+                    settings: compositionRoot.settings.get(),
+                })
+            )
+            .map(({ settings, predictors: { objects } }) => runPredictors(settings, objects));
     }).run(
         result => console.log({ result }),
         error => console.error(error)

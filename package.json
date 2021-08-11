@@ -34,6 +34,7 @@
         "fluture": "14.0.0",
         "font-awesome": "4.7.0",
         "lodash": "4.17.21",
+        "log4js": "6.3.0",
         "monaco-editor": "0.26.1",
         "node-schedule": "2.0.0",
         "postcss-rtl": "1.7.3",

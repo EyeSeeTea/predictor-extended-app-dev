@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-08-11T07:27:29.533Z\n"
-"PO-Revision-Date: 2021-08-11T07:27:29.533Z\n"
+"POT-Creation-Date: 2021-08-11T07:50:51.125Z\n"
+"PO-Revision-Date: 2021-08-11T07:50:51.125Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -199,6 +199,9 @@ msgstr ""
 msgid "Please provide a valid identifier"
 msgstr ""
 
+msgid "Invalid option"
+msgstr ""
+
 msgid "Name"
 msgstr ""
 
@@ -311,9 +314,6 @@ msgid "Skip if all values are missing"
 msgstr ""
 
 msgid "Never skip"
-msgstr ""
-
-msgid "Invalid option"
 msgstr ""
 
 msgid "Saving predictors"
