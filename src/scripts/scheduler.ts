@@ -20,31 +20,37 @@ configure({
 
 function runPredictors(settings: Settings, predictors: PredictorDetails[]) {
     const orderedPredictors = _.sortBy(predictors, ["scheduling.sequence", "scheduling.variable", "id"]);
-    console.log(settings, orderedPredictors);
+    getLogger("main").info(settings, orderedPredictors);
 }
 
 const checkMigrations = (compositionRoot: CompositionRoot): FutureData<boolean> => {
     return Future.fromPromise(compositionRoot.migrations.hasPending()).mapError(() => {
-        getLogger("migrations").fatal("Scheduler is unable to continue due to database migrations");
-        return "There are pending migrations to be applied to the data store";
+        return "There are pending migrations, unable to continue";
     });
 };
 
 function parseConfig(config: SchedulerConfig) {
-    Future.futureMap(config.instances, instance => {
-        const compositionRoot = getCompositionRoot(instance);
+    Future.futureMap(
+        config.instances,
+        instance => {
+            const compositionRoot = getCompositionRoot(instance);
 
-        return checkMigrations(compositionRoot)
-            .flatMap(() =>
-                Future.joinObj({
-                    predictors: compositionRoot.predictors.list(undefined, { paging: false }),
-                    settings: compositionRoot.settings.get(),
-                })
-            )
-            .map(({ settings, predictors: { objects } }) => runPredictors(settings, objects));
-    }).run(
-        result => console.log({ result }),
-        error => console.error(error)
+            return checkMigrations(compositionRoot)
+                .flatMap(() =>
+                    Future.joinObj({
+                        predictors: compositionRoot.predictors.list(undefined, { paging: false }),
+                        settings: compositionRoot.settings.get(),
+                    })
+                )
+                .map(({ settings, predictors: { objects } }) => runPredictors(settings, objects))
+                .mapError(error => `[${instance.url}] ${error}`);
+        },
+        {
+            catchErrors: error => getLogger("main").error(error),
+        }
+    ).run(
+        result => getLogger("main").info({ result }),
+        error => getLogger("main").error(error)
     );
 }
 
@@ -65,7 +71,7 @@ async function main() {
         const config = ConfigModel.unsafeDecode(contents);
         parseConfig(config);
     } catch (err) {
-        console.error(err);
+        getLogger("main").fatal(err);
         process.exit(1);
     }
 }

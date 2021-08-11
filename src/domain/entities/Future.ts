@@ -34,9 +34,9 @@ export class Future<E, D> {
         return new Future(chainRejMapper(this.instance));
     }
 
-    toPromise(): Promise<D> {
+    toPromise(onError?: (error: E) => void): Promise<D> {
         return new Promise((resolve, reject) => {
-            this.run(resolve, reject);
+            this.run(resolve, onError ?? reject);
         });
     }
 
@@ -88,19 +88,17 @@ export class Future<E, D> {
         return new Future(instance);
     }
 
-    static parallel<E, D>(
-        futures: Array<Future<E, D>>,
-        options: { maxConcurrency?: number } = {}
-    ): Future<E, Array<D>> {
-        const { maxConcurrency = 10 } = options;
+    static parallel<E, D>(futures: Array<Future<E, D>>, options: ParallelOptions<E, D> = {}): Future<E, Array<D>> {
+        const { maxConcurrency = 10, catchErrors } = options;
         const parallel = fluture.parallel(maxConcurrency);
-        const instance = parallel(futures.map(future => future.instance));
+        const coalesce = catchErrors ? fluture.coalesce<E, D>(error => catchErrors(error))((d: D) => d) : undefined;
+        const instance = parallel(futures.map(future => (coalesce ? coalesce(future.instance) : future.instance)));
         return new Future(instance);
     }
 
     static joinObj<FuturesObj extends Record<string, Future<any, any>>>(
         futuresObj: FuturesObj,
-        options: { maxConcurrency?: number } = {}
+        options: ParallelOptions<any, any> = {}
     ): JoinObj<FuturesObj> {
         const { maxConcurrency = 10 } = options;
         const parallel = fluture.parallel(maxConcurrency);
@@ -111,10 +109,19 @@ export class Future<E, D> {
         return futureObj as JoinObj<FuturesObj>;
     }
 
-    static futureMap<T, E, D>(inputValues: T[], mapper: (value: T, index: number) => Future<E, D>): Future<E, D[]> {
-        return this.parallel(inputValues.map((value, index) => mapper(value, index)));
+    static futureMap<T, E, D>(
+        inputValues: T[],
+        mapper: (value: T, index: number) => Future<E, D>,
+        options?: ParallelOptions<E, D>
+    ): Future<E, D[]> {
+        return this.parallel(
+            inputValues.map((value, index) => mapper(value, index)),
+            options
+        );
     }
 }
+
+type ParallelOptions<E, D> = { maxConcurrency?: number; catchErrors?: (error: E) => D };
 
 type JoinObj<Futures extends Record<string, Future<any, any>>> = Future<
     ExtractFutureError<Futures[keyof Futures]>,
