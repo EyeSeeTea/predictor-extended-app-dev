@@ -93,7 +93,7 @@ export class ExportPredictorsUseCase implements UseCase {
         };
 
         const buffer = await this.excelRepository.writeFile(emptyFile, file);
-        this.fileRepository.download({ type: "excel", name: "Test", buffer });
+        this.fileRepository.download({ type: "excel", name: "Predictors export", buffer });
     }
 }
 

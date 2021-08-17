@@ -46,7 +46,7 @@ export type Ref = CellRef | RangeRef;
 export interface ExcelCell {
     ref: Ref;
     contents: CellContents;
-    style?: Style & { columnWidth?: number; rowHeight?: number; };
+    style?: Style & { columnWidth?: number; rowHeight?: number };
 }
 
 export interface ExcelSheet {

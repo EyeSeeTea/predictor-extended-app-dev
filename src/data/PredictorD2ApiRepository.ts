@@ -120,7 +120,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             ).map(({ status, message }) => ({
                 id,
                 status: status ?? "ERROR",
-                message: message ?? "Generated 0 predictions",
+                message: message ?? "Unknown error",
             }))
         );
     }
