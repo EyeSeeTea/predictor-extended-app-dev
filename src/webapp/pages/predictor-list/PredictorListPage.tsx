@@ -10,7 +10,7 @@ import {
     useObjectsTable,
     useSnackbar,
 } from "@eyeseetea/d2-ui-components";
-import { ArrowDownward, ArrowUpward, Delete, Edit, GridOn, QueuePlayNext, Schedule } from "@material-ui/icons";
+import { ArrowDownward, ArrowUpward, Delete, Edit, GridOn, QueuePlayNext, Tune } from "@material-ui/icons";
 import _ from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileRejection } from "react-dropzone";
@@ -241,10 +241,10 @@ export const PredictorListPage: React.FC = () => {
                 },
                 process.env.NODE_ENV === "development" && currentUser.isAdmin
                     ? {
-                          name: "scheduling",
-                          text: i18n.t("Scheduling options"),
+                          name: "settings",
+                          text: i18n.t("Settings"),
                           onClick: goToSettings,
-                          icon: <Schedule />,
+                          icon: <Tune />,
                       }
                     : undefined,
             ]),
