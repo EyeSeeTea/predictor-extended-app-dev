@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-08-11T07:50:51.125Z\n"
-"PO-Revision-Date: 2021-08-11T07:50:51.125Z\n"
+"POT-Creation-Date: 2021-08-17T06:11:30.901Z\n"
+"PO-Revision-Date: 2021-08-17T06:11:30.901Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -397,7 +397,7 @@ msgstr ""
 msgid "Download empty excel template"
 msgstr ""
 
-msgid "Scheduling options"
+msgid "Settings"
 msgstr ""
 
 msgid "Search by name"
@@ -413,7 +413,4 @@ msgid "Last updated date"
 msgstr ""
 
 msgid "Invalid output combo"
-msgstr ""
-
-msgid "Settings"
 msgstr ""
