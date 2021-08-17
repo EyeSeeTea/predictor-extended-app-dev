@@ -2,9 +2,7 @@ import { D2Api } from "../../../types/d2-api";
 import { MigrationTasks } from "../client/types";
 
 export function getMigrationTasks(): MigrationTasks<MigrationParams> {
-    return [
-        [1, import("./01.scheduling-reset")]
-    ];
+    return [[1, import("./01.scheduling-reset")]];
 }
 
 export interface MigrationParams {
