@@ -9,6 +9,7 @@ import {
     ExpressionValidation,
     ListPredictorsFilters,
     PredictorRepository,
+    RunPredictorsResponse,
 } from "../domain/repositories/PredictorRepository";
 import { Namespaces, StorageRepository } from "../domain/repositories/StorageRepository";
 import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
@@ -109,15 +110,18 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         });
     }
 
-    // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}
-    public run(ids: string[], startDate: Date, endDate: Date): FutureData<any> {
+    public run(ids: string[], startDate: Date, endDate: Date): FutureData<RunPredictorsResponse[]> {
         return Future.futureMap(ids, id =>
             toFuture(
-                this.api.post(`/predictors/${id}/run`, {
+                this.api.post<{ status?: "OK" | "ERROR"; message?: string }>(`/predictors/${id}/run`, {
                     startDate: formatDate(startDate),
                     endDate: formatDate(endDate),
                 })
-            )
+            ).map(({ status, message }) => ({
+                id,
+                status: status ?? "ERROR",
+                message: message ?? "Generated 0 predictions",
+            }))
         );
     }
 

@@ -18,7 +18,7 @@ export interface PredictorRepository {
 
     getOutputDataElements(): FutureData<NamedRef[]>;
 
-    run(ids: string[], startDate: Date, endDate: Date): FutureData<any>;
+    run(ids: string[], startDate: Date, endDate: Date): FutureData<RunPredictorsResponse[]>;
 
     save(predictors: Predictor[]): FutureData<MetadataResponse[]>;
 
@@ -40,4 +40,10 @@ export interface ListPredictorsFilters {
     predictorGroups?: string[];
     dataElements?: string[];
     lastUpdated?: string;
+}
+
+export interface RunPredictorsResponse {
+    id: string;
+    status: "OK" | "ERROR";
+    message: string;
 }
