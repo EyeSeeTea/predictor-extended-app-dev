@@ -62,6 +62,15 @@ export class ExportPredictorsUseCase implements UseCase {
                     address: { row: 0, column: index },
                 },
                 contents: { type: "formula" as const, value: field },
+                style: {
+                    bold: true,
+                    columnWidth: 20,
+                    rowHeight: 40,
+                    wrapText: true,
+                    horizontalAlignment: "center",
+                    verticalAlignment: "center",
+                    fill: { type: "solid", color: { rgb: "ffee58" } },
+                },
             })),
             ..._.flatMap(predictors, (predictor: PredictorDetails, row: number) =>
                 exportFields.map((key: PredictorFormField, column: number) => ({
