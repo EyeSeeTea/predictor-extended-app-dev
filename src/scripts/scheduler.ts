@@ -5,7 +5,7 @@ import { configure, getLogger } from "log4js";
 import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
 import { Future, FutureData } from "../domain/entities/Future";
 import { PredictorDetails } from "../domain/entities/Predictor";
-import { Settings } from "../domain/entities/Settings";
+import { RunPredictorsResponse } from "../domain/repositories/PredictorRepository";
 import { ConfigModel, SchedulerConfig } from "./entities/SchedulerConfig";
 
 const development = process.env.NODE_ENV === "development";
@@ -18,39 +18,64 @@ configure({
     categories: { default: { appenders: ["file", "out"], level: development ? "all" : "debug" } },
 });
 
-function runPredictors(settings: Settings, predictors: PredictorDetails[]) {
+function runPredictors(
+    compositionRoot: CompositionRoot,
+    instance: string,
+    predictors: PredictorDetails[]
+): FutureData<RunPredictorsResponse[]> {
     const orderedPredictors = _.sortBy(predictors, ["scheduling.sequence", "scheduling.variable", "id"]);
-    getLogger("main").info(settings, orderedPredictors);
+
+    return Future.futureMap(
+        orderedPredictors,
+        ({ id }) =>
+            compositionRoot.predictors.run([id]).map(results => {
+                results.forEach(({ id, status, message }) =>
+                    getLogger(instance).info(`Executed ${id} ${status}: ${message}`)
+                );
+                return results;
+            }),
+        { maxConcurrency: 1 }
+    ).map(results => _.flatten(results));
 }
 
 const checkMigrations = (compositionRoot: CompositionRoot): FutureData<boolean> => {
-    return Future.fromPromise(compositionRoot.migrations.hasPending()).mapError(() => {
-        return "There are pending migrations, unable to continue";
-    });
+    return Future.fromPromise(compositionRoot.migrations.hasPending())
+        .mapError(() => {
+            return "Unable to connect with remote instance";
+        })
+        .flatMap(pendingMigrations => {
+            if (pendingMigrations) {
+                return Future.error<string, boolean>("There are pending migrations, unableto continue");
+            }
+
+            return Future.success(pendingMigrations);
+        });
 };
 
 function parseConfig(config: SchedulerConfig) {
-    Future.futureMap(
+    return Future.futureMap(
         config.instances,
         instance => {
             const compositionRoot = getCompositionRoot(instance);
+            const { name, url } = instance;
+            getLogger(name).info(`Loaded instance at ${url}`);
 
             return checkMigrations(compositionRoot)
                 .flatMap(() =>
                     Future.joinObj({
                         predictors: compositionRoot.predictors.list(undefined, { paging: false }),
-                        settings: compositionRoot.settings.get(),
+                        settings: compositionRoot.settings.get(), // TODO
                     })
                 )
-                .map(({ settings, predictors: { objects } }) => runPredictors(settings, objects))
-                .mapError(error => `[${instance.url}] ${error}`);
+                .flatMap(({ predictors: { objects } }) => runPredictors(compositionRoot, name, objects))
+                .mapError(error => `[${name}] ${error}`);
         },
         {
-            catchErrors: error => getLogger("main").error(error),
+            catchErrors: error => {
+                getLogger("main").error(error);
+                return [];
+            },
         }
-    ).run(
-        result => getLogger("main").info({ result }),
-        error => getLogger("main").error(error)
     );
 }
 
@@ -69,7 +94,10 @@ async function main() {
         const text = fs.readFileSync(args.config, "utf8");
         const contents = JSON.parse(text);
         const config = ConfigModel.unsafeDecode(contents);
-        parseConfig(config);
+        parseConfig(config).run(
+            () => process.exit(0),
+            error => getLogger("main").error(error)
+        );
     } catch (err) {
         getLogger("main").fatal(err);
         process.exit(1);
