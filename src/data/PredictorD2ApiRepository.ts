@@ -91,6 +91,12 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         });
     }
 
+    public getAllIds(): FutureData<string[]> {
+        return toFuture(this.api.models.predictors.get({ paging: false, fields: { id: true } })).map(({ objects }) =>
+            objects.map(({ id }) => id)
+        );
+    }
+
     public getGroups(): FutureData<NamedRef[]> {
         return toFuture(
             this.api.models.predictorGroups.get({ paging: false, fields: { id: true, displayName: true } })

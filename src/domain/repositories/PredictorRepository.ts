@@ -16,6 +16,8 @@ export interface PredictorRepository {
 
     getGroups(): FutureData<NamedRef[]>;
 
+    getAllIds(): FutureData<string[]>;
+
     getOutputDataElements(): FutureData<NamedRef[]>;
 
     run(ids: string[], startDate: Date, endDate: Date): FutureData<RunPredictorsResponse[]>;

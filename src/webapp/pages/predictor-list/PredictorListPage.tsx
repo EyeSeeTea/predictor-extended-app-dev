@@ -57,6 +57,10 @@ export const PredictorListPage: React.FC = () => {
             .map(dataElements => dataElements.map(({ id, name }) => ({ value: id, text: name })));
     }, []);
 
+    const { data: allIds = [] } = useFuture(() => {
+        return compositionRoot.predictors.getAllIds();
+    }, []);
+
     useEffect(() => {
         compositionRoot.expressions.getSuggestions().run(
             variables => setVariables(variables),
@@ -348,6 +352,7 @@ export const PredictorListPage: React.FC = () => {
                     {...tableProps}
                     onChangeSearch={search => onChangeFilter({ search })}
                     initialSearch={state.search ?? ""}
+                    ids={allIds}
                 >
                     <React.Fragment>
                         {state.predictorGroups && state.predictorGroups.length > 0 && (

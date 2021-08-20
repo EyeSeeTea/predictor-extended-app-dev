@@ -11,6 +11,7 @@ import { UserD2ApiRepository } from "./data/UserD2ApiRepository";
 import { Instance } from "./domain/entities/Instance";
 import { DeletePredictorsUseCase } from "./domain/usecases/DeletePredictorsUseCase";
 import { ExportPredictorsUseCase } from "./domain/usecases/ExportPredictorsUseCase";
+import { GetAllPredictorIdsUseCase } from "./domain/usecases/GetAllPredictorIdsUseCase";
 import { GetCurrentUserUseCase } from "./domain/usecases/GetCurrentUserUseCase";
 import { GetExpressionSuggestionsUseCase } from "./domain/usecases/GetExpressionSuggestionsUseCase";
 import { GetMigrationVersionsUseCase } from "./domain/usecases/GetMigrationVersionsUseCase";
@@ -47,6 +48,7 @@ export function getCompositionRoot(instance: Instance) {
             list: new ListPredictorsUseCase(predictorRepository),
             getGroups: new GetPredictorGroupsUseCase(predictorRepository),
             getDataElements: new GetOutputDataElementsUseCase(predictorRepository),
+            getAllIds: new GetAllPredictorIdsUseCase(predictorRepository),
             run: new RunPredictorsUseCase(predictorRepository),
             delete: new DeletePredictorsUseCase(predictorRepository),
             save: new SavePredictorsUseCase(predictorRepository),
