@@ -1,6 +1,6 @@
-import Editor, { useMonaco } from "@monaco-editor/react";
+import Editor, { Monaco } from "@monaco-editor/react";
 import _ from "lodash";
-import React, { useEffect } from "react";
+import React, { useCallback } from "react";
 import { FormulaVariable } from "../../../domain/entities/FormulaVariable";
 import i18n from "../../../locales";
 import { buildPredictorsCompletionProvider } from "./completion/predictors";
@@ -15,44 +15,47 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
     value,
     includeNameAndCodeSuggestions,
 }) => {
-    const monaco = useMonaco();
+    const handleEditorDidMount = useCallback(
+        (monaco: Monaco) => {
+            monaco.languages.register({ id: "dhis" });
+            monaco.languages.setLanguageConfiguration("dhis", PredictorsLanguageConfiguration);
+            monaco.languages.registerCompletionItemProvider(
+                "dhis",
+                buildPredictorsCompletionProvider({ variables, onValidate, includeNameAndCodeSuggestions })
+            );
+            monaco.languages.registerHoverProvider("dhis", {
+                provideHover: function (model, position) {
+                    const reference = model.getWordAtPosition(position);
+                    const variable = variables?.find(variable => variable.id === reference?.word);
 
-    useEffect(() => {
-        if (!monaco) return;
+                    if (variable) {
+                        const descriptions = variable.properties
+                            ?.map(({ label, value }) => `**${label}:** ${value}`)
+                            .join("\n\n");
 
-        monaco.languages.register({ id: "dhis" });
-        monaco.languages.setLanguageConfiguration("dhis", PredictorsLanguageConfiguration);
-        monaco.languages.registerCompletionItemProvider(
-            "dhis",
-            buildPredictorsCompletionProvider({ variables, onValidate, includeNameAndCodeSuggestions })
-        );
-        monaco.languages.registerHoverProvider("dhis", {
-            provideHover: function (model, position) {
-                const reference = model.getWordAtPosition(position);
-                const variable = variables?.find(variable => variable.id === reference?.word);
-
-                if (variable) {
-                    const descriptions = variable.properties
-                        ?.map(({ label, value }) => `**${label}:** ${value}`)
-                        .join("\n\n");
-
-                    return {
-                        range: new monaco.Range(
-                            model.getLineCount(),
-                            reference?.startColumn ?? 0,
-                            model.getLineCount(),
-                            reference?.endColumn ?? 0
-                        ),
-                        contents: _.compact([
-                            { value: _.compact([`**${_.trim(variable.label)}**`, variable.description]).join("\n\n") },
-                            { value: `*${formatType(variable.type)}*` },
-                            descriptions ? { value: descriptions } : undefined,
-                        ]),
-                    };
-                }
-            },
-        });
-    }, [monaco, variables, onValidate, includeNameAndCodeSuggestions]);
+                        return {
+                            range: new monaco.Range(
+                                model.getLineCount(),
+                                reference?.startColumn ?? 0,
+                                model.getLineCount(),
+                                reference?.endColumn ?? 0
+                            ),
+                            contents: _.compact([
+                                {
+                                    value: _.compact([`**${_.trim(variable.label)}**`, variable.description]).join(
+                                        "\n\n"
+                                    ),
+                                },
+                                { value: `*${formatType(variable.type)}*` },
+                                descriptions ? { value: descriptions } : undefined,
+                            ]),
+                        };
+                    }
+                },
+            });
+        },
+        [includeNameAndCodeSuggestions, onValidate, variables]
+    );
 
     return (
         <Editor
@@ -61,6 +64,7 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
             defaultLanguage="dhis"
             onChange={onChange}
             value={value}
+            beforeMount={handleEditorDidMount}
             options={{
                 minimap: { enabled: false },
                 lineNumbers: "off",
