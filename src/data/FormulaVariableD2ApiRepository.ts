@@ -46,11 +46,7 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
             })
         ).map(({ dataElements = [], constants = [], organisationUnitGroups = [], predictors = [] }) => {
             const dataElementVariables = dataElements.map(({ id, name, description, categoryCombo, ...rest }) => ({
-                id,
-                label: name,
-                filterText: name,
-                insertText: id,
-                description,
+                ...buildVariable(id, name, description, rest),
                 type: "dataElements",
                 options: categoryCombo.categoryOptionCombos.map(({ id, name, description }) => ({
                     id,
@@ -60,48 +56,31 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
                     description,
                     type: "categoryOptionCombos",
                 })),
-                properties: _(rest)
-                    .mapValues((value, key) => ({
-                        property: key,
-                        label: buildLabel(key),
-                        value: buildValue(value),
-                    }))
-                    .values()
-                    .value(),
             }));
 
+            const dataElementByCodeVariables = dataElements.filter(({ code }) => code !== undefined).map(
+                ({ id, code, description, categoryCombo, ...rest }) => ({
+                    ...buildVariable(id, code, description, rest),
+                    type: "dataElements",
+                    options: categoryCombo.categoryOptionCombos.map(({ id, name, description }) => ({
+                        id,
+                        label: name,
+                        filterText: name,
+                        insertText: id,
+                        description,
+                        type: "categoryOptionCombos",
+                    })),
+                })
+            );
+
             const constantVariables = constants.map(({ id, name, description, ...rest }) => ({
-                id,
-                label: name,
-                filterText: name,
-                insertText: id,
-                description,
+                ...buildVariable(id, name, description, rest),
                 type: "constants",
-                properties: _(rest)
-                    .mapValues((value, key) => ({
-                        property: key,
-                        label: buildLabel(key),
-                        value: buildValue(value),
-                    }))
-                    .values()
-                    .value(),
             }));
 
             const orgUnitGroupVariables = organisationUnitGroups.map(({ id, name, description, ...rest }) => ({
-                id,
-                label: name,
-                filterText: name,
-                insertText: id,
-                description,
+                ...buildVariable(id, name, description, rest),
                 type: "organisationUnitGroups",
-                properties: _(rest)
-                    .mapValues((value, key) => ({
-                        property: key,
-                        label: buildLabel(key),
-                        value: buildValue(value),
-                    }))
-                    .values()
-                    .value(),
             }));
 
             const predictorVariables = predictors.map(({ id, name, description, output, outputCombo }) => ({
@@ -115,6 +94,7 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
 
             return [
                 ...dataElementVariables,
+                ...dataElementByCodeVariables,
                 ..._.flatMap(dataElementVariables, "options"),
                 ...constantVariables,
                 ...orgUnitGroupVariables,
@@ -155,4 +135,22 @@ function buildValue(value: unknown): string {
     if (_.has(value, "id")) return (value as any).id;
     if (typeof value === "string") return value;
     return "";
+}
+
+function buildVariable(id: string, label: string, description: string, rest: Record<string, any>) {
+    return {
+        id,
+        label,
+        filterText: label,
+        insertText: id,
+        description,
+        properties: _(rest)
+            .mapValues((value, key) => ({
+                property: key,
+                label: buildLabel(key),
+                value: buildValue(value),
+            }))
+            .values()
+            .value(),
+    };
 }
