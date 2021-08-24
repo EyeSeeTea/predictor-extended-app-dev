@@ -117,18 +117,26 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public run(ids: string[], startDate: Date, endDate: Date): FutureData<RunPredictorsResponse[]> {
-        return Future.futureMap(ids, id =>
-            toFuture(
-                this.api.post<{ status?: "OK" | "ERROR"; message?: string }>(`/predictors/${id}/run`, {
-                    startDate: formatDate(startDate),
-                    endDate: formatDate(endDate),
-                })
-            ).map(({ status, message }) => ({
-                id,
-                status: status ?? "ERROR",
-                message: message ?? "Unknown error",
-            }))
-        );
+        return this.get(ids).flatMap(predictors => {
+            const orderedPredictors = _.sortBy(predictors, ["scheduling.sequence", "scheduling.variable", "id"]);
+
+            return Future.futureMap(
+                orderedPredictors,
+                ({ id, name }) =>
+                    toFuture(
+                        this.api.post<{ status?: "OK" | "ERROR"; message?: string }>(`/predictors/${id}/run`, {
+                            startDate: formatDate(startDate),
+                            endDate: formatDate(endDate),
+                        })
+                    ).map(({ status, message }) => ({
+                        id,
+                        name,
+                        status: status ?? "ERROR",
+                        message: message ?? "Unknown error",
+                    })),
+                { maxConcurrency: 1 }
+            );
+        });
     }
 
     public save(inputPredictors: Predictor[]): FutureData<MetadataResponse[]> {

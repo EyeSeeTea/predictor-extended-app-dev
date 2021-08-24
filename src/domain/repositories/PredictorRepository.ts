@@ -46,6 +46,7 @@ export interface ListPredictorsFilters {
 
 export interface RunPredictorsResponse {
     id: string;
+    name: string;
     status: "OK" | "ERROR";
     message: string;
 }

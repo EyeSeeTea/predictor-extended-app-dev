@@ -23,19 +23,12 @@ function runPredictors(
     instance: string,
     predictors: PredictorDetails[]
 ): FutureData<RunPredictorsResponse[]> {
-    const orderedPredictors = _.sortBy(predictors, ["scheduling.sequence", "scheduling.variable", "id"]);
+    const ids = predictors.map(({ id }) => id);
 
-    return Future.futureMap(
-        orderedPredictors,
-        ({ id }) =>
-            compositionRoot.predictors.run([id]).map(results => {
-                results.forEach(({ id, status, message }) =>
-                    getLogger(instance).info(`Executed ${id} ${status}: ${message}`)
-                );
-                return results;
-            }),
-        { maxConcurrency: 1 }
-    ).map(results => _.flatten(results));
+    return compositionRoot.predictors.run(ids).map(results => {
+        results.forEach(({ id, status, message }) => getLogger(instance).info(`Executed ${id} ${status}: ${message}`));
+        return results;
+    });
 }
 
 const checkMigrations = (compositionRoot: CompositionRoot): FutureData<boolean> => {

@@ -76,7 +76,9 @@ export const PredictorListPage: React.FC = () => {
         async (ids: string[]) => {
             loading.show(true, i18n.t("Running predictors"));
             const results = await compositionRoot.predictors.run(ids).toPromise();
-            snackbar.info(results.map((response: any) => response?.message).join("\n"));
+            const message = results.map(({ name, message }) => `${name}: ${message}`).join("\n");
+
+            snackbar.info(message);
             loading.reset();
         },
         [compositionRoot, loading, snackbar]
@@ -218,7 +220,7 @@ export const PredictorListPage: React.FC = () => {
                 {
                     name: "execute",
                     text: i18n.t("Run"),
-                    multiple: false,
+                    multiple: true,
                     onClick: runPredictors,
                     icon: <QueuePlayNext />,
                 },
