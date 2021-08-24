@@ -7,17 +7,9 @@ import ReactDOM from "react-dom";
 import { D2Api } from "./types/d2-api";
 import App from "./webapp/components/app/App";
 
-const ENABLE_PROXY = false;
-
 async function getBaseUrl() {
     if (process.env.NODE_ENV === "development") {
-        if (ENABLE_PROXY) {
-            return "/dhis2"; // See src/setupProxy.js
-        } else {
-            const baseUrl = process.env.REACT_APP_DHIS2_BASE_URL || "http://localhost:8080";
-            console.debug(`[DEV] DHIS2 instance: ${baseUrl}`);
-            return baseUrl.replace(/\/*$/, "");
-        }
+        return "/dhis2"; // See src/setupProxy.js
     } else {
         const { data: manifest } = await axios.get("manifest.webapp");
         return manifest.activities.dhis.href;
