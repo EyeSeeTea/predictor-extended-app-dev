@@ -1,8 +1,10 @@
 import Editor, { Monaco } from "@monaco-editor/react";
 import _ from "lodash";
+import { editor } from "monaco-editor";
 import React, { useCallback } from "react";
 import { FormulaVariable } from "../../../domain/entities/FormulaVariable";
 import i18n from "../../../locales";
+import { interpolate } from "../../../utils/uid-replacement";
 import { buildPredictorsCompletionProvider } from "./completion/predictors";
 import { PredictorsLanguageConfiguration } from "./language/predictors";
 import { ValidationMarker } from "./types";
@@ -57,6 +59,24 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
         [includeNameAndCodeSuggestions, onValidate, variables]
     );
 
+    const handleEditorOnMount = useCallback(
+        (editor: editor.IStandaloneCodeEditor) => {
+            editor.addAction({
+                id: "format-expression",
+                label: i18n.t("Format DHIS2 Expression"),
+                contextMenuGroupId: "1_modification",
+                run: (editor: editor.IStandaloneCodeEditor) => {
+                    const text = editor.getValue();
+                    const dictionary = _.fromPairs(
+                        variables?.map(({ filterText, insertText }) => [filterText, insertText])
+                    );
+                    editor.setValue(interpolate(text, dictionary));
+                },
+            });
+        },
+        [variables]
+    );
+
     return (
         <Editor
             className={className}
@@ -65,6 +85,7 @@ export const ExpressionEditor: React.FC<ExpressionEditorProps> = ({
             onChange={onChange}
             value={value}
             beforeMount={handleEditorDidMount}
+            onMount={handleEditorOnMount}
             options={{
                 minimap: { enabled: false },
                 lineNumbers: "off",

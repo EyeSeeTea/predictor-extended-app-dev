@@ -58,8 +58,9 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
                 })),
             }));
 
-            const dataElementByCodeVariables = dataElements.filter(({ code }) => code !== undefined).map(
-                ({ id, code, description, categoryCombo, ...rest }) => ({
+            const dataElementByCodeVariables = dataElements
+                .filter(({ code }) => code !== undefined)
+                .map(({ id, code, description, categoryCombo, ...rest }) => ({
                     ...buildVariable(id, code, description, rest),
                     type: "dataElements",
                     options: categoryCombo.categoryOptionCombos.map(({ id, name, description }) => ({
@@ -70,8 +71,7 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
                         description,
                         type: "categoryOptionCombos",
                     })),
-                })
-            );
+                }));
 
             const constantVariables = constants.map(({ id, name, description, ...rest }) => ({
                 ...buildVariable(id, name, description, rest),
