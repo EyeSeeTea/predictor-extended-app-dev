@@ -23,9 +23,9 @@
         "@material-ui/styles": "4.11.4",
         "@monaco-editor/react": "4.2.2",
         "antlr4ts": "0.5.0-alpha.4",
-        "argparse": "2.0.1",
         "axios": "0.21.1",
         "classnames": "2.3.1",
+        "cmd-ts": "0.7.0",
         "d2": "31.10.0",
         "d2-manifest": "1.0.0",
         "date-fns": "2.23.0",
@@ -75,7 +75,7 @@
         "antlr4ts": "antlr4ts -visitor src/data/expression-parser/Expression.g4",
         "prepare": "husky install",
         "build-scheduler": "ncc build src/scripts/scheduler.ts -m",
-        "start-scheduler": "ts-node -P tsconfig-cli.json src/scripts/scheduler.ts"
+        "start-scheduler": "ts-node src/scripts/scheduler.ts"
     },
     "husky": {
         "hooks": {
@@ -88,7 +88,6 @@
         "@babel/preset-typescript": "7.15.0",
         "@testing-library/jest-dom": "5.14.1",
         "@testing-library/react": "12.0.0",
-        "@types/argparse": "2.0.10",
         "@types/axios-mock-adapter": "1.10.0",
         "@types/classnames": "2.3.1",
         "@types/file-saver": "2.0.3",
@@ -122,6 +121,7 @@
         "eslint-plugin-prettier": "3.4.0",
         "eslint-plugin-react": "7.24.0",
         "eslint-plugin-react-hooks": "4.2.0",
+        "http-proxy-middleware": "2.0.1",
         "husky": "7.0.1",
         "jest": "27.0.6",
         "ncc": "0.3.6",

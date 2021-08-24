@@ -7,11 +7,17 @@ import ReactDOM from "react-dom";
 import { D2Api } from "./types/d2-api";
 import App from "./webapp/components/app/App";
 
+const ENABLE_PROXY = false;
+
 async function getBaseUrl() {
     if (process.env.NODE_ENV === "development") {
-        const baseUrl = process.env.REACT_APP_DHIS2_BASE_URL || "http://localhost:8080";
-        console.debug(`[DEV] DHIS2 instance: ${baseUrl}`);
-        return baseUrl.replace(/\/*$/, "");
+        if (ENABLE_PROXY) {
+            return "/dhis2"; // See src/setupProxy.js
+        } else {
+            const baseUrl = process.env.REACT_APP_DHIS2_BASE_URL || "http://localhost:8080";
+            console.debug(`[DEV] DHIS2 instance: ${baseUrl}`);
+            return baseUrl.replace(/\/*$/, "");
+        }
     } else {
         const { data: manifest } = await axios.get("manifest.webapp");
         return manifest.activities.dhis.href;
@@ -35,7 +41,7 @@ async function main() {
     try {
         const d2 = await init({ baseUrl: baseUrl + "/api", schemas: [] });
         const api = new D2Api({ baseUrl, backend: "fetch" });
-        Object.assign(window, { d2, api });
+        Object.assign(window, { app: { d2, api } });
 
         const userSettings = await api.get<{ keyUiLocale: string }>("/userSettings").getData();
         configI18n(userSettings);
@@ -48,7 +54,7 @@ async function main() {
         );
     } catch (err: any) {
         console.error(err);
-        const message = err.toString().match("Unable to get schemas") ? (
+        const feedback = err.toString().match("Unable to get schemas") ? (
             <h3 style={{ margin: 20 }}>
                 <a rel="noopener noreferrer" target="_blank" href={baseUrl}>
                     Login
@@ -56,9 +62,9 @@ async function main() {
                 {` ${baseUrl}`}
             </h3>
         ) : (
-            err.toString()
+            <h3>{err.toString()}</h3>
         );
-        ReactDOM.render(<div>{message}</div>, document.getElementById("root"));
+        ReactDOM.render(<div>{feedback}</div>, document.getElementById("root"));
     }
 }
 

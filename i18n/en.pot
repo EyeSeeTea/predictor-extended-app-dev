@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-08-17T06:11:30.901Z\n"
-"PO-Revision-Date: 2021-08-17T06:11:30.901Z\n"
+"POT-Creation-Date: 2021-08-24T07:07:32.589Z\n"
+"PO-Revision-Date: 2021-08-24T07:07:32.589Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -54,6 +54,9 @@ msgid "Constants"
 msgstr ""
 
 msgid "Reporting rates"
+msgstr ""
+
+msgid "Format DHIS2 Expression"
 msgstr ""
 
 msgid "Data Element"

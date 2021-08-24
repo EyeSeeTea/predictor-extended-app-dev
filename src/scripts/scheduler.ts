@@ -1,7 +1,7 @@
-import { ArgumentParser } from "argparse";
+import { command, option, run, string } from "cmd-ts";
 import fs from "fs";
-import _ from "lodash";
 import { configure, getLogger } from "log4js";
+import path from "path";
 import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
 import { Future, FutureData } from "../domain/entities/Future";
 import { PredictorDetails } from "../domain/entities/Predictor";
@@ -73,28 +73,34 @@ function parseConfig(config: SchedulerConfig) {
 }
 
 async function main() {
-    const parser = new ArgumentParser({
+    const cmd = command({
+        name: path.basename(__filename),
         description: "Scheduler to execute predictors on multiple DHIS2 instances",
+        args: {
+            config: option({
+                type: string,
+                long: "config",
+                short: "c",
+                description: "Configuration file",
+            }),
+        },
+        handler: async args => {
+            try {
+                const text = fs.readFileSync(args.config, "utf8");
+                const contents = JSON.parse(text);
+                const config = ConfigModel.unsafeDecode(contents);
+                parseConfig(config).run(
+                    () => process.exit(0),
+                    error => getLogger("main").error(error)
+                );
+            } catch (err) {
+                getLogger("main").fatal(err);
+                process.exit(1);
+            }
+        },
     });
 
-    parser.add_argument("-c", "--config", {
-        required: true,
-        help: "Configuration file",
-    });
-
-    try {
-        const args = parser.parse_args();
-        const text = fs.readFileSync(args.config, "utf8");
-        const contents = JSON.parse(text);
-        const config = ConfigModel.unsafeDecode(contents);
-        parseConfig(config).run(
-            () => process.exit(0),
-            error => getLogger("main").error(error)
-        );
-    } catch (err) {
-        getLogger("main").fatal(err);
-        process.exit(1);
-    }
+    run(cmd, process.argv.slice(2));
 }
 
 main();
