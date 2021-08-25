@@ -17,13 +17,13 @@ export class MetadataD2ApiRepository implements MetadataRepository {
 
     public list(
         type: MetadataType,
-        options: { pageSize?: number; page?: number; filter?: object },
+        options: { pageSize?: number; page?: number; filter?: string },
         fieldOptions: {}
     ): FutureData<{ pager: Pager; objects: Metadata[] }> {
         return toFuture(
             //@ts-ignore
             this.api.models[type].get({
-                filter: options.filter,
+                filter: options.filter ? { identifiable: { token: options.filter } } : undefined,
                 fields: { ...fieldOptions, id: true, name: true, code: true },
                 pageSize: options.pageSize ?? 25,
                 page: options.page ?? 1,
@@ -34,7 +34,7 @@ export class MetadataD2ApiRepository implements MetadataRepository {
     public listAll(
         types: MetadataType[],
         fields = { id: true, name: true, code: true },
-        filter?: object
+        filter?: string
     ): FutureData<MetadataPackage> {
         const params = _.zipObject(
             types,
