@@ -12,9 +12,9 @@ export class SchedulerD2ApiRepository implements SchedulerRepository {
         return this.storageRepository.saveObject<SchedulerExecution>(Namespaces.SCHEDULER_EXECUTIONS, data);
     }
 
-    public getLastExecution(): FutureData<SchedulerExecution | undefined> {
+    public getLastExecution(): FutureData<SchedulerExecution> {
         return this.storageRepository
-            .getObjectIfExists<SchedulerExecution>(Namespaces.SCHEDULER_EXECUTIONS)
+            .getObject<SchedulerExecution>(Namespaces.SCHEDULER_EXECUTIONS, {})
             .flatMap(data => Future.fromPurifyEither(SchedulerExecutionModel.decode(data)));
     }
 }

@@ -3,5 +3,5 @@ import { SchedulerExecution } from "../entities/SchedulerExecution";
 
 export interface SchedulerRepository {
     updateLastExecution(execution: SchedulerExecution): FutureData<void>;
-    getLastExecution(): FutureData<SchedulerExecution | undefined>;
+    getLastExecution(): FutureData<SchedulerExecution>;
 }

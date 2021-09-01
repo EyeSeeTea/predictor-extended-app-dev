@@ -4,9 +4,9 @@ import { SchedulerExecution } from "../entities/SchedulerExecution";
 import { SchedulerRepository } from "../repositories/SchedulerRepository";
 
 export class UpdateLastSchedulerExecutionUseCase implements UseCase {
-    constructor(private userRepository: SchedulerRepository) {}
+    constructor(private schedulerRepository: SchedulerRepository) {}
 
     public execute(execution: SchedulerExecution): FutureData<void> {
-        return this.userRepository.updateLastExecution(execution);
+        return this.schedulerRepository.updateLastExecution(execution);
     }
 }

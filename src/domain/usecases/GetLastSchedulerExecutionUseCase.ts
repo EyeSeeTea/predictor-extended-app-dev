@@ -4,9 +4,9 @@ import { SchedulerExecution } from "../entities/SchedulerExecution";
 import { SchedulerRepository } from "../repositories/SchedulerRepository";
 
 export class GetLastSchedulerExecutionUseCase implements UseCase {
-    constructor(private userRepository: SchedulerRepository) {}
+    constructor(private schedulerRepository: SchedulerRepository) {}
 
-    public execute(): FutureData<SchedulerExecution | undefined> {
-        return this.userRepository.getLastExecution();
+    public execute(): FutureData<SchedulerExecution> {
+        return this.schedulerRepository.getLastExecution();
     }
 }

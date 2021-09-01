@@ -64,8 +64,9 @@ export default class Scheduler {
             const nextExecution = job.nextInvocation();
             const nextDate = moment(nextExecution.toISOString()).toISOString(true);
             getLogger("scheduler").info(`Scheduling job at ${nextDate} (${frequency})`);
-            
-            await this.compositionRoot.scheduler.updateLastExecution({ nextExecution }).toPromise();
+
+            const lastExecution = await this.compositionRoot.scheduler.getLastExecution().toPromise();
+            await this.compositionRoot.scheduler.updateLastExecution({ ...lastExecution, nextExecution }).toPromise();
         } catch (error) {
             getLogger("scheduler").error(error);
         }
