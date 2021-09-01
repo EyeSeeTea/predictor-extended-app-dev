@@ -19,7 +19,6 @@ export const SchedulerInfo: React.FC<SchedulerInfoProps> = React.memo(props => {
         useCallback(() => {
             return compositionRoot.scheduler.getLastExecution().run(
                 execution => {
-                    console.log({ execution });
                     const timestamp = execution?.lastExecuted.toISOString() || "";
                     if (onSchedulerRun) onSchedulerRun(timestamp);
                     return setMessages(formatSchedulerInfo(execution));
@@ -34,8 +33,6 @@ export const SchedulerInfo: React.FC<SchedulerInfoProps> = React.memo(props => {
         const intervalId = setInterval(() => getSchedulerInfo(), 60 * 1000);
         return () => clearInterval(intervalId);
     }, [getSchedulerInfo, setMessages]);
-
-    console.log(messages);
 
     return (
         <SchedulerContainer>
@@ -54,8 +51,6 @@ const SchedulerContainer = styled.div`
 const SchedulerInfoLine = styled.div``;
 
 function formatSchedulerInfo(info?: SchedulerExecution): string[] {
-    console.log({ info });
-
     return _.compact([
         info?.lastExecuted
             ? [`${i18n.t("Last")}:`, formatDateTime(info.lastExecuted), `(${info.duration} ${i18n.t("seconds")})`].join(
