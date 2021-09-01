@@ -7,6 +7,7 @@ export const SchedulingSettingsModel: Codec<SchedulingSettings> = Schema.oneOf([
     Schema.object({
         enabled: Schema.true,
         period: PeriodObjectModel,
+        frequency: Schema.string,
     }),
 ]);
 

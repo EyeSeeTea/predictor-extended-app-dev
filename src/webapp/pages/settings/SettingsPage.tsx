@@ -1,13 +1,15 @@
-import { Button, CenteredContent } from "@dhis2/ui";
+import { Button, CenteredContent, InputField } from "@dhis2/ui";
 import { useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "@eyeseetea/d2-ui-components/locales";
 import { Paper } from "@material-ui/core";
+import cronstrue from "cronstrue";
 import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { PeriodObject } from "../../../domain/entities/SchedulerPeriod";
 import { Settings } from "../../../domain/entities/Settings";
 import { UpdateMethod } from "../../../utils/utils";
+import isValidCronExpression from "../../../utils/validCronExpression";
 import { Dropdown, DropdownOption } from "../../components/dropdown/Dropdown";
 import { PageHeader } from "../../components/page-header/PageHeader";
 import { PeriodPicker } from "../../components/period-picker/PeriodPicker";
@@ -42,7 +44,11 @@ export const SettingsPage: React.FC = () => {
                 ...settings,
                 scheduling:
                     enabled === "yes"
-                        ? { ...settings.scheduling, enabled: true, period: { type: "THIS_MONTH" } }
+                        ? {
+                              ...settings.scheduling,
+                              ...defaultScheduling,
+                              enabled: true,
+                          }
                         : { ...settings.scheduling, enabled: false },
             };
         });
@@ -58,7 +64,15 @@ export const SettingsPage: React.FC = () => {
 
             const period = _.isFunction(update) ? update(oldPeriod) : update;
 
-            return { ...settings, scheduling: { ...settings.scheduling, enabled: true, period } };
+            return { ...settings, scheduling: { ...settings.scheduling, period } };
+        });
+    }, []);
+
+    const updateFrequency = useCallback(({ value }: { value?: string }) => {
+        setSettings(settings => {
+            if (!settings) return;
+
+            return { ...settings, scheduling: { ...settings.scheduling, frequency: value ?? "" } };
         });
     }, []);
 
@@ -83,6 +97,7 @@ export const SettingsPage: React.FC = () => {
                 <h3>{i18n.t("Scheduling")}</h3>
 
                 <Dropdown<Enabled>
+                    label={i18n.t("Enabled")}
                     items={enabledOptions}
                     value={settings.scheduling.enabled ? "yes" : "no"}
                     onChange={updateEnabled}
@@ -90,7 +105,24 @@ export const SettingsPage: React.FC = () => {
                 />
 
                 {settings.scheduling.enabled ? (
-                    <PeriodPicker period={settings.scheduling.period} onChange={updatePeriod} />
+                    <React.Fragment>
+                        <InputField
+                            label={i18n.t("Frequency (cron expression)")}
+                            value={settings.scheduling.frequency}
+                            onChange={updateFrequency}
+                            warning={!isValidCronExpression(settings.scheduling.frequency)}
+                            validationText={
+                                isValidCronExpression(settings.scheduling.frequency)
+                                    ? cronstrue.toString(settings.scheduling.frequency, {
+                                          throwExceptionOnParseError: false,
+                                          verbose: true,
+                                      })
+                                    : i18n.t("Invalid cron expression")
+                            }
+                        />
+
+                        <PeriodPicker period={settings.scheduling.period} onChange={updatePeriod} />
+                    </React.Fragment>
                 ) : null}
 
                 <CenteredContent>
@@ -110,6 +142,11 @@ const Wrapper = styled.div`
 const Container = styled(Paper)`
     margin: 10px;
     padding: 45px;
+
+    label {
+        margin: 20px 0;
+        font-weight: bold;
+    }
 `;
 
 const SaveButton = styled(Button)`
@@ -122,3 +159,5 @@ const enabledOptions: DropdownOption<Enabled>[] = [
     { id: "yes", name: i18n.t("Yes") },
     { id: "no", name: i18n.t("No") },
 ];
+
+const defaultScheduling = { period: { type: "THIS_MONTH" }, frequency: "0 0 0 ? * *" } as const;

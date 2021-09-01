@@ -45,7 +45,7 @@ const checkMigrations = (compositionRoot: CompositionRoot): FutureData<boolean> 
         })
         .flatMap(pendingMigrations => {
             if (pendingMigrations) {
-                return Future.error<string, boolean>("There are pending migrations, unableto continue");
+                return Future.error<string, boolean>("There are pending migrations, unable to continue");
             }
 
             return Future.success(pendingMigrations);

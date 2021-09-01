@@ -26,6 +26,7 @@
         "axios": "0.21.1",
         "classnames": "2.3.1",
         "cmd-ts": "0.7.0",
+        "cronstrue": "1.117.0",
         "d2": "31.10.0",
         "d2-manifest": "1.0.0",
         "date-fns": "2.23.0",

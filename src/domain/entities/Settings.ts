@@ -4,6 +4,7 @@ export type SchedulingSettings =
     | { enabled: false }
     | {
           enabled: true;
+          frequency: string;
           period: PeriodObject;
       };
 
