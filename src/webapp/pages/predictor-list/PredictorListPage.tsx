@@ -80,6 +80,7 @@ export const PredictorListPage: React.FC = () => {
             setRunPredictorDialogProps({
                 onClose: () => setRunPredictorDialogProps(null),
                 onExecute: async (period: PeriodObject) => {
+                    setRunPredictorDialogProps(null);
                     loading.show(true, i18n.t("Running predictors"));
                     const results = await compositionRoot.predictors.run(ids, period).toPromise();
                     const message = results.map(({ name, message }) => `${name}: ${message}`).join("\n");

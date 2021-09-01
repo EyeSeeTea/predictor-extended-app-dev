@@ -121,7 +121,11 @@ export const SettingsPage: React.FC = () => {
                             }
                         />
 
-                        <PeriodPicker period={settings.scheduling.period} onChange={updatePeriod} />
+                        <PeriodPicker
+                            title={i18n.t("Prediction period")}
+                            period={settings.scheduling.period}
+                            onChange={updatePeriod}
+                        />
                     </React.Fragment>
                 ) : null}
 
