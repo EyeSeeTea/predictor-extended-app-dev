@@ -1,6 +1,7 @@
 import { Button, CenteredContent } from "@dhis2/ui";
 import { useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "@eyeseetea/d2-ui-components/locales";
+import { Paper } from "@material-ui/core";
 import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
@@ -78,31 +79,37 @@ export const SettingsPage: React.FC = () => {
         <Wrapper>
             <PageHeader onBackClick={goBack} title={i18n.t("Settings")} />
 
-            <h3>{i18n.t("Scheduling")}</h3>
+            <Container>
+                <h3>{i18n.t("Scheduling")}</h3>
 
-            <Dropdown<Enabled>
-                items={enabledOptions}
-                value={settings.scheduling.enabled ? "yes" : "no"}
-                onChange={updateEnabled}
-                hideEmpty={true}
-            />
+                <Dropdown<Enabled>
+                    items={enabledOptions}
+                    value={settings.scheduling.enabled ? "yes" : "no"}
+                    onChange={updateEnabled}
+                    hideEmpty={true}
+                />
 
-            {settings.scheduling.enabled ? (
-                <PeriodPicker period={settings.scheduling.period} onChange={updatePeriod} />
-            ) : null}
+                {settings.scheduling.enabled ? (
+                    <PeriodPicker period={settings.scheduling.period} onChange={updatePeriod} />
+                ) : null}
 
-            <CenteredContent>
-                <SaveButton primary={true} onClick={saveSettings}>
-                    {i18n.t("Save")}
-                </SaveButton>
-            </CenteredContent>
+                <CenteredContent>
+                    <SaveButton primary={true} onClick={saveSettings}>
+                        {i18n.t("Save")}
+                    </SaveButton>
+                </CenteredContent>
+            </Container>
         </Wrapper>
     );
 };
 
 const Wrapper = styled.div`
-    margin: 20px;
-    min-height: 600px;
+    margin: 20px 30px;
+`;
+
+const Container = styled(Paper)`
+    margin: 10px;
+    padding: 45px;
 
     label {
         margin: 20px 0;

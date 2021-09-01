@@ -15,9 +15,10 @@ export interface PeriodPickerProps {
 }
 
 export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
-    const { period: objectWithPeriod, onChange, title = i18n.t("Period"), className } = props;
+    const { period, onChange, title = i18n.t("Period"), className } = props;
+    const { type, startDate, endDate } = period;
 
-    const { type, startDate, endDate } = objectWithPeriod;
+    const autoPeriod = useMemo(() => buildPeriodDate({ type }), [type]);
 
     const periodItems = useMemo(
         () =>
@@ -45,17 +46,17 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
     const updateStartDate = useCallback(
         ({ value }: { value?: string }) => {
             const startDate = value ? new Date(value) : new Date();
-            onChange({ ...objectWithPeriod, startDate });
+            onChange({ ...period, startDate });
         },
-        [objectWithPeriod, onChange]
+        [period, onChange]
     );
 
     const updateEndDate = useCallback(
         ({ value }: { value?: string }) => {
             const endDate = moment(value).toDate();
-            onChange({ ...objectWithPeriod, endDate });
+            onChange({ ...period, endDate });
         },
-        [objectWithPeriod, onChange]
+        [period, onChange]
     );
 
     return (
@@ -68,22 +69,21 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
                 hideEmpty={true}
             />
 
-            {type === "FIXED" && (
-                <React.Fragment>
-                    <InputField
-                        type="date"
-                        label={`${i18n.t("Start date")}`}
-                        value={startDate ? formatDate(startDate) : ""}
-                        onChange={updateStartDate}
-                    />
-                    <InputField
-                        type="date"
-                        label={`${i18n.t("End date")}`}
-                        value={endDate ? formatDate(endDate) : ""}
-                        onChange={updateEndDate}
-                    />
-                </React.Fragment>
-            )}
+            <InputField
+                type="date"
+                label={`${i18n.t("Start date")}`}
+                value={formatDate(startDate ?? autoPeriod.startDate)}
+                onChange={updateStartDate}
+                disabled={type !== "FIXED"}
+            />
+
+            <InputField
+                type="date"
+                label={`${i18n.t("End date")}`}
+                value={formatDate(endDate ?? autoPeriod.endDate)}
+                onChange={updateEndDate}
+                disabled={type !== "FIXED"}
+            />
         </div>
     );
 };
