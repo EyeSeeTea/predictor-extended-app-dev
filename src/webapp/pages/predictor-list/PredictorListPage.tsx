@@ -146,16 +146,16 @@ export const PredictorListPage: React.FC = () => {
                 {
                     name: "scheduling",
                     text: i18n.t("Scheduling"),
-                    sortable: true,
+                    sortable: false,
                     getValue: ({ scheduling }: PredictorDetails) => {
                         return `Sequence: ${scheduling.sequence}\nVariable: ${scheduling.variable}`;
                     },
                 },
-                { name: "output", text: i18n.t("Output data element"), sortable: true },
+                { name: "output", text: i18n.t("Output data element"), sortable: false },
                 {
                     name: "outputCombo",
                     text: i18n.t("Output category option"),
-                    sortable: true,
+                    sortable: false,
                     getValue: ({ output, outputCombo }) => (
                         <OutputComboCell output={output} outputCombo={outputCombo} variables={variables} />
                     ),
@@ -167,17 +167,17 @@ export const PredictorListPage: React.FC = () => {
                     sortable: false,
                     getValue: ({ generator }: PredictorDetails) => <FormulaCell formula={generator.expression} />,
                 },
-                { name: "predictorGroups", text: i18n.t("Predictor groups"), sortable: true },
+                { name: "predictorGroups", text: i18n.t("Predictor groups"), sortable: false },
                 {
                     name: "organisationUnitLevels",
                     text: i18n.t("Organisation unit levels"),
-                    sortable: true,
+                    sortable: false,
                     hidden: true,
                 },
                 {
                     name: "periodType",
                     text: i18n.t("Period type"),
-                    sortable: true,
+                    sortable: false,
                     getValue: ({ periodType }: PredictorDetails) => {
                         return periodTypes.find(({ value }) => value === periodType)?.label ?? "-";
                     },
