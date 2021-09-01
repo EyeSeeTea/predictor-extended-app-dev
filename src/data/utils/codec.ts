@@ -2,7 +2,6 @@ import { isFunction } from "lodash";
 import {
     array,
     Codec,
-    date,
     Either as PurifyEither,
     enumeration,
     exactly,
@@ -24,6 +23,7 @@ import {
 } from "purify-ts";
 import {
     chainCodec,
+    DateFromAny,
     DateFromStringFormatOf,
     FormattedStringFromDate,
     Integer,
@@ -113,7 +113,7 @@ export const Schema = {
     null: nullType,
     undefined: undefinedType,
     unknown,
-    date,
+    date: DateFromAny,
     formattedDate: FormattedStringFromDate,
     stringDate: DateFromStringFormatOf,
     oneOf,

@@ -1,14 +1,12 @@
 import { SchedulingSettings, Settings } from "../../domain/entities/Settings";
 import { Codec, Schema } from "../utils/codec";
+import { PeriodObjectModel } from "./SchedulerPeriodModel";
 
 export const SchedulingSettingsModel: Codec<SchedulingSettings> = Schema.oneOf([
     Schema.object({ enabled: Schema.false }),
     Schema.object({
         enabled: Schema.true,
-        recurrence: Schema.string,
-        delay: Schema.number,
-        startDate: Schema.date,
-        endDate: Schema.date,
+        period: PeriodObjectModel,
     }),
 ]);
 

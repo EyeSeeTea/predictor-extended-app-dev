@@ -23,7 +23,7 @@ module.exports = function (app) {
 
     const proxy = createProxyMiddleware({
         target: targetUrl,
-        logLevel: "debug",
+        logLevel: "warn",
         changeOrigin: true,
         pathRewrite: { "^/dhis2/": "/" },
         auth,
