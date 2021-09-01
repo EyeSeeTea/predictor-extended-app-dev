@@ -75,6 +75,7 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
                 value={formatDate(startDate ?? autoPeriod.startDate)}
                 onChange={updateStartDate}
                 disabled={type !== "FIXED"}
+                max={formatDate(endDate ?? autoPeriod.endDate)}
             />
 
             <InputField
@@ -83,6 +84,7 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
                 value={formatDate(endDate ?? autoPeriod.endDate)}
                 onChange={updateEndDate}
                 disabled={type !== "FIXED"}
+                min={formatDate(startDate ?? autoPeriod.startDate)}
             />
         </Wrapper>
     );
