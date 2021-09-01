@@ -5,6 +5,7 @@ import path from "path";
 import { CompositionRoot, getCompositionRoot } from "../compositionRoot";
 import { Future, FutureData } from "../domain/entities/Future";
 import { PredictorDetails } from "../domain/entities/Predictor";
+import { SchedulingSettings } from "../domain/entities/Settings";
 import { RunPredictorsResponse } from "../domain/repositories/PredictorRepository";
 import { ConfigModel, SchedulerConfig } from "./entities/SchedulerConfig";
 
@@ -21,11 +22,17 @@ configure({
 function runPredictors(
     compositionRoot: CompositionRoot,
     instance: string,
-    predictors: PredictorDetails[]
+    predictors: PredictorDetails[],
+    scheduling: SchedulingSettings
 ): FutureData<RunPredictorsResponse[]> {
+    if (!scheduling.enabled) {
+        getLogger(instance).info("Scheduling is disabled");
+        return Future.success([]);
+    }
+
     const ids = predictors.map(({ id }) => id);
 
-    return compositionRoot.predictors.run(ids).map(results => {
+    return compositionRoot.predictors.run(ids, scheduling.period).map(results => {
         results.forEach(({ id, status, message }) => getLogger(instance).info(`Executed ${id} ${status}: ${message}`));
         return results;
     });
@@ -57,10 +64,12 @@ function parseConfig(config: SchedulerConfig) {
                 .flatMap(() =>
                     Future.joinObj({
                         predictors: compositionRoot.predictors.list(undefined, { paging: false }),
-                        settings: compositionRoot.settings.get(), // TODO
+                        settings: compositionRoot.settings.get(),
                     })
                 )
-                .flatMap(({ predictors: { objects } }) => runPredictors(compositionRoot, name, objects))
+                .flatMap(({ predictors: { objects }, settings: { scheduling } }) =>
+                    runPredictors(compositionRoot, name, objects, scheduling)
+                )
                 .mapError(error => `[${name}] ${error}`);
         },
         {
