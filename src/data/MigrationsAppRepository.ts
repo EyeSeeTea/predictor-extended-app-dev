@@ -36,9 +36,10 @@ export class MigrationsAppRepository implements MigrationsRepository {
     @cache()
     private async getMigrationsRunner(): Promise<MigrationsRunner<MigrationParams>> {
         const storage = await this.getStorageClient();
-        const migrations = await promiseMap(getMigrationTasks(), async ([version, module_]) => {
-            return { version, ...(await module_).default };
-        });
+        const migrations = await promiseMap(getMigrationTasks(), async ([version, migration]) => ({
+            version,
+            ...migration,
+        }));
 
         return MigrationsRunner.init<MigrationParams>({
             storage,
