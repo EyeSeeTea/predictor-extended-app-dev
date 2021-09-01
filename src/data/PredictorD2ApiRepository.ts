@@ -1,49 +1,69 @@
 import { TableSorting } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import { NamedRef } from "../domain/entities/DHIS2";
-import { Predictor } from "../domain/entities/Predictor";
+import { Future, FutureData } from "../domain/entities/Future";
+import { Predictor, PredictorDetails, SaveScheduling } from "../domain/entities/Predictor";
 import {
+    ExpressionType,
+    ExpressionValidation,
     ListPredictorsFilters,
     PredictorRepository,
 } from "../domain/repositories/PredictorRepository";
-import { D2Api, MetadataResponse } from "../types/d2-api";
+import { Namespaces, StorageRepository } from "../domain/repositories/StorageRepository";
+import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
+import { cache } from "../utils/cache";
 import { formatDate } from "../utils/dates";
-import { promiseMap } from "../utils/promises";
-import { Pager } from "../webapp/components/objects-list/objects-list-hooks";
+import { PredictorModel } from "./models/PredictorModel";
 import { getD2APiFromUrl } from "./utils/d2-api";
+import { toFuture } from "./utils/futures";
 
 export class PredictorD2ApiRepository implements PredictorRepository {
     private api: D2Api;
 
-    constructor(baseUrl: string) {
+    constructor(baseUrl: string, private storageRepository: StorageRepository) {
         this.api = getD2APiFromUrl(baseUrl);
     }
 
-    public async get(ids: string[]): Promise<Predictor[]> {
-        const { objects } = await this.api.models.predictors
-            .get({
+    @cache()
+    public validateExpression(type: ExpressionType, expression: string): FutureData<ExpressionValidation> {
+        return toFuture(this.api.expressions.validate(type, expression)).map(({ message, description, status }) => ({
+            message,
+            description,
+            status,
+        }));
+    }
+
+    public get(ids: string[]): FutureData<PredictorDetails[]> {
+        const predictorData$ = toFuture(
+            this.api.models.predictors.get({
                 filter: { id: { in: ids } },
                 paging: false,
                 fields: predictorFields,
             })
-            .getData();
+        );
 
-        return objects;
+        const schedulingData$ = this.storageRepository.getObject<SaveScheduling[]>(Namespaces.SCHEDULING, []);
+
+        return Future.join2(predictorData$, schedulingData$).map(([{ objects }, schedulingData]) => {
+            return objects.map(item => {
+                const scheduling = schedulingData.find(s => s.id === item.id) ?? { sequence: 0, variable: 0 };
+                return { ...item, scheduling };
+            });
+        });
     }
 
-    public async list(
+    public list(
         filters?: ListPredictorsFilters,
         paging?: { page: number; pageSize: number },
-        sorting?: TableSorting<Predictor>
-    ): Promise<{ pager: Pager; objects: Predictor[] }> {
+        sorting?: TableSorting<PredictorDetails>
+    ): FutureData<{ pager: Pager; objects: PredictorDetails[] }> {
         const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
 
-        return this.api.models.predictors
-            .get({
+        const predictorData$ = toFuture(
+            this.api.models.predictors.get({
                 filter: {
                     name: search ? { token: search } : undefined,
-                    "predictorGroups.id":
-                        predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
+                    "predictorGroups.id": predictorGroups.length > 0 ? { in: predictorGroups } : undefined,
                     "output.id": dataElements.length > 0 ? { in: dataElements } : undefined,
                     lastUpdated: lastUpdated ? { ge: lastUpdated } : undefined,
                 },
@@ -52,43 +72,117 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 order: sorting ? `${sorting.field}:${sorting.order}` : undefined,
                 fields: predictorFields,
             })
-            .getData();
-    }
-
-    public async getGroups(): Promise<NamedRef[]> {
-        const { objects } = await this.api.models.predictorGroups
-            .get({ paging: false, fields: { id: true, displayName: true } })
-            .getData();
-
-        return objects.map(({ id, displayName }) => ({ id, name: displayName }));
-    }
-
-    public async getDataElements(): Promise<NamedRef[]> {
-        const { objects } = await this.api.models.predictors
-            .get({ paging: false, fields: { output: { id: true, displayName: true } } })
-            .getData();
-
-        return _.uniqBy(
-            objects.map(({ output }) => ({ id: output.id, name: output.displayName })),
-            "id"
         );
+
+        const schedulingData$ = this.storageRepository.getObject<SaveScheduling[]>(Namespaces.SCHEDULING, []);
+
+        return Future.join2(predictorData$, schedulingData$).map(([{ objects, pager }, schedulingData]) => {
+            return {
+                pager,
+                objects: objects.map(item => {
+                    const scheduling = schedulingData.find(s => s.id === item.id) ?? { sequence: 0, variable: 0 };
+                    return { ...item, scheduling };
+                }),
+            };
+        });
+    }
+
+    public getGroups(): FutureData<NamedRef[]> {
+        return toFuture(
+            this.api.models.predictorGroups.get({ paging: false, fields: { id: true, displayName: true } })
+        ).map(({ objects }) => {
+            return objects.map(({ id, displayName }) => ({ id, name: displayName }));
+        });
+    }
+
+    public getOutputDataElements(): FutureData<NamedRef[]> {
+        return toFuture(
+            this.api.models.predictors.get({ paging: false, fields: { output: { id: true, displayName: true } } })
+        ).map(({ objects }) => {
+            return _.uniqBy(
+                objects.map(({ output }) => ({ id: output.id, name: output.displayName })),
+                "id"
+            );
+        });
     }
 
     // TODO: Response {"httpStatus":"OK","httpStatusCode":200,"status":"OK","message":"Generated 0 predictions"}
-    public async run(ids: string[], startDate: Date, endDate: Date): Promise<any> {
-        return promiseMap(ids, id =>
-            this.api
-                .post(`/predictors/${id}/run`, {
+    public run(ids: string[], startDate: Date, endDate: Date): FutureData<any> {
+        return Future.futureMap(ids, id =>
+            toFuture(
+                this.api.post(`/predictors/${id}/run`, {
                     startDate: formatDate(startDate),
                     endDate: formatDate(endDate),
                 })
-                .getData()
+            )
         );
     }
 
-    public async save(predictors: Predictor[]): Promise<MetadataResponse> {
-        // TODO FIXME: Predictor groups need to be updated with predictors to be included
-        return this.api.metadata.post({ predictors }).getData();
+    public save(inputPredictors: Predictor[]): FutureData<MetadataResponse[]> {
+        const validations = inputPredictors.map(predictor => PredictorModel.decode(cleanPredictor(predictor)));
+        const predictors = _.compact(validations.map(either => either.toMaybe().extract()));
+        const errors = _.compact(validations.map(either => either.leftOrDefault("")));
+        if (errors.length > 0) {
+            return Future.error(errors.join("\n"));
+        }
+
+        const scheduling = predictors.map(item => ({ id: item.id, ...item.scheduling }));
+
+        return this.get(predictors.map(({ id }) => id)).flatMap(existingPredictors =>
+            this.getGroupsToSave(inputPredictors, existingPredictors).flatMap(predictorGroups => {
+                const saveMetadata$ = toFuture(this.api.metadata.post({ predictors, predictorGroups }));
+                const saveDataStore$ = this.storageRepository.saveObjectsInCollection<SaveScheduling>(
+                    Namespaces.SCHEDULING,
+                    scheduling
+                );
+
+                return Future.join2(saveMetadata$, saveDataStore$).map(([metadataResponse]) => [metadataResponse]);
+            })
+        );
+    }
+
+    public delete(ids: string[]): FutureData<any> {
+        return Future.futureMap(ids, id => toFuture(this.api.models.predictors.delete({ id: id })));
+    }
+
+    private getGroupsToSave(predictors: Predictor[], existing: Predictor[]) {
+        const predictorIds = predictors.map(({ id }) => id);
+        const groupDictionary = _(predictors)
+            .flatMap(({ id, predictorGroups }) => predictorGroups.map(group => ({ id, group })))
+            .groupBy(({ group }) => group.id)
+            .mapValues(items => items.map(({ id }) => id))
+            .value();
+
+        const existingGroupRefs = _.flatMap(existing, ({ predictorGroups }) => predictorGroups);
+        const newGroupRefs = _.flatMap(predictors, ({ predictorGroups }) => predictorGroups);
+        const allGroupRefs = _.concat(existingGroupRefs, newGroupRefs);
+
+        const groupInfo$ = toFuture(
+            this.api.metadata.get({
+                predictorGroups: {
+                    fields: { $owner: true },
+                    filter: { id: { in: _.uniq(allGroupRefs.map(oug => oug.id)) } }, // Review 414
+                },
+            })
+        );
+
+        return groupInfo$.map(({ predictorGroups }) =>
+            predictorGroups
+                .map(group => {
+                    const cleanList = group.predictors.filter(({ id }) => !predictorIds.includes(id));
+                    const newItems = groupDictionary[group.id] ?? [];
+                    const predictors = [...cleanList, ...newItems.map(id => ({ id }))];
+
+                    return { ...group, predictors };
+                })
+                .filter(group => {
+                    const newIds = group.predictors.map(({ id }) => id);
+                    const oldIds =
+                        predictorGroups.find(({ id }) => id === group.id)?.predictors.map(({ id }) => id) ?? [];
+
+                    return !_.isEqual(_.sortBy(oldIds), _.sortBy(newIds));
+                })
+        );
     }
 }
 
@@ -107,7 +201,7 @@ const predictorFields = {
         missingValueStrategy: true,
         slidingWindow: true,
     },
-    organisationUnitLevels: true,
+    organisationUnitLevels: { id: true, name: true },
     predictorGroups: { id: true, name: true },
     sampleSkipTest: {
         expression: true,
@@ -125,3 +219,11 @@ const predictorFields = {
     userAccesses: { id: true, access: true, displayName: true },
     userGroupAccesses: { id: true, access: true, displayName: true },
 };
+
+function cleanPredictor(predictor: Partial<PredictorDetails>): Partial<PredictorDetails> {
+    const hasSampleSkipTest = _.has(predictor, "sampleSkipTest.expression");
+    return {
+        ...predictor,
+        sampleSkipTest: hasSampleSkipTest ? predictor.sampleSkipTest : undefined,
+    };
+}

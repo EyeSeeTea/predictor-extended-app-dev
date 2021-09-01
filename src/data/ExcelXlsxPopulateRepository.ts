@@ -1,13 +1,6 @@
 import XLSX, { Cell, Range, Sheet, Workbook } from "@eyeseetea/xlsx-populate";
 import _ from "lodash";
-import {
-    Address,
-    CellContents,
-    CellRef,
-    ExcelModel,
-    ExcelSheet,
-    RangeRef,
-} from "../domain/entities/Excel";
+import { Address, CellContents, CellRef, ExcelModel, ExcelSheet, RangeRef } from "../domain/entities/Excel";
 import { ExcelRepository, ReadOptions, WriteOptions } from "../domain/repositories/ExcelRepository";
 
 export class ExcelXlsxPopulateRepository implements ExcelRepository {
@@ -16,10 +9,7 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
         return this.toBuffer(workbook);
     }
 
-    public async readFile(
-        buffer: Buffer | ArrayBuffer,
-        _options?: ReadOptions
-    ): Promise<ExcelModel> {
+    public async readFile(buffer: Buffer | ArrayBuffer, _options?: ReadOptions): Promise<ExcelModel> {
         const workbook = await this.fromBuffer(buffer);
 
         const sheets: Record<string, ExcelSheet> = _(workbook.sheets())
@@ -33,9 +23,7 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
                                 .cells()
                                 .filter(cell => cell.value() || cell.formula())
                                 .map(cell => {
-                                    const range = merged.find((range: Range) =>
-                                        range.cells()[0]?.includes(cell)
-                                    );
+                                    const range = merged.find((range: Range) => range.cells()[0]?.includes(cell));
                                     return {
                                         contents: buildCellContents(cell),
                                         ref: range ? buildRangeRef(range) : buildCellRef(cell),
@@ -67,14 +55,8 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
         return { sheets, definedNames };
     }
 
-    public async writeFile(
-        buffer: Buffer | ArrayBuffer,
-        file: ExcelModel,
-        _options?: WriteOptions
-    ): Promise<Buffer> {
+    public async writeFile(buffer: Buffer | ArrayBuffer, file: ExcelModel, _options?: WriteOptions): Promise<Buffer> {
         const workbook = await this.fromBuffer(buffer);
-
-        // TODO: Handle defined names
 
         for (const [sheetName, { cells }] of _.toPairs(file.sheets)) {
             const sheet = getOrCreateSheet(workbook, sheetName);
@@ -83,6 +65,12 @@ export class ExcelXlsxPopulateRepository implements ExcelRepository {
                 if (cell.contents.type === "formula") location.formula(cell.contents.value);
                 else location.value(cell.contents.value);
             }
+        }
+
+        for (const [name, cell] of _.toPairs(file.definedNames)) {
+            const sheet = getOrCreateSheet(workbook, cell.ref.sheet);
+            const location = parseLocation(sheet, cell.ref);
+            workbook.definedName(name, location);
         }
 
         // TODO: Add options to keep existing sheets
@@ -144,9 +132,7 @@ function getOrCreateSheet(workbook: Workbook, name: string): Sheet {
 
 function parseLocation(sheet: Sheet, ref: CellRef | RangeRef) {
     if (ref.type === "range") {
-        return sheet
-            .range(ref.start.row + 1, ref.start.column + 1, ref.end.row + 1, ref.end.column + 1)
-            .merged(true);
+        return sheet.range(ref.start.row + 1, ref.start.column + 1, ref.end.row + 1, ref.end.column + 1).merged(true);
     } else {
         return sheet.cell(ref.address.row + 1, ref.address.column + 1);
     }
