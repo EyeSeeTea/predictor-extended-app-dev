@@ -1,4 +1,5 @@
 import _ from "lodash";
+import moment from "moment";
 import { UseCase } from "../../compositionRoot";
 import { getTemplates, interpolate } from "../../utils/uid-replacement";
 import { getPredictorName, PredictorFormField } from "../../webapp/components/predictor-form/utils";
@@ -92,8 +93,11 @@ export class ExportPredictorsUseCase implements UseCase {
             },
         };
 
+        const date = moment().format("YYYYMMDDHHmm");
+        const name = `predictor-export-${date}`;
         const buffer = await this.excelRepository.writeFile(emptyFile, file);
-        this.fileRepository.download({ type: "excel", name: "Predictors export", buffer });
+
+        this.fileRepository.download({ type: "excel", name, buffer });
     }
 }
 
