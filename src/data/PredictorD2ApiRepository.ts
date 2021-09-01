@@ -15,9 +15,10 @@ import { Namespaces, StorageRepository } from "../domain/repositories/StorageRep
 import { D2Api, MetadataResponse, Pager } from "../types/d2-api";
 import { cache } from "../utils/cache";
 import { formatDate } from "../utils/dates";
+import { timeout } from "../utils/promises";
 import { PredictorModel } from "./models/PredictorModel";
 import { getD2APiFromInstance } from "./utils/d2-api";
-import { toFuture } from "./utils/futures";
+import { apiToFuture } from "./utils/futures";
 
 export class PredictorD2ApiRepository implements PredictorRepository {
     private api: D2Api;
@@ -28,7 +29,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
     @cache()
     public validateExpression(type: ExpressionType, expression: string): FutureData<ExpressionValidation> {
-        return toFuture(this.api.expressions.validate(type, expression)).map(({ message, description, status }) => ({
+        return apiToFuture(this.api.expressions.validate(type, expression)).map(({ message, description, status }) => ({
             message,
             description,
             status,
@@ -36,7 +37,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public get(ids: string[]): FutureData<PredictorDetails[]> {
-        const predictorData$ = toFuture(
+        const predictorData$ = apiToFuture(
             this.api.models.predictors.get({
                 filter: { id: { in: ids } },
                 paging: false,
@@ -61,7 +62,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     ): FutureData<{ pager: Pager; objects: PredictorDetails[] }> {
         const { search, predictorGroups = [], dataElements = [], lastUpdated } = filters ?? {};
 
-        const predictorData$ = toFuture(
+        const predictorData$ = apiToFuture(
             this.api.models.predictors.get({
                 filter: {
                     name: search ? { token: search } : undefined,
@@ -92,13 +93,13 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public getAllIds(): FutureData<string[]> {
-        return toFuture(this.api.models.predictors.get({ paging: false, fields: { id: true } })).map(({ objects }) =>
+        return apiToFuture(this.api.models.predictors.get({ paging: false, fields: { id: true } })).map(({ objects }) =>
             objects.map(({ id }) => id)
         );
     }
 
     public getGroups(): FutureData<NamedRef[]> {
-        return toFuture(
+        return apiToFuture(
             this.api.models.predictorGroups.get({ paging: false, fields: { id: true, displayName: true } })
         ).map(({ objects }) => {
             return objects.map(({ id, displayName }) => ({ id, name: displayName }));
@@ -106,7 +107,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public getOutputDataElements(): FutureData<NamedRef[]> {
-        return toFuture(
+        return apiToFuture(
             this.api.models.predictors.get({ paging: false, fields: { output: { id: true, displayName: true } } })
         ).map(({ objects }) => {
             return _.uniqBy(
@@ -116,24 +117,26 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         });
     }
 
-    public run(ids: string[], startDate: Date, endDate: Date): FutureData<RunPredictorsResponse[]> {
+    public run(ids: string[], startDate: Date, endDate: Date, delay = 500): FutureData<RunPredictorsResponse[]> {
         return this.get(ids).flatMap(predictors => {
             const orderedPredictors = _.sortBy(predictors, ["scheduling.sequence", "scheduling.variable", "id"]);
 
             return Future.futureMap(
                 orderedPredictors,
                 ({ id, name }) =>
-                    toFuture(
+                    apiToFuture(
                         this.api.post<{ status?: "OK" | "ERROR"; message?: string }>(`/predictors/${id}/run`, {
                             startDate: formatDate(startDate),
                             endDate: formatDate(endDate),
                         })
-                    ).map(({ status, message }) => ({
-                        id,
-                        name,
-                        status: status ?? "ERROR",
-                        message: message ?? "Unknown error",
-                    })),
+                    )
+                        .flatMap(result => Future.fromPromise<string, unknown>(timeout(delay)).map(() => result))
+                        .map(({ status, message }) => ({
+                            id,
+                            name,
+                            status: status ?? "ERROR",
+                            message: message ?? "Unknown error",
+                        })),
                 { maxConcurrency: 1 }
             );
         });
@@ -151,7 +154,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
 
         return this.get(predictors.map(({ id }) => id)).flatMap(existingPredictors =>
             this.getGroupsToSave(inputPredictors, existingPredictors).flatMap(predictorGroups => {
-                const saveMetadata$ = toFuture(this.api.metadata.post({ predictors, predictorGroups }));
+                const saveMetadata$ = apiToFuture(this.api.metadata.post({ predictors, predictorGroups }));
                 const saveDataStore$ = this.storageRepository.saveObjectsInCollection<SaveScheduling>(
                     Namespaces.SCHEDULING,
                     scheduling
@@ -163,7 +166,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
     }
 
     public delete(ids: string[]): FutureData<any> {
-        return Future.futureMap(ids, id => toFuture(this.api.models.predictors.delete({ id: id })));
+        return Future.futureMap(ids, id => apiToFuture(this.api.models.predictors.delete({ id: id })));
     }
 
     private getGroupsToSave(predictors: Predictor[], existing: Predictor[]) {
@@ -178,7 +181,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         const newGroupRefs = _.flatMap(predictors, ({ predictorGroups }) => predictorGroups);
         const allGroupRefs = _.concat(existingGroupRefs, newGroupRefs);
 
-        const groupInfo$ = toFuture(
+        const groupInfo$ = apiToFuture(
             this.api.metadata.get({
                 predictorGroups: {
                     fields: { $owner: true },

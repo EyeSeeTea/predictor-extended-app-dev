@@ -76,6 +76,14 @@ export const SettingsPage: React.FC = () => {
         });
     }, []);
 
+    const updateDelay = useCallback(({ value }: { value?: string }) => {
+        setSettings(settings => {
+            if (!settings) return;
+
+            return { ...settings, scheduling: { ...settings.scheduling, delay: parseInt(value ?? "0") } };
+        });
+    }, []);
+
     useEffect(() => {
         compositionRoot.settings.get().run(
             settings => {
@@ -121,6 +129,14 @@ export const SettingsPage: React.FC = () => {
                             }
                         />
 
+                        <InputField
+                            label={i18n.t("Delay between predictions (in ms))")}
+                            type="number"
+                            value={`${settings.scheduling.delay}`}
+                            onChange={updateDelay}
+                            min="0"
+                        />
+
                         <PeriodPicker
                             title={i18n.t("Prediction period")}
                             period={settings.scheduling.period}
@@ -164,4 +180,4 @@ const enabledOptions: DropdownOption<Enabled>[] = [
     { id: "no", name: i18n.t("No") },
 ];
 
-const defaultScheduling = { period: { type: "THIS_MONTH" }, frequency: "0 0 0 ? * *" } as const;
+const defaultScheduling = { period: { type: "THIS_MONTH" }, frequency: "0 0 0 ? * *", delay: 100 } as const;

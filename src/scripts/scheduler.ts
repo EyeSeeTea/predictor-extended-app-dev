@@ -17,12 +17,12 @@ export default class Scheduler {
             if (!settings.scheduling.enabled) return;
 
             const { objects } = await this.compositionRoot.predictors.list(undefined, { paging: false }).toPromise();
-            const { period } = settings.scheduling;
+            const { period, delay } = settings.scheduling;
             const ids = objects.map(({ id }) => id);
 
-            getLogger("execution").info(`Running predictions for ${ids.length} items with period ${period.type}`);
+            getLogger("execution").info(`Running predictions for ${ids.length} items with period ${period.type} and delay ${delay}`);
 
-            const results = await this.compositionRoot.predictors.run(ids, period).toPromise();
+            const results = await this.compositionRoot.predictors.run(ids, period, delay).toPromise();
             results.forEach(({ id, status, message }) =>
                 getLogger("execution").info(`Executed ${id} ${status}: ${message}`)
             );

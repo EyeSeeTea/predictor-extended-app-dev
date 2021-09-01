@@ -6,8 +6,8 @@ import { PredictorRepository, RunPredictorsResponse } from "../repositories/Pred
 export class RunPredictorsUseCase implements UseCase {
     constructor(private predictorRepository: PredictorRepository) {}
 
-    public execute(predictors: string[], period: PeriodObject): FutureData<RunPredictorsResponse[]> {
+    public execute(predictors: string[], period: PeriodObject, delay?: number): FutureData<RunPredictorsResponse[]> {
         const { startDate, endDate } = buildPeriodDate(period);
-        return this.predictorRepository.run(predictors, startDate, endDate);
+        return this.predictorRepository.run(predictors, startDate, endDate, delay);
     }
 }

@@ -6,7 +6,7 @@ import { FormulaVariableRepository } from "../domain/repositories/FormulaVariabl
 import i18n from "../locales";
 import { D2Api } from "../types/d2-api";
 import { getD2APiFromInstance } from "./utils/d2-api";
-import { toFuture } from "./utils/futures";
+import { apiToFuture } from "./utils/futures";
 
 export class FormulaVariableD2ApiRepository implements FormulaVariableRepository {
     private api: D2Api;
@@ -16,7 +16,7 @@ export class FormulaVariableD2ApiRepository implements FormulaVariableRepository
     }
 
     public get(): FutureData<FormulaVariable[]> {
-        return toFuture(
+        return apiToFuture(
             this.api.metadata.get({
                 dataElements: {
                     fields: {

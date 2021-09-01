@@ -67,7 +67,7 @@ function formatSchedulerInfo(info?: SchedulerExecution): string[] {
 }
 
 function formatDateTime(datetime: Date): string {
-    const date = datetime.toLocaleDateString();
+    const date = datetime.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric" });
     const time = datetime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     return `${date} ${time}`;
 }

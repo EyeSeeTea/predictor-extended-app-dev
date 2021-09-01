@@ -20,7 +20,7 @@ export interface PredictorRepository {
 
     getOutputDataElements(): FutureData<NamedRef[]>;
 
-    run(ids: string[], startDate: Date, endDate: Date): FutureData<RunPredictorsResponse[]>;
+    run(ids: string[], startDate: Date, endDate: Date, delay?: number): FutureData<RunPredictorsResponse[]>;
 
     save(predictors: Predictor[]): FutureData<MetadataResponse[]>;
 
