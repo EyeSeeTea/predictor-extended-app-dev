@@ -10,8 +10,8 @@ export const RunPredictorsResponseModel: Codec<RunPredictorsResponse> = Schema.o
 });
 
 export const SchedulerExecutionModel: Codec<SchedulerExecution> = Schema.object({
-    duration: Schema.number,
-    lastExecuted: Schema.date,
-    nextExecution: Schema.date,
-    results: Schema.array(RunPredictorsResponseModel),
+    duration: Schema.optional(Schema.number),
+    lastExecuted: Schema.optional(Schema.date),
+    nextExecution: Schema.optional(Schema.date),
+    results: Schema.optional(Schema.array(RunPredictorsResponseModel)),
 });

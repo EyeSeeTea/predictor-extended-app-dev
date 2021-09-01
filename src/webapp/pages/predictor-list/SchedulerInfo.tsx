@@ -19,7 +19,7 @@ export const SchedulerInfo: React.FC<SchedulerInfoProps> = React.memo(props => {
         useCallback(() => {
             return compositionRoot.scheduler.getLastExecution().run(
                 execution => {
-                    const timestamp = execution?.lastExecuted.toISOString() || "";
+                    const timestamp = execution?.lastExecution?.toISOString() ?? "";
                     if (onSchedulerRun) onSchedulerRun(timestamp);
                     return setMessages(formatSchedulerInfo(execution));
                 },
@@ -52,10 +52,12 @@ const SchedulerInfoLine = styled.div``;
 
 function formatSchedulerInfo(info?: SchedulerExecution): string[] {
     return _.compact([
-        info?.lastExecuted
-            ? [`${i18n.t("Last")}:`, formatDateTime(info.lastExecuted), `(${info.duration} ${i18n.t("seconds")})`].join(
-                  " "
-              )
+        info?.lastExecution
+            ? [
+                  `${i18n.t("Last")}:`,
+                  formatDateTime(info.lastExecution),
+                  `(${info.lastExecutionDuration} ${i18n.t("seconds")})`,
+              ].join(" ")
             : undefined,
         info?.nextExecution
             ? [

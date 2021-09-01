@@ -36,8 +36,8 @@ export default class Scheduler {
             const nextExecution = schedule.scheduledJobs[settings.scheduling.frequency]?.nextInvocation() ?? startTime;
             await this.compositionRoot.scheduler
                 .updateLastExecution({
-                    lastExecuted: endTime,
-                    duration,
+                    lastExecution: endTime,
+                    lastExecutionDuration: duration,
                     results,
                     nextExecution,
                 })
@@ -61,8 +61,11 @@ export default class Scheduler {
 
             this.cancelExistingJobs();
             const job = schedule.scheduleJob(frequency, frequency, this.synchronizationTask);
-            const nextDate = moment(job.nextInvocation().toISOString()).toISOString(true);
+            const nextExecution = job.nextInvocation();
+            const nextDate = moment(nextExecution.toISOString()).toISOString(true);
             getLogger("scheduler").info(`Scheduling job at ${nextDate} (${frequency})`);
+            
+            await this.compositionRoot.scheduler.updateLastExecution({ nextExecution }).toPromise();
         } catch (error) {
             getLogger("scheduler").error(error);
         }
