@@ -2,20 +2,20 @@ import { InputField } from "@dhis2/ui";
 import _ from "lodash";
 import moment from "moment";
 import React, { useCallback, useMemo } from "react";
+import styled from "styled-components";
 import { buildPeriodDate, PeriodObject, periods, SchedulerPeriod } from "../../../domain/entities/SchedulerPeriod";
 import i18n from "../../../locales";
 import { UpdateMethod } from "../../../utils/utils";
 import { Dropdown } from "../dropdown/Dropdown";
 
 export interface PeriodPickerProps {
-    className?: string;
     title?: string;
     period: PeriodObject;
     onChange: UpdateMethod<PeriodObject>;
 }
 
 export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
-    const { period, onChange, title = i18n.t("Period"), className } = props;
+    const { period, onChange, title = i18n.t("Period") } = props;
     const { type, startDate, endDate } = period;
 
     const autoPeriod = useMemo(() => buildPeriodDate({ type }), [type]);
@@ -60,7 +60,7 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
     );
 
     return (
-        <div className={className}>
+        <Wrapper>
             <Dropdown<SchedulerPeriod>
                 label={title}
                 items={periodItems}
@@ -84,10 +84,16 @@ export const PeriodPicker: React.FC<PeriodPickerProps> = props => {
                 onChange={updateEndDate}
                 disabled={type !== "FIXED"}
             />
-        </div>
+        </Wrapper>
     );
 };
 
 function formatDate(date: Date) {
     return moment(date).format("YYYY-MM-DD");
 }
+
+const Wrapper = styled.div`
+    label {
+        margin: 20px 0;
+    }
+`;

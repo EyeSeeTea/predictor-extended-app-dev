@@ -20,6 +20,7 @@ import { NamedRef } from "../../../domain/entities/DHIS2";
 import { FormulaVariable } from "../../../domain/entities/FormulaVariable";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { PredictorDetails } from "../../../domain/entities/Predictor";
+import { PeriodObject } from "../../../domain/entities/SchedulerPeriod";
 import { ListPredictorsFilters } from "../../../domain/repositories/PredictorRepository";
 import i18n from "../../../locales";
 import { formatDate } from "../../../utils/dates";
@@ -27,6 +28,7 @@ import { AlertIcon } from "../../components/alert-icon/AlertIcon";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import { periodTypes } from "../../components/predictor-form/utils";
+import { RunPredictorDialog, RunPredictorDialogProps } from "../../components/run-predictor-dialog/RunPredictorDialog";
 import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { useQueryState } from "../../hooks/useQueryState";
@@ -43,6 +45,7 @@ export const PredictorListPage: React.FC = () => {
     const [state, setState] = useQueryState<ListPredictorsFilters>({});
     const [response, setResponse] = useState<MetadataResponse[]>();
     const [variables, setVariables] = useState<FormulaVariable[]>([]);
+    const [runPredictorDialogProps, setRunPredictorDialogProps] = useState<RunPredictorDialogProps | null>(null);
     const [reloadKey, reload] = useReload();
 
     const { data: predictorGroupOptions = [] } = useFuture(() => {
@@ -74,12 +77,17 @@ export const PredictorListPage: React.FC = () => {
 
     const runPredictors = useCallback(
         async (ids: string[]) => {
-            loading.show(true, i18n.t("Running predictors"));
-            const results = await compositionRoot.predictors.run(ids).toPromise();
-            const message = results.map(({ name, message }) => `${name}: ${message}`).join("\n");
+            setRunPredictorDialogProps({
+                onClose: () => setRunPredictorDialogProps(null),
+                onExecute: async (period: PeriodObject) => {
+                    loading.show(true, i18n.t("Running predictors"));
+                    const results = await compositionRoot.predictors.run(ids, period).toPromise();
+                    const message = results.map(({ name, message }) => `${name}: ${message}`).join("\n");
 
-            snackbar.info(message);
-            loading.reset();
+                    snackbar.info(message);
+                    loading.reset();
+                },
+            });
         },
         [compositionRoot, loading, snackbar]
     );
@@ -345,6 +353,8 @@ export const PredictorListPage: React.FC = () => {
 
     return (
         <Wrapper>
+            {runPredictorDialogProps && <RunPredictorDialog {...runPredictorDialogProps} />}
+
             <Dropzone
                 ref={fileRef}
                 accept={"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}

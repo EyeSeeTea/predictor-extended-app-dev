@@ -110,10 +110,6 @@ const Wrapper = styled.div`
 const Container = styled(Paper)`
     margin: 10px;
     padding: 45px;
-
-    label {
-        margin: 20px 0;
-    }
 `;
 
 const SaveButton = styled(Button)`
