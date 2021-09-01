@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-09-01T11:26:51.726Z\n"
-"PO-Revision-Date: 2021-09-01T11:26:51.726Z\n"
+"POT-Creation-Date: 2021-09-01T16:39:41.573Z\n"
+"PO-Revision-Date: 2021-09-01T16:39:41.573Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -506,6 +506,9 @@ msgid "Frequency (cron expression)"
 msgstr ""
 
 msgid "Invalid cron expression"
+msgstr ""
+
+msgid "Prediction period"
 msgstr ""
 
 msgid "Yes"
