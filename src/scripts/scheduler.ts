@@ -20,7 +20,9 @@ export default class Scheduler {
             const { period, delay } = settings.scheduling;
             const ids = objects.map(({ id }) => id);
 
-            getLogger("execution").info(`Running predictions for ${ids.length} items with period ${period.type} and delay ${delay}`);
+            getLogger("execution").info(
+                `Running predictions for ${ids.length} items with period ${period.type} and delay ${delay}`
+            );
 
             const results = await this.compositionRoot.predictors.run(ids, period, delay).toPromise();
             results.forEach(({ id, status, message }) =>
@@ -48,19 +50,16 @@ export default class Scheduler {
     private fetchTask = async (): Promise<void> => {
         try {
             const settings = await this.compositionRoot.settings.get().toPromise();
-            if (!settings.scheduling.enabled) return;
+            if (!settings.scheduling.enabled) {
+                this.cancelExistingJobs();
+                return;
+            }
 
             const { frequency } = settings.scheduling;
             const existingJob = schedule.scheduledJobs[frequency];
             if (existingJob) return;
 
-            const currentJobIds = _.keys(schedule.scheduledJobs);
-            const idsToCancel = _.difference(currentJobIds, [DEFAULT_CODE]);
-            idsToCancel.forEach((id: string) => {
-                getLogger("scheduler").info(`Detected configuration changes. Cancelling old job (${id})`);
-                schedule.scheduledJobs[id]?.cancel();
-            });
-
+            this.cancelExistingJobs();
             const job = schedule.scheduleJob(frequency, frequency, this.synchronizationTask);
             const nextDate = moment(job.nextInvocation().toISOString()).toISOString(true);
             getLogger("scheduler").info(`Scheduling job at ${nextDate} (${frequency})`);
@@ -68,6 +67,15 @@ export default class Scheduler {
             getLogger("scheduler").error(error);
         }
     };
+
+    private cancelExistingJobs(): void {
+        const currentJobIds = _.keys(schedule.scheduledJobs);
+        const idsToCancel = _.difference(currentJobIds, [DEFAULT_CODE]);
+        idsToCancel.forEach((id: string) => {
+            getLogger("scheduler").info(`Detected configuration changes. Cancelling old job (${id})`);
+            schedule.scheduledJobs[id]?.cancel();
+        });
+    }
 
     public initialize(): void {
         // Execute fetch task immediately
