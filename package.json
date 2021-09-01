@@ -76,8 +76,8 @@
         "cy:e2e:run": "NODE_ENV=test CYPRESS_E2E=true cypress run --browser chrome",
         "antlr4ts": "antlr4ts -visitor src/data/expression-parser/Expression.g4",
         "prepare": "husky install",
-        "build-scheduler": "ncc build src/scripts/scheduler.ts -m",
-        "start-scheduler": "ts-node src/scripts/scheduler.ts"
+        "build-scheduler": "ncc build src/scripts/cli.ts -m && cp dist/index.js $npm_package_name-server.js",
+        "start-scheduler": "ts-node -P tsconfig-cli.json src/scripts/cli.ts"
     },
     "husky": {
         "hooks": {

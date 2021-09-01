@@ -10,6 +10,7 @@
 manifest.webapp
 /build
 dist/
+predictor-extended-server.js
 
 # misc
 .DS_Store
