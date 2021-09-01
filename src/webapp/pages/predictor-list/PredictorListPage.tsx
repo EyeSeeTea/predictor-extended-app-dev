@@ -33,6 +33,7 @@ import { useAppContext } from "../../contexts/app-context";
 import { useFuture } from "../../hooks/useFuture";
 import { useQueryState } from "../../hooks/useQueryState";
 import { useReload } from "../../hooks/useReload";
+import { SchedulerInfo } from "./SchedulerInfo";
 
 export const PredictorListPage: React.FC = () => {
     const { compositionRoot } = useAppContext();
@@ -387,6 +388,8 @@ export const PredictorListPage: React.FC = () => {
                             isFilter={true}
                             onChange={onChangeLastUpdatedFilter}
                         />
+
+                        <SchedulerInfo />
                     </React.Fragment>
                 </ObjectsList>
             </Dropzone>

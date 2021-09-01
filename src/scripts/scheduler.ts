@@ -12,6 +12,7 @@ export default class Scheduler {
 
     private synchronizationTask = async (): Promise<void> => {
         try {
+            const startTime = new Date();
             const settings = await this.compositionRoot.settings.get().toPromise();
             if (!settings.scheduling.enabled) return;
 
@@ -25,6 +26,20 @@ export default class Scheduler {
             results.forEach(({ id, status, message }) =>
                 getLogger("execution").info(`Executed ${id} ${status}: ${message}`)
             );
+
+            const endTime = new Date();
+            const duration = moment.duration(endTime.getTime() - startTime.getTime()).asSeconds();
+            getLogger("execution").info(`Executed ${ids.length} items in ${duration} seconds`);
+
+            const nextExecution = schedule.scheduledJobs[settings.scheduling.frequency]?.nextInvocation() ?? startTime;
+            await this.compositionRoot.scheduler
+                .updateLastExecution({
+                    lastExecuted: endTime,
+                    duration,
+                    results,
+                    nextExecution,
+                })
+                .toPromise();
         } catch (error) {
             getLogger("execution").error(`Failed to run predictions`);
         }
@@ -61,6 +76,8 @@ export default class Scheduler {
         // Schedule periodic fetch task every minute
         schedule.scheduleJob(DEFAULT_CODE, "0 * * * * *", this.fetchTask);
 
-        getLogger("main").info(`Loading configuration for ${this.instance.name} (${this.instance.url}) with user ${this.instance.username}`);
+        getLogger("main").info(
+            `Loading configuration for ${this.instance.name} (${this.instance.url}) with user ${this.instance.username}`
+        );
     }
 }
