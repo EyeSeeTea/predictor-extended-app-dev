@@ -35,7 +35,7 @@ import { useQueryState } from "../../hooks/useQueryState";
 import { useReload } from "../../hooks/useReload";
 
 export const PredictorListPage: React.FC = () => {
-    const { compositionRoot, currentUser } = useAppContext();
+    const { compositionRoot } = useAppContext();
     const loading = useLoading();
     const snackbar = useSnackbar();
     const history = useHistory();
@@ -242,25 +242,23 @@ export const PredictorListPage: React.FC = () => {
             ],
             globalActions: _.compact([
                 {
-                    name: "import",
-                    text: i18n.t("Import excel"),
-                    onClick: openImportDialog,
-                    icon: <ArrowUpward />,
-                },
-                {
                     name: "export",
                     text: i18n.t("Download empty excel template"),
                     onClick: () => exportPredictors([]),
                     icon: <GridOn />,
                 },
-                process.env.NODE_ENV === "development" && currentUser.isAdmin
-                    ? {
-                          name: "settings",
-                          text: i18n.t("Settings"),
-                          onClick: goToSettings,
-                          icon: <Tune />,
-                      }
-                    : undefined,
+                {
+                    name: "import",
+                    text: i18n.t("Import excel template"),
+                    onClick: openImportDialog,
+                    icon: <ArrowUpward />,
+                },
+                {
+                    name: "settings",
+                    text: i18n.t("Settings"),
+                    onClick: goToSettings,
+                    icon: <Tune />,
+                },
             ]),
             // TODO: Bug in ObjectsList
             initialSorting: {
@@ -287,7 +285,6 @@ export const PredictorListPage: React.FC = () => {
         editPredictor,
         deletePredictor,
         openImportDialog,
-        currentUser,
         goToSettings,
         variables,
     ]);
