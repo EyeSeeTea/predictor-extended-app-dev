@@ -130,7 +130,7 @@ export const SettingsPage: React.FC = () => {
                         />
 
                         <InputField
-                            label={i18n.t("Delay between predictions (in ms))")}
+                            label={i18n.t("Delay between predictions (in ms)")}
                             type="number"
                             value={`${settings.scheduling.delay}`}
                             onChange={updateDelay}
