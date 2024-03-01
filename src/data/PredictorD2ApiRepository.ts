@@ -41,7 +41,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             this.api.models.predictors.get({
                 filter: { id: { in: ids } },
                 paging: false,
-                fields: predictorFields,
+                fields: { ...predictorFields, $owner: true },
             })
         );
 
@@ -50,7 +50,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         return Future.join2(predictorData$, schedulingData$).map(([{ objects }, schedulingData]) => {
             return objects.map(item => {
                 const scheduling = schedulingData.find(s => s.id === item.id) ?? { sequence: 0, variable: 0 };
-                return { ...item, scheduling };
+                return { ...item, scheduling, organisationUnitDescendants: "DESCENDANTS" };
             });
         });
     }
@@ -74,7 +74,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 page: paging?.page,
                 pageSize: paging?.pageSize,
                 order: sorting ? `${sorting.field}:${sorting.order}` : undefined,
-                fields: predictorFields,
+                fields: { ...predictorFields, $owner: true },
             })
         );
 
@@ -86,7 +86,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 pager: predictorsData.pager ?? { total: predictorsData.objects.length, page: 1, pageSize: 1 },
                 objects: predictorsData.objects.map(item => {
                     const scheduling = schedulingData.find(s => s.id === item.id) ?? { sequence: 0, variable: 0 };
-                    return { ...item, scheduling };
+                    return { ...item, scheduling, organisationUnitDescendants: "DESCENDANTS" };
                 }),
             };
         });
@@ -151,7 +151,6 @@ export class PredictorD2ApiRepository implements PredictorRepository {
         }
 
         const scheduling = predictors.map(item => ({ id: item.id, ...item.scheduling }));
-
         return this.get(predictors.map(({ id }) => id)).flatMap(existingPredictors =>
             this.getGroupsToSave(inputPredictors, existingPredictors).flatMap(predictorGroups => {
                 const saveMetadata$ = apiToFuture(this.api.metadata.post({ predictors, predictorGroups }));

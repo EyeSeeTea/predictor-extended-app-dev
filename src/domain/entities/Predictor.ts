@@ -41,6 +41,7 @@ export interface Predictor {
     outputCombo?: NamedRef | undefined;
     periodType: PeriodType;
     organisationUnitLevels: NamedRef[];
+    organisationUnitDescendants: "SELECTED" | "DESCENDANTS";
     generator: Formula;
     sampleSkipTest?: Formula | undefined;
     sequentialSampleCount: number;
@@ -63,6 +64,7 @@ export const defaultPredictor: Predictor = {
     output: { id: "", name: "" },
     periodType: "Yearly",
     organisationUnitLevels: [],
+    organisationUnitDescendants: "DESCENDANTS",
     generator: { expression: "", description: "", slidingWindow: false, missingValueStrategy: "NEVER_SKIP" },
     sequentialSampleCount: 0,
     annualSampleCount: 0,
