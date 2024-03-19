@@ -41,7 +41,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
             this.api.models.predictors.get({
                 filter: { id: { in: ids } },
                 paging: false,
-                fields: { ...predictorFields, $owner: true },
+                fields: predictorFields,
             })
         );
 
@@ -74,7 +74,7 @@ export class PredictorD2ApiRepository implements PredictorRepository {
                 page: paging?.page,
                 pageSize: paging?.pageSize,
                 order: sorting ? `${sorting.field}:${sorting.order}` : undefined,
-                fields: { ...predictorFields, $owner: true },
+                fields: predictorFields,
             })
         );
 
@@ -225,6 +225,7 @@ const predictorFields = {
         slidingWindow: true,
     },
     organisationUnitLevels: { id: true, name: true },
+    organisationUnitDescendants: true,
     predictorGroups: { id: true, name: true },
     sampleSkipTest: {
         expression: true,
