@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-09-01T16:39:41.573Z\n"
-"PO-Revision-Date: 2021-09-01T16:39:41.573Z\n"
+"POT-Creation-Date: 2024-02-22T12:18:36.826Z\n"
+"PO-Revision-Date: 2024-02-22T12:18:36.826Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -496,6 +496,21 @@ msgstr ""
 msgid "Invalid output combo"
 msgstr ""
 
+msgid "Scheduler"
+msgstr ""
+
+msgid "Last"
+msgstr ""
+
+msgid "seconds"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Script not running"
+msgstr ""
+
 msgid "Saving settings..."
 msgstr ""
 
@@ -506,6 +521,9 @@ msgid "Frequency (cron expression)"
 msgstr ""
 
 msgid "Invalid cron expression"
+msgstr ""
+
+msgid "Delay between predictions (in ms))"
 msgstr ""
 
 msgid "Prediction period"
