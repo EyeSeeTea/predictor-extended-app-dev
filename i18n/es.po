@@ -497,7 +497,7 @@ msgid "Invalid output combo"
 msgstr ""
 
 msgid "Scheduler"
-msgstr ""
+msgstr "Programador"
 
 msgid "Last"
 msgstr ""
