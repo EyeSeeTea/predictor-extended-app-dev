@@ -1,3 +1,4 @@
+import { Feedback, FeedbackOptions } from "@eyeseetea/feedback-component";
 import { useConfig } from "@dhis2/app-runtime";
 import { HeaderBar } from "@dhis2/ui";
 import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
@@ -5,6 +6,7 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import _ from "lodash";
 import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import React, { useEffect, useState } from "react";
+
 import { appConfig } from "../../../app-config";
 import { getCompositionRoot } from "../../../compositionRoot";
 import { D2Api } from "../../../types/d2-api";
@@ -19,28 +21,11 @@ import { muiTheme } from "./themes/dhis2.theme";
 
 type D2 = object;
 
-type AppWindow = Window & {
-    $: {
-        feedbackDhis2: (d2: D2, appKey: string, feedbackOptions: object) => void;
-    };
-};
-
-function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
-    const appKey = _(appConfig).get("appKey");
-
-    if (appConfig && appConfig.feedback) {
-        const feedbackOptions = {
-            ...appConfig.feedback,
-            i18nPath: "feedback-tool/i18n",
-        };
-        (window as unknown as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
-    }
-}
-
 const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
     const { baseUrl } = useConfig();
 
     const [showShareButton, setShowShareButton] = useState(false);
+    const [username, setUsername] = useState<string>("");
     const [loading, setLoading] = useState(true);
     const [appContext, setAppContext] = useState<AppContextState | null>(null);
     const migrations = useMigrations(appContext);
@@ -52,8 +37,8 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
 
             setAppContext({ api, compositionRoot, currentUser });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
-            initFeedbackTool(d2, appConfig);
             setLoading(false);
+            setUsername(currentUser.username);
         }
         setup();
     }, [d2, api, baseUrl]);
@@ -82,6 +67,7 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
                         </div>
 
                         <Share visible={showShareButton} />
+                        <Feedback options={appConfig.feedback} username={username} />
                     </LoadingProvider>
                 </SnackbarProvider>
             </OldMuiThemeProvider>
@@ -94,21 +80,7 @@ export interface AppConfig {
     appearance: {
         showShareButton: boolean;
     };
-    feedback?: {
-        token: string[];
-        createIssue: boolean;
-        sendToDhis2UserGroups: string[];
-        issues: {
-            repository: string;
-            title: string;
-            body: string;
-        };
-        snapshots: {
-            repository: string;
-            branch: string;
-        };
-        feedbackOptions: object;
-    };
+    feedback: FeedbackOptions;
 }
 
 export default React.memo(App);

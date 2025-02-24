@@ -14,10 +14,20 @@ export class UserD2ApiRepository implements UserRepository {
     async getCurrent(): Promise<User> {
         const currentUser = await this.api.currentUser
             .get({
-                fields: { id: true, name: true, authorities: true },
+                fields: {
+                    id: true,
+                    name: true,
+                    authorities: true,
+                    userCredentials: {
+                        username: true,
+                    },
+                },
             })
             .getData();
 
-        return User.create(currentUser);
+        return User.create({
+            ...currentUser,
+            ...currentUser.userCredentials,
+        });
     }
 }
