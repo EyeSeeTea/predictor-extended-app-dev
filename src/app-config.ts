@@ -1,4 +1,4 @@
-import { AppConfig } from "./webapp/components/app/App";
+import { FeedbackOptions } from "@eyeseetea/feedback-component";
 
 export const appConfig: AppConfig = {
     appKey: "predictor-extended",
@@ -20,4 +20,12 @@ export const appConfig: AppConfig = {
             descriptionTemplate: "## Summary\n\n## Steps to reproduce\n\n## Actual results\n\n## Expected results\n\n",
         },
     },
+};
+
+type AppConfig = {
+    appKey: string;
+    appearance: {
+        showShareButton: boolean;
+    };
+    feedback: FeedbackOptions;
 };

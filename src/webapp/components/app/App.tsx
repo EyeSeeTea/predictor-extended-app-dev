@@ -1,4 +1,4 @@
-import { Feedback, FeedbackOptions } from "@eyeseetea/feedback-component";
+import { Feedback } from "@eyeseetea/feedback-component";
 import { useConfig } from "@dhis2/app-runtime";
 import { HeaderBar } from "@dhis2/ui";
 import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
@@ -74,13 +74,5 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
         </MuiThemeProvider>
     );
 };
-
-export interface AppConfig {
-    appKey: string;
-    appearance: {
-        showShareButton: boolean;
-    };
-    feedback: FeedbackOptions;
-}
 
 export default React.memo(App);
