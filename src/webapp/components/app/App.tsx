@@ -25,7 +25,6 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
     const { baseUrl } = useConfig();
 
     const [showShareButton, setShowShareButton] = useState(false);
-    const [username, setUsername] = useState<string>("");
     const [loading, setLoading] = useState(true);
     const [appContext, setAppContext] = useState<AppContextState | null>(null);
     const migrations = useMigrations(appContext);
@@ -38,7 +37,6 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
             setAppContext({ api, compositionRoot, currentUser });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
             setLoading(false);
-            setUsername(currentUser.username);
         }
         setup();
     }, [d2, api, baseUrl]);
@@ -67,7 +65,9 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
                         </div>
 
                         <Share visible={showShareButton} />
-                        <Feedback options={appConfig.feedback} username={username} />
+                        {appContext && (
+                            <Feedback options={appConfig.feedback} username={appContext.currentUser.username} />
+                        )}
                     </LoadingProvider>
                 </SnackbarProvider>
             </OldMuiThemeProvider>
