@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { defaultPredictor, Predictor } from "../../../domain/entities/Predictor";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { generateUid } from "../../../utils/uid";
 import { PageHeader } from "../../components/page-header/PageHeader";
 import { PredictorEditWizard } from "../../components/predictor-edit-wizard/PredictorEditWizard";

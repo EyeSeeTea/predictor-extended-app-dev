@@ -1,5 +1,5 @@
 import { Menu, Pagination } from "@dhis2/ui";
-import i18n from "@eyeseetea/d2-ui-components/locales";
+import i18n from "../../../../utils/i18n";
 import styled from "styled-components";
 import { GenericElementPicker } from "./GenericElementPicker";
 import { ReportingRatePicker } from "./ReportingRatePicker";
