@@ -17,7 +17,7 @@ const auth = process.env.REACT_APP_DHIS2_AUTH;
 
 module.exports = function (app) {
     if (!targetUrl) {
-        console.error(`Set ${envVarName} to base DHIS2 URL`);
+        console.error("Set REACT_APP_DHIS2_BASE_URL to base DHIS2 URL");
         process.exit(1);
     }
 

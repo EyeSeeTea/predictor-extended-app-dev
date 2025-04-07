@@ -1,4 +1,4 @@
-import i18n from "../../../../locales";
+import i18n from "../../../../utils/i18n";
 
 export const hasItems = (value: unknown): string | undefined => {
     if (!Array.isArray(value)) return i18n.t("Value must be an array");
