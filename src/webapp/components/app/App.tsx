@@ -1,3 +1,4 @@
+import { Feedback } from "@eyeseetea/feedback-component";
 import { useConfig } from "@dhis2/app-runtime";
 import { HeaderBar } from "@dhis2/ui";
 import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
@@ -5,6 +6,7 @@ import { MuiThemeProvider } from "@material-ui/core/styles";
 import _ from "lodash";
 import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import React, { useEffect, useState } from "react";
+
 import { appConfig } from "../../../app-config";
 import { getCompositionRoot } from "../../../compositionRoot";
 import { D2Api } from "../../../types/d2-api";
@@ -18,24 +20,6 @@ import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import { muiTheme } from "./themes/dhis2.theme";
 
 type D2 = object;
-
-type AppWindow = Window & {
-    $: {
-        feedbackDhis2: (d2: D2, appKey: string, feedbackOptions: object) => void;
-    };
-};
-
-function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
-    const appKey = _(appConfig).get("appKey");
-
-    if (appConfig && appConfig.feedback) {
-        const feedbackOptions = {
-            ...appConfig.feedback,
-            i18nPath: "feedback-tool/i18n",
-        };
-        (window as unknown as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
-    }
-}
 
 const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
     const { baseUrl } = useConfig();
@@ -52,7 +36,6 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
 
             setAppContext({ api, compositionRoot, currentUser });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
-            initFeedbackTool(d2, appConfig);
             setLoading(false);
         }
         setup();
@@ -82,33 +65,14 @@ const App = ({ api, d2 }: { api: D2Api; d2: D2 }) => {
                         </div>
 
                         <Share visible={showShareButton} />
+                        {appContext && (
+                            <Feedback options={appConfig.feedback} username={appContext.currentUser.username} />
+                        )}
                     </LoadingProvider>
                 </SnackbarProvider>
             </OldMuiThemeProvider>
         </MuiThemeProvider>
     );
 };
-
-export interface AppConfig {
-    appKey: string;
-    appearance: {
-        showShareButton: boolean;
-    };
-    feedback?: {
-        token: string[];
-        createIssue: boolean;
-        sendToDhis2UserGroups: string[];
-        issues: {
-            repository: string;
-            title: string;
-            body: string;
-        };
-        snapshots: {
-            repository: string;
-            branch: string;
-        };
-        feedbackOptions: object;
-    };
-}
 
 export default React.memo(App);
