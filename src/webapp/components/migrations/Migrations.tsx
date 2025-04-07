@@ -3,7 +3,7 @@ import { makeStyles, Theme, Typography } from "@material-ui/core";
 import React, { useCallback, useEffect, useState } from "react";
 import { Log } from "../../../domain/entities/Debug";
 import { MigrationVersions } from "../../../domain/entities/MigrationVersions";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { useAppContext } from "../../contexts/app-context";
 import { UseMigrationsResult } from "./hooks";
 

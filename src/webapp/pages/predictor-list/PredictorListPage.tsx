@@ -22,7 +22,7 @@ import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { PredictorDetails } from "../../../domain/entities/Predictor";
 import { PeriodObject } from "../../../domain/entities/SchedulerPeriod";
 import { ListPredictorsFilters } from "../../../domain/repositories/PredictorRepository";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { formatDate } from "../../../utils/dates";
 import { AlertIcon } from "../../components/alert-icon/AlertIcon";
 import { Dropzone, DropzoneRef } from "../../components/dropzone/Dropzone";

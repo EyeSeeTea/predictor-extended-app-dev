@@ -3,7 +3,7 @@ import _ from "lodash";
 import { editor } from "monaco-editor";
 import React, { useCallback } from "react";
 import { FormulaVariable } from "../../../domain/entities/FormulaVariable";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { interpolate } from "../../../utils/uid-replacement";
 import { buildPredictorsCompletionProvider } from "./completion/predictors";
 import { PredictorsLanguageConfiguration } from "./language/predictors";
