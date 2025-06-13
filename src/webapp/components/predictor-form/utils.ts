@@ -7,6 +7,7 @@ export const predictorFormFields = [
     "id",
     "code",
     "name",
+    "shortName",
     "description",
     "output",
     "periodType",
@@ -24,7 +25,13 @@ export const predictorFormFields = [
     "scheduling.variable",
 ];
 
-export const predictorRequiredFields: PredictorFormField[] = ["name", "generator.expression", "output", "outputCombo"];
+export const predictorRequiredFields: PredictorFormField[] = [
+    "name",
+    "shortName",
+    "generator.expression",
+    "output",
+    "outputCombo",
+];
 
 export const getPredictorName = (field: PredictorFormField) => {
     switch (field) {
@@ -34,6 +41,8 @@ export const getPredictorName = (field: PredictorFormField) => {
             return i18n.t("Code");
         case "name":
             return i18n.t("Name");
+        case "shortName":
+            return i18n.t("Short name");
         case "description":
             return i18n.t("Description");
         case "output":

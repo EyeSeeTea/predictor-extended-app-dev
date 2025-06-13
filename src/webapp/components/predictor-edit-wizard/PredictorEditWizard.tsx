@@ -19,6 +19,7 @@ const steps: WizardStep[] = [
         props: {
             fields: [
                 "name",
+                "shortName",
                 "code",
                 "description",
                 "periodType",

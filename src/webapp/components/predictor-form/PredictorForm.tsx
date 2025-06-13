@@ -108,6 +108,7 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
         case "code":
         case "description":
         case "name":
+        case "shortName":
         case "generator.description":
         case "sampleSkipTest.description":
             return <FormField {...props} component={InputFieldFF} />;

@@ -36,6 +36,7 @@ export interface Predictor {
     id: string;
     code?: string | undefined;
     name: string;
+    shortName: string;
     description?: string | undefined;
     output: NamedRef;
     outputCombo?: NamedRef | undefined;
@@ -61,6 +62,7 @@ export interface PredictorDetails extends Predictor {
 export const defaultPredictor: Predictor = {
     id: "",
     name: "",
+    shortName: "",
     output: { id: "", name: "" },
     periodType: "Yearly",
     organisationUnitLevels: [],
