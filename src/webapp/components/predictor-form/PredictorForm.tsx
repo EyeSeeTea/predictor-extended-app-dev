@@ -9,7 +9,7 @@ import {
     integer,
     SingleSelectFieldFF,
 } from "@dhis2/ui";
-import React from "react";
+import React, { useEffect } from "react";
 import { ExpressionValidation } from "../../../domain/repositories/PredictorRepository";
 import i18n from "../../../utils/i18n";
 import { fullUidRegex } from "../../../utils/uid";
@@ -38,6 +38,18 @@ const useValidations = (
     const [expressionValidation, setExpressionValidation] = React.useState<
         Record<string, ExpressionValidation | undefined>
     >({});
+    const [existingPredictors, setExistingPredictors] = React.useState<string[]>([]);
+
+    useEffect(() => {
+        compositionRoot.predictors.list().run(
+            ({ objects: predictors }) => {
+                setExistingPredictors(predictors.map(predictor => predictor.name));
+            },
+            error => {
+                console.error(`Unable to get predictors: ${error}`);
+            }
+        );
+    }, [compositionRoot.predictors]);
 
     const validateExpression = (formula: string, _allValues: object, meta?: FieldState<string>) => {
         if (!meta) return;
@@ -64,6 +76,16 @@ const useValidations = (
     switch (field) {
         case "id":
             return { validation: createPattern(fullUidRegex, i18n.t("Please provide a valid identifier")) };
+        case "name":
+            return {
+                validation: value => {
+                    const nameValueExists = existingPredictors.includes(value)
+                        ? i18n.t("Name must be unique")
+                        : undefined;
+
+                    return hasValue(value) || nameValueExists;
+                },
+            };
         case "description":
         case "generator.description":
         case "sampleSkipTest.description":
@@ -105,9 +127,9 @@ export const RenderPredictorWizardField: React.FC<{ row: number; field: Predicto
 
     switch (field) {
         case "id":
+        case "name":
         case "code":
         case "description":
-        case "name":
         case "shortName":
         case "generator.description":
         case "sampleSkipTest.description":
