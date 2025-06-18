@@ -11,7 +11,7 @@ import { Predictor } from "../../../domain/entities/Predictor";
 import { useGoBack } from "../../hooks/useGoBack";
 import { PredictorEditWizardStep, PredictorEditWizardStepProps } from "./PredictorEditWizardStep";
 
-const steps: WizardStep[] = [
+const getSteps = (predictor: Predictor): WizardStep[] => [
     {
         key: `general-info`,
         label: i18n.t("General info"),
@@ -27,13 +27,17 @@ const steps: WizardStep[] = [
                 "organisationUnitLevels",
                 "predictorGroups",
             ],
+            predictor,
         },
     },
     {
         key: `generator`,
         label: i18n.t("Generator"),
         component: PredictorEditWizardStep,
-        props: { fields: ["generator.description", "generator.expression", "generator.missingValueStrategy"] },
+        props: {
+            fields: ["generator.description", "generator.expression", "generator.missingValueStrategy"],
+            predictor,
+        },
     },
     {
         key: `sample`,
@@ -47,6 +51,7 @@ const steps: WizardStep[] = [
                 "sampleSkipTest.description",
                 "sampleSkipTest.expression",
             ],
+            predictor,
         },
     },
     {
@@ -55,6 +60,7 @@ const steps: WizardStep[] = [
         component: PredictorEditWizardStep,
         props: {
             fields: ["scheduling.sequence", "scheduling.variable"],
+            predictor,
         },
     },
 ];
@@ -74,6 +80,7 @@ export interface PredictorEditWizardProps {
 
 export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predictor, onSave, onCancel }) => {
     const goBack = useGoBack();
+    const steps = getSteps(predictor);
 
     const onSubmit = useCallback(
         async (values: { predictors: Predictor[] }) => {
@@ -101,7 +108,7 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
                         </NoticeBox>
                     )}
 
-                    <Wizard onCancel={onCancel}>
+                    <Wizard onCancel={onCancel} steps={steps}>
                         {steps.map(({ component: Component, props, key }) => (
                             <Component key={key} {...props} />
                         ))}
@@ -112,7 +119,7 @@ export const PredictorEditWizard: React.FC<PredictorEditWizardProps> = ({ predic
     );
 };
 
-const Wizard: React.FC<{ onCancel: any }> = ({ children, onCancel }) => {
+const Wizard: React.FC<{ onCancel: any; steps: WizardStep[] }> = ({ children, onCancel, steps }) => {
     const [step, setStep] = useState<string>(steps[0]?.key ?? "");
     const index = _.findIndex(steps, ({ key }) => key === step);
     const page = index > 0 ? index : 0;
@@ -123,14 +130,14 @@ const Wizard: React.FC<{ onCancel: any }> = ({ children, onCancel }) => {
             const index = steps.findIndex(({ key }) => key === step);
             return steps[index + 1]?.key ?? step;
         });
-    }, []);
+    }, [steps]);
 
     const onPrev = useCallback(() => {
         setStep(step => {
             const index = steps.findIndex(({ key }) => key === step);
             return steps[index - 1]?.key ?? step;
         });
-    }, []);
+    }, [steps]);
 
     const jumpStep = useCallback((currentStep: string) => setStep(currentStep), []);
 

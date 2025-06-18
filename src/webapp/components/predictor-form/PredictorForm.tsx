@@ -28,10 +28,13 @@ import {
     PredictorFormField,
     predictorRequiredFields,
 } from "./utils";
+import { Predictor } from "../../../domain/entities/Predictor";
+import _ from "lodash";
 
 const useValidations = (
     field: PredictorFormField,
-    name: string
+    name: string,
+    predictor?: Predictor
 ): { validation?: (...args: any[]) => any; props?: object } => {
     const { compositionRoot } = useAppContext();
 
@@ -43,13 +46,20 @@ const useValidations = (
     useEffect(() => {
         compositionRoot.predictors.list().run(
             ({ objects: predictors }) => {
-                setExistingPredictors(predictors.map(predictor => predictor.name));
+                const existingPredictorNames = _(predictors)
+                    .map(existingPredictor => {
+                        if (existingPredictor.id === predictor?.id) return undefined;
+                        return existingPredictor.name;
+                    })
+                    .compact()
+                    .value();
+                setExistingPredictors(existingPredictorNames);
             },
             error => {
                 console.error(`Unable to get predictors: ${error}`);
             }
         );
-    }, [compositionRoot.predictors]);
+    }, [compositionRoot.predictors, predictor]);
 
     const validateExpression = (formula: string, _allValues: object, meta?: FieldState<string>) => {
         if (!meta) return;
@@ -115,72 +125,76 @@ const useValidations = (
     }
 };
 
-export const RenderPredictorWizardField: React.FC<{ row: number; field: PredictorFormField }> = ({ row, field }) => {
-    const name = `predictors[${row}.${field}]`;
-    const { validation, props: validationProps = {} } = useValidations(field, name);
-    const props = {
-        name,
-        placeholder: getPredictorFieldName(field),
-        validate: validation,
-        ...validationProps,
+export const RenderPredictorWizardField: React.FC<{ row: number; field: PredictorFormField; predictor?: Predictor }> =
+    ({ row, field, predictor }) => {
+        const name = `predictors[${row}.${field}]`;
+        const { validation, props: validationProps = {} } = useValidations(field, name, predictor);
+        const props = {
+            name,
+            placeholder: getPredictorFieldName(field),
+            validate: validation,
+            ...validationProps,
+        };
+
+        switch (field) {
+            case "id":
+            case "name":
+            case "code":
+            case "description":
+            case "shortName":
+            case "generator.description":
+            case "sampleSkipTest.description":
+                return <FormField {...props} component={InputFieldFF} />;
+            case "output":
+                return (
+                    <FormField {...props} component={OutputFF} optionComboField={`predictors[${row}.outputCombo]`} />
+                );
+            case "periodType":
+                return <FormField {...props} component={SingleSelectFieldFF} options={periodTypes} />;
+            case "organisationUnitLevels":
+                return <FormField {...props} component={OrgUnitLevelsFF} />;
+            case "predictorGroups":
+                return <FormField {...props} component={PredictorGroupsFF} />;
+            case "generator.missingValueStrategy":
+                return <FormField {...props} component={SingleSelectFieldFF} options={missingValueStrategy} />;
+            case "sequentialSampleCount":
+            case "annualSampleCount":
+            case "sequentialSkipCount":
+            case "scheduling.sequence":
+            case "scheduling.variable":
+                return <FormField {...props} component={NumberInputFF} defaultValue="0" min="0" />;
+            case "generator.expression":
+            case "sampleSkipTest.expression":
+                return <FormField {...props} component={ExpressionBoxFF} expressionType="predictor" />;
+            default:
+                return null;
+        }
     };
 
-    switch (field) {
-        case "id":
-        case "name":
-        case "code":
-        case "description":
-        case "shortName":
-        case "generator.description":
-        case "sampleSkipTest.description":
-            return <FormField {...props} component={InputFieldFF} />;
-        case "output":
-            return <FormField {...props} component={OutputFF} optionComboField={`predictors[${row}.outputCombo]`} />;
-        case "periodType":
-            return <FormField {...props} component={SingleSelectFieldFF} options={periodTypes} />;
-        case "organisationUnitLevels":
-            return <FormField {...props} component={OrgUnitLevelsFF} />;
-        case "predictorGroups":
-            return <FormField {...props} component={PredictorGroupsFF} />;
-        case "generator.missingValueStrategy":
-            return <FormField {...props} component={SingleSelectFieldFF} options={missingValueStrategy} />;
-        case "sequentialSampleCount":
-        case "annualSampleCount":
-        case "sequentialSkipCount":
-        case "scheduling.sequence":
-        case "scheduling.variable":
-            return <FormField {...props} component={NumberInputFF} defaultValue="0" min="0" />;
-        case "generator.expression":
-        case "sampleSkipTest.expression":
-            return <FormField {...props} component={ExpressionBoxFF} expressionType="predictor" />;
-        default:
-            return null;
-    }
-};
+export const RenderPredictorImportField: React.FC<{ row: number; field: PredictorFormField; predictor?: Predictor }> =
+    ({ row, field, predictor }) => {
+        const name = `predictors[${row}.${field}]`;
+        const { validation, props: validationProps = {} } = useValidations(field, name, predictor);
 
-export const RenderPredictorImportField: React.FC<{ row: number; field: PredictorFormField }> = ({ row, field }) => {
-    const name = `predictors[${row}.${field}]`;
-    const { validation, props: validationProps = {} } = useValidations(field, name);
+        const props = {
+            name,
+            placeholder: getPredictorFieldName(field),
+            validate: validation,
+            ...validationProps,
+        };
 
-    const props = {
-        name,
-        placeholder: getPredictorFieldName(field),
-        validate: validation,
-        ...validationProps,
+        switch (field) {
+            case "organisationUnitLevels":
+            case "predictorGroups":
+            case "generator.expression":
+            case "sampleSkipTest.expression":
+            case "output":
+                return (
+                    <PreviewInputFF {...props}>
+                        <RenderPredictorWizardField row={row} field={field} predictor={predictor} />
+                    </PreviewInputFF>
+                );
+            default:
+                return <RenderPredictorWizardField row={row} field={field} predictor={predictor} />;
+        }
     };
-
-    switch (field) {
-        case "organisationUnitLevels":
-        case "predictorGroups":
-        case "generator.expression":
-        case "sampleSkipTest.expression":
-        case "output":
-            return (
-                <PreviewInputFF {...props}>
-                    <RenderPredictorWizardField row={row} field={field} />
-                </PreviewInputFF>
-            );
-        default:
-            return <RenderPredictorWizardField row={row} field={field} />;
-    }
-};
