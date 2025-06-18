@@ -213,6 +213,7 @@ const predictorFields = {
     id: true,
     code: true,
     name: true,
+    shortName: true,
     description: true,
     output: { id: true, name: true },
     outputCombo: { id: true, name: true },
