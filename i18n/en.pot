@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-06-17T12:39:34.173Z\n"
-"PO-Revision-Date: 2025-06-17T12:39:34.173Z\n"
+"POT-Creation-Date: 2025-06-18T13:49:16.280Z\n"
+"PO-Revision-Date: 2025-06-18T13:49:16.280Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -271,13 +271,13 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "{{predictorField}} must be unique"
+msgstr ""
+
 msgid "Unable to validate"
 msgstr ""
 
 msgid "Please provide a valid identifier"
-msgstr ""
-
-msgid "Name must be unique"
 msgstr ""
 
 msgid "Invalid option"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2025-06-17T12:39:34.173Z\n"
+"POT-Creation-Date: 2025-06-18T13:49:16.280Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -271,13 +271,13 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "{{predictorField}} must be unique"
+msgstr ""
+
 msgid "Unable to validate"
 msgstr ""
 
 msgid "Please provide a valid identifier"
-msgstr ""
-
-msgid "Name must be unique"
 msgstr ""
 
 msgid "Invalid option"
