@@ -33,7 +33,7 @@ export const predictorRequiredFields: PredictorFormField[] = [
     "outputCombo",
 ];
 
-export const getPredictorName = (field: PredictorFormField) => {
+export const getPredictorName = (field: PredictorFormField): string => {
     switch (field) {
         case "id":
             return i18n.t("Identifier");
@@ -75,6 +75,8 @@ export const getPredictorName = (field: PredictorFormField) => {
             return i18n.t("Sequence");
         case "scheduling.variable":
             return i18n.t("Variable");
+        default:
+            return "";
     }
 };
 

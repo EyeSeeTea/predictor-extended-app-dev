@@ -23,12 +23,13 @@ import { OutputFF } from "./components/OutputFF";
 import { PredictorGroupsFF } from "./components/PredictorGroupsFF";
 import {
     getPredictorFieldName,
+    getPredictorName,
     missingValueStrategy,
     periodTypes,
     PredictorFormField,
     predictorRequiredFields,
 } from "./utils";
-import { Predictor } from "../../../domain/entities/Predictor";
+import { Predictor, PredictorDetails } from "../../../domain/entities/Predictor";
 import _ from "lodash";
 
 const useValidations = (
@@ -41,25 +42,27 @@ const useValidations = (
     const [expressionValidation, setExpressionValidation] = React.useState<
         Record<string, ExpressionValidation | undefined>
     >({});
-    const [existingPredictors, setExistingPredictors] = React.useState<string[]>([]);
+    const [existingPredictors, setExistingPredictors] = React.useState<PredictorDetails[]>([]);
 
     useEffect(() => {
         compositionRoot.predictors.list().run(
-            ({ objects: predictors }) => {
-                const existingPredictorNames = _(predictors)
-                    .map(existingPredictor => {
-                        if (existingPredictor.id === predictor?.id) return undefined;
-                        return existingPredictor.name;
-                    })
-                    .compact()
-                    .value();
-                setExistingPredictors(existingPredictorNames);
-            },
-            error => {
-                console.error(`Unable to get predictors: ${error}`);
-            }
+            ({ objects: predictors }) =>
+                setExistingPredictors(predictors.filter(existingPredictor => existingPredictor.id !== predictor?.id)),
+            error => console.error(`Unable to get predictors: ${error}`)
         );
     }, [compositionRoot.predictors, predictor]);
+
+    const validateUniqueField = (value: string, field: "name" | "shortName") => {
+        const requiredError = hasValue(value);
+        if (requiredError) return requiredError;
+
+        const predictorField = getPredictorName(field);
+        const predictorData = existingPredictors.map(p => p[field]);
+
+        return predictorData.includes(value)
+            ? i18n.t("{{predictorField}} must be unique", { predictorField })
+            : undefined;
+    };
 
     const validateExpression = (formula: string, _allValues: object, meta?: FieldState<string>) => {
         if (!meta) return;
@@ -87,14 +90,9 @@ const useValidations = (
         case "id":
             return { validation: createPattern(fullUidRegex, i18n.t("Please provide a valid identifier")) };
         case "name":
+        case "shortName":
             return {
-                validation: value => {
-                    const nameValueExists = existingPredictors.includes(value)
-                        ? i18n.t("Name must be unique")
-                        : undefined;
-
-                    return hasValue(value) || nameValueExists;
-                },
+                validation: value => validateUniqueField(value, field),
             };
         case "description":
         case "generator.description":
