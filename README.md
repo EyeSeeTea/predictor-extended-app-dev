@@ -11,7 +11,7 @@ $ yarn install
 Start development server:
 
 ```
-$ PORT=8081 REACT_APP_DHIS2_BASE_URL="http://localhost:8080" yarn start
+$ VITE_PORT=8081 VITE_DHIS2_BASE_URL="http://localhost:8080" yarn start
 ```
 
 Linting:
