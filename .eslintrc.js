@@ -5,7 +5,6 @@ module.exports = {
         "react-app",
         "eslint:recommended",
         "plugin:react/recommended",
-        "plugin:cypress/recommended",
         "plugin:@typescript-eslint/recommended",
     ],
     parser: "@typescript-eslint/parser",
@@ -43,8 +42,7 @@ module.exports = {
         "react-hooks/rules-of-hooks": "error",
         "react-hooks/exhaustive-deps": "warn",
     },
-    plugins: ["cypress", "@typescript-eslint", "react-hooks"],
-    env: { "cypress/globals": true },
+    plugins: ["@typescript-eslint", "react-hooks"],
     settings: {
         react: {
             pragma: "React",

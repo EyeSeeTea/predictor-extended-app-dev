@@ -35,11 +35,6 @@ bak
 .eslintcache
 config.json
 
-# cypress
-cypress/screenshots/
-cypress/videos/
-cypress/fixtures/
-
 # Yarn 4
 .yarn/cache
 .yarn/install-state.gz
