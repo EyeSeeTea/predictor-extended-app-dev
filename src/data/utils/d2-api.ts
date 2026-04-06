@@ -16,7 +16,7 @@ export function getD2APiFromInstance(instance: Instance) {
             instance.username && instance.password
                 ? { username: instance.username, password: instance.password }
                 : undefined,
-        backend: "fetch",
+        // Usar backend por defecto para evitar arrastrar polyfills de fetch (whatwg-fetch)
     });
 }
 

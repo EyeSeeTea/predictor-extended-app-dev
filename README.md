@@ -6,12 +6,57 @@ Install dependencies:
 $ yarn install
 ```
 
+This project uses **Yarn 4** managed by **Corepack** and declares:
+
+```json
+"packageManager": "yarn@4.12.0"
+```
+
+### If you have Yarn 1 globally and see a packageManager error
+
+If running `yarn` shows an error like:
+
+> This project's package.json defines "packageManager": "yarn@4.12.0". However the current global version of Yarn is 1.22.x.
+
+do the following once on your machine:
+
+```bash
+# 1) Remove global Yarn (optional but recommended)
+npm uninstall -g yarn
+
+# 2) Enable Corepack (shipped with Node 16.9+ / 14.19+)
+corepack enable
+
+# 3) Set Yarn 1.x as the default for projects WITHOUT packageManager
+corepack prepare yarn@1.22.22 --activate
+```
+
+Then, in this project (normal case, once Corepack is enabled):
+
+```bash
+nvm use # use the version from .nvmrc
+yarn install
+```
+
+If for some reason `yarn --version` still shows `1.x` inside this repo (for example due to old Corepack state), you can force Yarn 4 explicitly:
+
+```bash
+corepack use yarn@4.12.0
+yarn --version # should now print 4.12.0
+yarn install
+```
+
+After this:
+
+- This repo will use **Yarn 4.12.0**.
+- Other repos without `packageManager` will keep using **Yarn 1.22.22** (or whatever you activated with `corepack prepare`).
+
 ## Development
 
 Start development server:
 
 ```
-$ PORT=8081 REACT_APP_DHIS2_BASE_URL="http://localhost:8080" yarn start
+$ VITE_PORT=8081 VITE_DHIS2_BASE_URL="http://localhost:8080" yarn start
 ```
 
 Linting:
@@ -27,23 +72,6 @@ Run unit tests:
 ```
 $ yarn test
 ```
-
-Run integration tests locally:
-
-```
-$ export CYPRESS_DHIS2_AUTH='admin:district'
-$ export CYPRESS_EXTERNAL_API="http://localhost:8080"
-$ export CYPRESS_ROOT_URL=http://localhost:8081
-
-# non-interactive
-$ yarn cy:e2e:run
-
-# interactive UI
-$ yarn cy:e2e:open
-```
-
-For this to work in Travis, you will have to create an environment variable `CYPRESS_DHIS2_AUTH`
-(Settings -> Environment Variables) with the `user:password` used in your testing DHIS2 instance.
 
 ## Build app ZIP
 
@@ -64,7 +92,6 @@ $ yarn build-webapp
 -   `src/types`: `.d.ts` file types for modules without TS definitions.
 -   `src/utils`: Misc utilities.
 -   `src/locales`: Auto-generated, do not update or add to the version control.
--   `cypress/integration/`: Cypress integration tests.
 
 ### i18n
 
