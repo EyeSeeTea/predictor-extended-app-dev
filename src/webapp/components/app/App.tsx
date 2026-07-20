@@ -1,6 +1,5 @@
 import { Feedback } from "@eyeseetea/feedback-component";
 import { useConfig } from "@dhis2/app-runtime";
-import { HeaderBar } from "@dhis2/ui";
 import { LoadingProvider, SnackbarProvider } from "@eyeseetea/d2-ui-components";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import _ from "lodash";
@@ -12,6 +11,7 @@ import { getCompositionRoot } from "../../../compositionRoot";
 import { D2Api } from "../../../types/d2-api";
 import { AppContext, AppContextState } from "../../contexts/app-context";
 import { Router } from "../../pages/Router";
+import { HeaderBar } from "../header-bar/HeaderBar";
 import { useMigrations } from "../migrations/hooks";
 import Migrations from "../migrations/Migrations";
 import Share from "../share/Share";
