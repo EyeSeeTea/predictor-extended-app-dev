@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2025-03-27T14:02:40.573Z\n"
-"PO-Revision-Date: 2025-03-27T14:02:40.573Z\n"
+"POT-Creation-Date: 2026-10-20T07:22:51.318Z\n"
+"PO-Revision-Date: 2026-10-20T07:22:51.318Z\n"
 
 msgid "Aggregation Type"
 msgstr ""
@@ -403,9 +403,6 @@ msgstr ""
 msgid "Saving predictors"
 msgstr ""
 
-msgid "Network error"
-msgstr ""
-
 msgid "Import predictors"
 msgstr ""
 
@@ -425,6 +422,9 @@ msgid "Edit predictor"
 msgstr ""
 
 msgid "New predictor"
+msgstr ""
+
+msgid "Network error"
 msgstr ""
 
 msgid "Unable to load predictor {{id}}"

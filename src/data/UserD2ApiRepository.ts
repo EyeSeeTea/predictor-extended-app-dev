@@ -18,6 +18,8 @@ export class UserD2ApiRepository implements UserRepository {
                     id: true,
                     name: true,
                     authorities: true,
+                    // DHIS2 >= 43 flattens userCredentials fields into User; userCredentials is kept for older versions
+                    username: true,
                     userCredentials: {
                         username: true,
                     },
@@ -26,8 +28,10 @@ export class UserD2ApiRepository implements UserRepository {
             .getData();
 
         return User.create({
-            ...currentUser,
-            ...currentUser.userCredentials,
+            id: currentUser.id,
+            name: currentUser.name,
+            authorities: currentUser.authorities,
+            username: currentUser.username ?? currentUser.userCredentials?.username ?? "",
         });
     }
 }

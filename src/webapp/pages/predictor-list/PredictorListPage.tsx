@@ -124,11 +124,12 @@ export const PredictorListPage: React.FC = () => {
     const deletePredictor = useCallback(
         async (ids: string[]) => {
             loading.show(true, i18n.t("Deleting predictors"));
-            await compositionRoot.predictors.delete(ids);
+            const { error } = await compositionRoot.predictors.delete(ids).runAsync();
             loading.reset();
+            if (error) snackbar.error(error);
             reload();
         },
-        [compositionRoot, loading, reload]
+        [compositionRoot, loading, reload, snackbar]
     );
 
     const openImportDialog = useCallback(async () => {
