@@ -1,6 +1,6 @@
 import { Button, CenteredContent, InputField } from "@dhis2/ui";
 import { useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
-import i18n from "@eyeseetea/d2-ui-components/locales";
+import i18n from "../../../utils/i18n";
 import { Paper } from "@material-ui/core";
 import cronstrue from "cronstrue";
 import _ from "lodash";
@@ -130,7 +130,7 @@ export const SettingsPage: React.FC = () => {
                         />
 
                         <InputField
-                            label={i18n.t("Delay between predictions (in ms))")}
+                            label={i18n.t("Delay between predictions (in ms)")}
                             type="number"
                             value={`${settings.scheduling.delay}`}
                             onChange={updateDelay}

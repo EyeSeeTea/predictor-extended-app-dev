@@ -36,11 +36,13 @@ export interface Predictor {
     id: string;
     code?: string | undefined;
     name: string;
+    shortName: string;
     description?: string | undefined;
     output: NamedRef;
     outputCombo?: NamedRef | undefined;
     periodType: PeriodType;
     organisationUnitLevels: NamedRef[];
+    organisationUnitDescendants: "SELECTED" | "DESCENDANTS";
     generator: Formula;
     sampleSkipTest?: Formula | undefined;
     sequentialSampleCount: number;
@@ -60,9 +62,11 @@ export interface PredictorDetails extends Predictor {
 export const defaultPredictor: Predictor = {
     id: "",
     name: "",
+    shortName: "",
     output: { id: "", name: "" },
     periodType: "Yearly",
     organisationUnitLevels: [],
+    organisationUnitDescendants: "DESCENDANTS",
     generator: { expression: "", description: "", slidingWindow: false, missingValueStrategy: "NEVER_SKIP" },
     sequentialSampleCount: 0,
     annualSampleCount: 0,

@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { useField } from "react-final-form";
 import styled from "styled-components";
 import { NamedRef } from "../../../../domain/entities/DHIS2";
-import i18n from "../../../../locales";
+import i18n from "../../../../utils/i18n";
 import { useAppContext } from "../../../contexts/app-context";
 import { useFuture } from "../../../hooks/useFuture";
 import { getPredictorFieldName } from "../utils";

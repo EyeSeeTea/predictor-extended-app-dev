@@ -1,6 +1,6 @@
 import moment from "moment";
 import { unitOfTime } from "moment";
-import i18n from "../../locales";
+import i18n from "../../utils/i18n";
 import { buildObject } from "../../utils/utils";
 
 export type SchedulerPeriod =

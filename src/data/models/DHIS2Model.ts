@@ -7,7 +7,7 @@ export const RefModel: Codec<Ref> = Schema.object({
 
 export const NamedRefModel: Codec<NamedRef> = Schema.object({
     id: Schema.string,
-    name: Schema.optionalSafe(Schema.string, "Unknown"),
+    name: Schema.optionalSafe(Schema.nonEmptyString, "Unknown"),
 });
 
 export const SharingSettingModel: Codec<SharingSetting> = Schema.object({

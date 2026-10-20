@@ -12,7 +12,7 @@ import { VariableSizeGrid as Grid } from "react-window";
 import styled from "styled-components";
 import { MetadataResponse } from "../../../domain/entities/Metadata";
 import { Predictor } from "../../../domain/entities/Predictor";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { ColumnSelectorDialog } from "../../components/column-selector-dialog/ColumnSelectorDialog";
 import { ImportSummary } from "../../components/import-summary/ImportSummary";
 import { PageHeader } from "../../components/page-header/PageHeader";

@@ -2,7 +2,7 @@ import _ from "lodash";
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { SchedulerExecution } from "../../../domain/entities/SchedulerExecution";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { useAppContext } from "../../contexts/app-context";
 import { useCallbackEffect } from "../../hooks/useCallbackEffect";
 

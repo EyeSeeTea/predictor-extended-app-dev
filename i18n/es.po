@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2021-09-01T16:39:41.573Z\n"
+"POT-Creation-Date: 2025-06-18T13:49:16.280Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -271,6 +271,9 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "{{predictorField}} must be unique"
+msgstr ""
+
 msgid "Unable to validate"
 msgstr ""
 
@@ -281,6 +284,9 @@ msgid "Invalid option"
 msgstr ""
 
 msgid "Name"
+msgstr ""
+
+msgid "Short name"
 msgstr ""
 
 msgid "Description"
@@ -482,7 +488,7 @@ msgid "Settings"
 msgstr ""
 
 msgid "Search by name"
-msgstr ""
+msgstr "Buscar por nombre"
 
 msgid "Couldn't read the file because it's not valid"
 msgstr ""
@@ -496,6 +502,21 @@ msgstr ""
 msgid "Invalid output combo"
 msgstr ""
 
+msgid "Scheduler"
+msgstr "Programador"
+
+msgid "Last"
+msgstr ""
+
+msgid "seconds"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Script not running"
+msgstr ""
+
 msgid "Saving settings..."
 msgstr ""
 
@@ -506,6 +527,9 @@ msgid "Frequency (cron expression)"
 msgstr ""
 
 msgid "Invalid cron expression"
+msgstr ""
+
+msgid "Delay between predictions (in ms)"
 msgstr ""
 
 msgid "Prediction period"

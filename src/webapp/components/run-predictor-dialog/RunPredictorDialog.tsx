@@ -1,7 +1,7 @@
 import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import { useCallback, useState } from "react";
 import { PeriodObject } from "../../../domain/entities/SchedulerPeriod";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { PeriodPicker } from "../period-picker/PeriodPicker";
 
 export interface RunPredictorDialogProps {

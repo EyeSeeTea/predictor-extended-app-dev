@@ -4,7 +4,7 @@ import moment from "moment";
 import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { buildPeriodDate, PeriodObject, periods, SchedulerPeriod } from "../../../domain/entities/SchedulerPeriod";
-import i18n from "../../../locales";
+import i18n from "../../../utils/i18n";
 import { UpdateMethod } from "../../../utils/utils";
 import { Dropdown } from "../dropdown/Dropdown";
 
