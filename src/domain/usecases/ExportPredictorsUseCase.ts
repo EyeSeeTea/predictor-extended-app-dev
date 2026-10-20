@@ -130,6 +130,7 @@ export const exportFields = [
     "id",
     "code",
     "name",
+    "shortName",
     "description",
     "output",
     "outputCombo",

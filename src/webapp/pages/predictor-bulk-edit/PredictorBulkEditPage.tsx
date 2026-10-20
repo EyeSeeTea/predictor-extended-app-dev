@@ -140,6 +140,7 @@ export const PredictorBulkEditPage: React.FC<PredictorBulkEditPageProps> = ({ ty
 const basePredictorColumns = [
     "id",
     "name",
+    "shortName",
     "scheduling.sequence",
     "scheduling.variable",
     "output",
