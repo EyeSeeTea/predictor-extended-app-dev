@@ -1,6 +1,7 @@
 import { Button, ButtonStrip, CenteredContent, NoticeBox } from "@dhis2/ui";
 import { useLoading } from "@eyeseetea/d2-ui-components";
 import { Paper } from "@material-ui/core";
+import { FORM_ERROR } from "final-form";
 import { Delete, ViewColumn } from "@material-ui/icons";
 import _ from "lodash";
 import { IconButton } from "material-ui";
@@ -45,8 +46,8 @@ export const PredictorBulkEditPage: React.FC<PredictorBulkEditPageProps> = ({ ty
         async ({ predictors }: { predictors: Predictor[] }) => {
             loading.show(true, i18n.t("Saving predictors"));
             const { data = [], error } = await compositionRoot.predictors.save(predictors).runAsync();
-            if (error) return error ?? i18n.t("Network error");
             loading.reset();
+            if (error) return { [FORM_ERROR]: error };
 
             if (_.some(data, foo => foo.status === "ERROR")) {
                 setSummary(data);
