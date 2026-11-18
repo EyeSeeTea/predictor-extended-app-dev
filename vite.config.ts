@@ -1,4 +1,4 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 import { UserConfig, defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import checker from "vite-plugin-checker";
@@ -24,10 +24,6 @@ const config = ({ mode }): UserConfig => {
         checker({
             overlay: false,
             typescript: true,
-            eslint: {
-                lintCommand: 'eslint "./src/**/*.{ts,tsx}"',
-                dev: { logLevel: ["warning"] },
-            },
         }),
         // Keep CRA's `redirectPaths` behaviour when running Vite dev server.
         {
