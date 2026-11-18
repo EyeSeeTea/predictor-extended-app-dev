@@ -65,7 +65,7 @@ const MigrationsDialog: React.FC<MigrationsRunnerProps> = ({ onFinish }) => {
             setState({ type: "success" });
         } catch (err) {
             debug({ message: "---" });
-            debug({ message: `Error: ${err.message}` });
+            debug({ message: `Error: ${err instanceof Error ? err.message : String(err)}` });
             debug({
                 message: i18n.t(
                     "There has been an error. You can either retry or contact your administrator if you think there has been an un recoverable error"
